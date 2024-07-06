@@ -8,8 +8,6 @@ pyvim
 Issues, questions, wishes, comments, feedback, remarks? Please create a GitHub
 issue, I appreciate it.
 
-|Build Status|
-
 
 Installation
 ------------
