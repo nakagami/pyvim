@@ -10,9 +10,11 @@ with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as f:
 setup(
     name='pyvim',
     author='Jonathan Slenders',
+    maintainer='Hajime Nakagami',
+    maintainer_email='nakagami@gmail.com',
     version=pyvim.__version__,
     license='BSD License',
-    url='https://github.com/jonathanslenders/pyvim',
+    url='https://github.com/nakagami/pyvim',
     description='Pure Python Vi Implementation',
     long_description=long_description,
     packages=find_packages('.'),
