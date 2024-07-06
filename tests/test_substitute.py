@@ -7,6 +7,7 @@ Sugar is sweet,
     And so are you.
 """.lstrip()
 
+
 def given_sample_text(editor_buffer, text=None):
     editor = editor_buffer.editor
     editor.window_arrangement._add_editor_buffer(editor_buffer)
