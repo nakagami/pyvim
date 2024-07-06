@@ -4,7 +4,6 @@ from prompt_toolkit.document import Document
 
 import os
 import re
-import six
 
 __all__ = (
     'has_command_handler',
@@ -223,7 +222,7 @@ def buffer_list(editor):
             eb = info.editor_buffer
             print(' %3i %-2s %-20s  line %i' % (
                   info.index, char, eb.location, (eb.buffer.document.cursor_position_row + 1)))
-        six.moves.input('\nPress ENTER to continue...')
+        input('\nPress ENTER to continue...')
     run_in_terminal(handler)
 
 

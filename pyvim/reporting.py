@@ -12,7 +12,6 @@ Usage::
 from __future__ import unicode_literals
 import pyflakes.api
 import string
-import six
 
 __all__ = (
     'report',
@@ -37,7 +36,7 @@ def report(location, document):
 
     Returns a list of `ReporterError`.
     """
-    assert isinstance(location, six.string_types)
+    assert isinstance(location, str)
 
     if location.endswith('.py'):
         return report_pyflakes(document)

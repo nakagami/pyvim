@@ -7,8 +7,6 @@ from prompt_toolkit import __version__ as ptk_version
 from pyvim.completion import DocumentCompleter
 from pyvim.reporting import report
 
-from six import string_types
-
 import os
 import weakref
 
@@ -32,8 +30,8 @@ class EditorBuffer(object):
     etc... This wrapper contains the necessary data for the editor.
     """
     def __init__(self, editor, location=None, text=None):
-        assert location is None or isinstance(location, string_types)
-        assert text is None or isinstance(text, string_types)
+        assert location is None or isinstance(location, str)
+        assert text is None or isinstance(text, str)
         assert not (location and text)
 
         self._editor_ref = weakref.ref(editor)
