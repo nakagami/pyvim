@@ -5,9 +5,7 @@ pyvim
 
 ::
 
-    pip install pyvim
-
-.. image :: https://github.com/jonathanslenders/pyvim/raw/master/docs/images/welcome-screen.png
+.. image :: https://github.com/nakagami/pyvim/raw/master/docs/images/welcome-screen.png
 
 Issues, questions, wishes, comments, feedback, remarks? Please create a GitHub
 issue, I appreciate it.
@@ -22,7 +20,7 @@ Simply install ``pyvim`` using pip:
 
 ::
 
-    pip install pyvim
+    pip install git+https://github.com/nakagami/pyvim
 
 
 It is a good idea to add the following to your ``~/.bashrc`` if you really
@@ -48,7 +46,7 @@ We have already many nice things, for instance:
 - Horizontal and vertical splits, as well as tab pages. (Similar to Vim.)
 
 - All of the functionality of `prompt_toolkit
-  <http://github.com/jonathanslenders/python-prompt-toolkit>`_. This includes a
+  <http://github.com/prompt-toolkit/python-prompt-toolkit>`_. This includes a
   lot of Vi key bindings, it's platform independent and runs on Python 3.8+ .
 
 - Several ``:set ...`` commands have been implemented, like ``incsearch``,
@@ -76,23 +74,23 @@ Some more screenshots
 
 Editing its own source code:
 
-.. image :: https://github.com/jonathanslenders/pyvim/raw/master/docs/images/editing-pyvim-source.png
+.. image :: https://github.com/nakagami/pyvim/raw/master/docs/images/editing-pyvim-source.png
 
 Window layouts (horizontal and vertical splits + tab pages.)
 
-.. image :: https://github.com/jonathanslenders/pyvim/raw/master/docs/images/window-layout.png
+.. image :: https://github.com/nakagami/pyvim/raw/master/docs/images/window-layout.png
 
 Pyflakes for Python code checking and Jedi for autocompletion:
 
-.. image :: https://github.com/jonathanslenders/pyvim/raw/master/docs/images/pyflakes-and-jedi.png
+.. image :: https://github.com/nakagami/pyvim/raw/master/docs/images/pyflakes-and-jedi.png
 
 Other colorschemes:
 
-.. image :: https://github.com/jonathanslenders/pyvim/raw/master/docs/images/colorschemes.png
+.. image :: https://github.com/nakagami/pyvim/raw/master/docs/images/colorschemes.png
 
 Chinese and Japanese input (double width characters):
 
-.. image :: https://raw.githubusercontent.com/jonathanslenders/pyvim/master/docs/images/cjk.png?v2
+.. image :: https://raw.githubusercontent.com/nakagami/pyvim/master/docs/images/cjk.png?v2
 
 
 Configuring pyvim
@@ -100,7 +98,7 @@ Configuring pyvim
 
 It is possible to create a ``.pyvimrc`` file for a custom configuration.
 Have a look at this example: `pyvimrc
-<https://github.com/jonathanslenders/pyvim/blob/master/examples/config/pyvimrc>`_
+<https://github.com/nakagami/pyvim/blob/master/examples/config/pyvimrc>`_
 
 
 Limitations
