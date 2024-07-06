@@ -354,8 +354,7 @@ class WindowArrangement(object):
         """
         Focus the previous tab.
         """
-        self.active_tab_index = (self.active_tab_index - 1 +
-                                 len(self.tab_pages)) % len(self.tab_pages)
+        self.active_tab_index = (self.active_tab_index - 1 + len(self.tab_pages)) % len(self.tab_pages)
 
     def go_to_buffer(self, buffer_name):
         """
@@ -364,8 +363,7 @@ class WindowArrangement(object):
         assert isinstance(buffer_name, str)
 
         for i, eb in enumerate(self.editor_buffers):
-            if (eb.location == buffer_name or
-                    (buffer_name.isdigit() and int(buffer_name) == i)):
+            if eb.location == buffer_name or (buffer_name.isdigit() and int(buffer_name) == i):
                 self.show_editor_buffer(eb)
                 break
 

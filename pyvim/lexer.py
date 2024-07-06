@@ -31,6 +31,7 @@ class DocumentLexer(Lexer):
 
 _DirectoryListing = Token.DirectoryListing
 
+
 class DirectoryListingLexer(RegexLexer):
     """
     Highlighting of directory listings.

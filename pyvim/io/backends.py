@@ -1,6 +1,7 @@
 import codecs
 import gzip
 import os
+import urllib
 
 from .base import EditorIO
 

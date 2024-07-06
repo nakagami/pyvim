@@ -5,7 +5,7 @@ __all__ = (
 )
 
 
-class EditorIO(metaclass = ABCMeta):
+class EditorIO(metaclass=ABCMeta):
     """
     The I/O interface for editor buffers.
 

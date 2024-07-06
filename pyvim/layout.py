@@ -32,6 +32,7 @@ __all__ = (
     'get_terminal_title',
 )
 
+
 def _try_char(character, backup, encoding=sys.stdout.encoding):
     """
     Return `character` if it can be encoded using sys.stdout, else return the
@@ -125,8 +126,7 @@ class WelcomeMessageWindow(ConditionalContainer):
 
             # Only show when there is only one empty buffer, but once the
             # welcome message has been hidden, don't show it again.
-            result = (len(buffers) == 1 and buffers[0].buffer.text == '' and
-                      buffers[0].location is None and not once_hidden[0])
+            result = len(buffers) == 1 and buffers[0].buffer.text == '' and buffers[0].location is None and not once_hidden[0]
             if not result:
                 once_hidden[0] = True
             return result
@@ -149,8 +149,7 @@ def _bufferlist_overlay_visible(editor):
         app = get_app()
 
         text = editor.command_buffer.text.lstrip()
-        return app.layout.has_focus(editor.command_buffer) and (
-                any(text.startswith(p) for p in ['b ', 'b! ', 'buffer', 'buffer!']))
+        return app.layout.has_focus(editor.command_buffer) and (any(text.startswith(p) for p in ['b ', 'b! ', 'buffer', 'buffer!']))
     return overlay_is_visible
 
 
@@ -286,9 +285,7 @@ class ReportMessageToolbar(ConditionalContainer):
 
             return []
 
-        super(ReportMessageToolbar, self).__init__(
-                FormattedTextToolbar(get_formatted_text),
-                filter=~has_focus(editor.command_buffer) & ~is_searching & ~has_focus('system'))
+        super(ReportMessageToolbar, self).__init__(FormattedTextToolbar(get_formatted_text), filter=~has_focus(editor.command_buffer) & ~is_searching & ~has_focus('system'))
 
 
 class WindowStatusBar(FormattedTextToolbar):
@@ -454,9 +451,7 @@ class EditorLayout(object):
                 Float(bottom=1, left=0, right=0, height=1,
                       content=ConditionalContainer(
                           CompletionsToolbar(),
-                          filter=has_focus(editor.command_buffer) &
-                                       ~_bufferlist_overlay_visible(editor) &
-                                       Condition(lambda: editor.show_wildmenu))),
+                          filter=has_focus(editor.command_buffer) & ~_bufferlist_overlay_visible(editor) & Condition(lambda: editor.show_wildmenu))),
                 Float(bottom=1, left=0, right=0, height=1,
                       content=ValidationToolbar()),
                 Float(bottom=1, left=0, right=0, height=1,
@@ -541,11 +536,12 @@ class EditorLayout(object):
                 top=(lambda: self.editor.scroll_offset),
                 bottom=(lambda: self.editor.scroll_offset)),
             wrap_lines=wrap_lines,
-            left_margins=[ConditionalMargin(
-                    margin=NumberedMargin(
-                        display_tildes=True,
-                        relative=Condition(lambda: self.editor.relative_number)),
-                    filter=Condition(lambda: self.editor.show_line_numbers))],
+            left_margins=[
+                ConditionalMargin(
+                    margin=NumberedMargin(display_tildes=True, relative=Condition(lambda: self.editor.relative_number)),
+                    filter=Condition(lambda: self.editor.show_line_numbers)
+                )
+            ],
             cursorline=Condition(lambda: self.editor.cursorline),
             cursorcolumn=Condition(lambda: self.editor.cursorcolumn),
             colorcolumns=(
@@ -582,8 +578,10 @@ class EditorLayout(object):
             TabsProcessor(
                 tabstop=(lambda: self.editor.tabstop),
                 char1=(lambda: '|' if self.editor.display_unprintable_characters else ' '),
-                char2=(lambda: _try_char('\u2508', '.', get_app().output.encoding())
-                                       if self.editor.display_unprintable_characters else ' '),
+                char2=(
+                    lambda: _try_char('\u2508', '.', get_app().output.encoding())
+                    if self.editor.display_unprintable_characters else ' '
+                ),
             ),
 
             # Reporting of errors, for Pyflakes.
@@ -623,6 +621,7 @@ class EditorLayout(object):
             return result
         return ''
 
+
 class ReportingProcessor(Processor):
     """
     Highlight all pyflakes errors on the input.
@@ -630,7 +629,7 @@ class ReportingProcessor(Processor):
     def __init__(self, editor_buffer):
         self.editor_buffer = editor_buffer
 
-    def apply_transformation(self, transformation_input): 
+    def apply_transformation(self, transformation_input):
         fragments = transformation_input.fragments
 
         if self.editor_buffer.report_errors:
@@ -642,7 +641,6 @@ class ReportingProcessor(Processor):
                             fragments[i] = ('class:flakeserror', fragments[i][1])
 
         return Transformation(fragments)
-
 
 
 def get_terminal_title(editor):
