@@ -3,8 +3,6 @@ pyvim
 
 *An implementation of Vim in Python*
 
-::
-
 .. image :: https://github.com/nakagami/pyvim/raw/master/docs/images/welcome-screen.png
 
 Issues, questions, wishes, comments, feedback, remarks? Please create a GitHub
