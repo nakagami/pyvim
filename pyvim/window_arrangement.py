@@ -5,7 +5,6 @@ This contains the data structure for the tab pages with their windows and
 buffers. It's not the same as a `prompt-toolkit` layout. The latter directly
 represents the rendering, while this is more specific for the editor itself.
 """
-from __future__ import unicode_literals
 import weakref
 
 from .editor_buffer import EditorBuffer

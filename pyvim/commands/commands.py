@@ -1,4 +1,3 @@
-from __future__ import unicode_literals, print_function
 from prompt_toolkit.application import run_in_terminal
 from prompt_toolkit.document import Document
 

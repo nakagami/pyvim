@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from prompt_toolkit.lexers import Lexer, SimpleLexer, PygmentsLexer
 from pygments.lexer import RegexLexer
 from pygments.token import Token

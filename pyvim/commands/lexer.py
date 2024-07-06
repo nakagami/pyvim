@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from prompt_toolkit.contrib.regular_languages.lexer import GrammarLexer
 from prompt_toolkit.lexers import PygmentsLexer, SimpleLexer
 

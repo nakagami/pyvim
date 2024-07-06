@@ -10,7 +10,6 @@ Options:
     -O           : Split vertically.
     -u <pyvimrc> : Use this .pyvimrc file instead.
 """
-from __future__ import unicode_literals
 import docopt
 import os
 

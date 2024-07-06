@@ -1,7 +1,6 @@
 """
 The actual layout for the renderer.
 """
-from __future__ import unicode_literals
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.filters import has_focus, is_searching, Condition, has_arg
 from prompt_toolkit.key_binding.vi_state import InputMode

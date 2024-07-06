@@ -9,7 +9,6 @@ Usage::
 
     errors = report('location.py', Document('file content'))
 """
-from __future__ import unicode_literals
 import pyflakes.api
 import string
 
