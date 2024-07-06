@@ -7,8 +7,6 @@ Usage::
     e = Editor(files_to_edit)
     e.run()  # Runs the event loop, starts interaction.
 """
-from __future__ import unicode_literals
-
 from prompt_toolkit.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.enums import EditingMode

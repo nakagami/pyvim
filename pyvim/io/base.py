@@ -1,14 +1,11 @@
-from __future__ import unicode_literals
-
 from abc import ABCMeta, abstractmethod
-import six
 
 __all__ = (
     'EditorIO',
 )
 
 
-class EditorIO(six.with_metaclass(ABCMeta, object)):
+class EditorIO(metaclass = ABCMeta):
     """
     The I/O interface for editor buffers.
 

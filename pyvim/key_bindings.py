@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from prompt_toolkit.application import get_app
 from prompt_toolkit.filters import Condition, has_focus, vi_insert_mode, vi_navigation_mode
 from prompt_toolkit.key_binding import KeyBindings

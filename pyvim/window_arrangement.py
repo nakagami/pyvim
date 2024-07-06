@@ -5,8 +5,6 @@ This contains the data structure for the tab pages with their windows and
 buffers. It's not the same as a `prompt-toolkit` layout. The latter directly
 represents the rendering, while this is more specific for the editor itself.
 """
-from __future__ import unicode_literals
-from six import string_types
 import weakref
 
 from .editor_buffer import EditorBuffer
@@ -363,7 +361,7 @@ class WindowArrangement(object):
         """
         Go to one of the open buffers.
         """
-        assert isinstance(buffer_name, string_types)
+        assert isinstance(buffer_name, str)
 
         for i, eb in enumerate(self.editor_buffers):
             if (eb.location == buffer_name or
@@ -410,7 +408,7 @@ class WindowArrangement(object):
         When location is None, this creates a new buffer.
         """
         assert location is None or text is None  # Don't pass two of them.
-        assert location is None or isinstance(location, string_types)
+        assert location is None or isinstance(location, str)
 
         if location is None:
             # Create and add an empty EditorBuffer

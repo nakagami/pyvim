@@ -1,10 +1,6 @@
-from __future__ import unicode_literals
-
 import codecs
 import gzip
 import os
-import six
-from six.moves import urllib
 
 from .base import EditorIO
 
@@ -161,7 +157,7 @@ def _auto_decode(data):
     """
     Decode bytes. Return a (text, encoding) tuple.
     """
-    assert isinstance(data, six.binary_type)
+    assert isinstance(data, bytes)
 
     for e in ENCODINGS:
         try:
