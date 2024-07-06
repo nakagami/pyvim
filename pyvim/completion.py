@@ -93,8 +93,9 @@ class _PythonCompleter(Completer):
                                      display=c.name_with_symbols)
 
     def _get_jedi_script_from_document(self, document):
-        import jedi  # We keep this import in-line, to improve start-up time.
-                     # Importing Jedi is 'slow'.
+        # We keep this import in-line, to improve start-up time.
+        # Importing Jedi is 'slow'.
+        import jedi
 
         try:
             return jedi.Script(
@@ -116,4 +117,3 @@ class _PythonCompleter(Completer):
         except KeyError:
             # Workaround for a crash when the input is "u'", the start of a unicode string.
             return None
-

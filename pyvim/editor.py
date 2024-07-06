@@ -20,7 +20,7 @@ from .commands.handler import handle_command
 from .commands.preview import CommandPreviewer
 from .help import HELP_TEXT
 from .key_bindings import create_key_bindings
-from .layout import EditorLayout, get_terminal_title
+from .layout import EditorLayout
 from .style import generate_built_in_styles, get_editor_style_by_name
 from .window_arrangement import WindowArrangement
 from .io import FileIO, DirectoryIO, HttpIO, GZipFileIO
@@ -167,10 +167,9 @@ class Editor(object):
             editing_mode=EditingMode.VI,
             layout=self.editor_layout.layout,
             key_bindings=self.key_bindings,
-#            get_title=lambda: get_terminal_title(self),
             style=DynamicStyle(lambda: self.current_style),
             paste_mode=Condition(lambda: self.paste_mode),
-#            ignore_case=Condition(lambda: self.ignore_case),  # TODO
+            #  ignore_case=Condition(lambda: self.ignore_case),  # TODO
             include_default_pygments_style=False,
             mouse_support=Condition(lambda: self.enable_mouse_support),
             full_screen=True,

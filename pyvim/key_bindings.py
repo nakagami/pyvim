@@ -79,8 +79,7 @@ def create_key_bindings(editor):
         """
         editor.enter_command_mode()
 
-    @kb.add('tab', filter=vi_insert_mode &
-            ~has_focus(editor.command_buffer) & whitespace_before_cursor_on_line)
+    @kb.add('tab', filter=vi_insert_mode & ~has_focus(editor.command_buffer) & whitespace_before_cursor_on_line)
     def autocomplete_or_indent(event):
         """
         When the 'tab' key is pressed with only whitespace character before the
@@ -94,8 +93,7 @@ def create_key_bindings(editor):
 
     @kb.add('escape', filter=has_focus(editor.command_buffer))
     @kb.add('c-c', filter=has_focus(editor.command_buffer))
-    @kb.add('backspace',
-        filter=has_focus(editor.command_buffer) & Condition(lambda: editor.command_buffer.text == ''))
+    @kb.add('backspace', filter=has_focus(editor.command_buffer) & Condition(lambda: editor.command_buffer.text == ''))
     def leave_command_mode(event):
         """
         Leaving command mode.
@@ -139,8 +137,7 @@ def create_key_bindings(editor):
 
     @Condition
     def in_file_explorer_mode():
-        return bool(editor.current_editor_buffer and
-            editor.current_editor_buffer.in_file_explorer_mode)
+        return bool(editor.current_editor_buffer and editor.current_editor_buffer.in_file_explorer_mode)
 
     @kb.add('enter', filter=in_file_explorer_mode)
     def open_path(event):

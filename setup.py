@@ -18,7 +18,7 @@ setup(
     description='Pure Python Vi Implementation',
     long_description=long_description,
     packages=find_packages('.'),
-    install_requires = [
+    install_requires=[
         'prompt_toolkit>=2.0.0,<3.1.0',
         'pyflakes',        # For Python error reporting.
         'pygments',        # For the syntax highlighting.
