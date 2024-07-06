@@ -49,9 +49,7 @@ We have already many nice things, for instance:
 
 - All of the functionality of `prompt_toolkit
   <http://github.com/jonathanslenders/python-prompt-toolkit>`_. This includes a
-  lot of Vi key bindings, it's platform independent and runs on every Python
-  version from python 2.6 up to 3.4. It also runs on Pypy with a noticeable
-  performance boost.
+  lot of Vi key bindings, it's platform independent and runs on Python 3.8+ .
 
 - Several ``:set ...`` commands have been implemented, like ``incsearch``,
   ``number``, ``ignorecase``, ``wildmenu``, ``expandtab``, ``hlsearch``,
