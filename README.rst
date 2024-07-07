@@ -150,17 +150,6 @@ And then run from root pyvim directory:
 
     py.test
 
-To test pyvim against all supported python versions, install tox:
-
-    pip install tox
-
-And then run from root pyvim directory:
-
-    tox
-
-You need to have installed all the supported versions of python in order to run
-tox command successfully.
-
 
 Why did I create Pyvim?
 -----------------------
