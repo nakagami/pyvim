@@ -365,8 +365,6 @@ def write_and_quit_all(editor, location, force=False):
     """
     write_all(editor)
     quit_all(editor)
-    write(editor, location, force=force)
-    quit(editor, all_=True, force=force)
 
 
 @cmd('h')
