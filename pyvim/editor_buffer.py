@@ -159,7 +159,7 @@ class EditorBuffer(object):
                         self.editor.show_message('%s' % e)
                         done = True
             except Exception as e:
-                if os.path.isfile(self.location) and (not os.access(self.location, os.W_OK)): # File is not writable
+                if os.path.isfile(self.location) and (not os.access(self.location, os.W_OK)):  # File is not writable
                     if force:
                         if not toggle_write_permission:
                             try:
