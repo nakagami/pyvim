@@ -24,3 +24,19 @@ def window(editor_buffer):
 @pytest.fixture
 def tab_page(window):
     return TabPage(window)
+
+
+@pytest.fixture
+def tab_page_with_splits(editor_buffer, window):
+    editor_buffer2 = EditorBuffer(editor)
+
+    tab_page = TabPage(Window(editor_buffer))
+    tab_page.vsplit(editor_buffer)
+    tab_page.vsplit(editor_buffer2)
+    tab_page.hsplit(editor_buffer)
+    return tab_page
+
+
+@pytest.fixture
+def window_arrangement(editor):
+    return WindowArrangement(editor)
