@@ -320,7 +320,7 @@ def write(editor, location, force=False):
         if location is None and eb.location is None:
             editor.show_message(_NO_FILE_NAME)
         else:
-            eb.write(location)
+            eb.write(location, force)
 
 
 @location_cmd('wq', accepts_force=True)
@@ -343,17 +343,13 @@ def quit_nonzero(editor):
     editor.application.exit()
 
 
-@cmd('wqa')
-def write_and_quit_all(editor):
+@location_cmd('wqa', accepts_force=True)
+def write_and_quit_all(editor, location, force=False):
     """
     Write current buffer and quit all.
     """
-    eb = editor.window_arrangement.active_editor_buffer
-    if eb.location is None:
-        editor.show_message(_NO_FILE_NAME)
-    else:
-        eb.write()
-        quit(editor, all_=True, force=False)
+    write(editor, location, force=force)
+    quit(editor, all_=True, force=force)
 
 
 @cmd('h')
