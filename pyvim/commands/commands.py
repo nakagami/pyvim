@@ -358,8 +358,6 @@ def write_all(editor):
             eb.write()
 
 
-@cmd('wqa')
-def write_and_quit_all(editor):
 @location_cmd('wqa', accepts_force=True)
 def write_and_quit_all(editor, location, force=False):
     """
