@@ -3,7 +3,7 @@ import pytest
 from prompt_toolkit.output import DummyOutput
 from prompt_toolkit.input import DummyInput
 from pyvim.editor import Editor
-from pyvim.window_arrangement import TabPage, EditorBuffer, Window
+from pyvim.window_arrangement import TabPage, EditorBuffer, Window, WindowArrangement
 
 
 @pytest.fixture

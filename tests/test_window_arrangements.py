@@ -1,4 +1,4 @@
-from pyvim.window_arrangement import EditorBuffer, VSplit
+from pyvim.window_arrangement import EditorBuffer, VSplit, TabPage, Window
 
 
 def test_initial(window, tab_page):
