@@ -167,7 +167,7 @@ def create_key_bindings(editor):
         # With this implementation, 1G same as G and moves to the end of the line.
         # I don't know how to fix it, so please use gg instead of 1G when moving to the first line
         buf = event.current_buffer
-        count = (buf.document.line_count if event.arg == 1 else event.arg -1) - buf.document.cursor_position_row
+        count = (buf.document.line_count if event.arg == 1 else event.arg - 1) - buf.document.cursor_position_row
         if count > 0:
             buf.auto_down(count=count, go_to_start_of_line_if_history_changes=True)
         elif count < 0:
