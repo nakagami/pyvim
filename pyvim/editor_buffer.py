@@ -1,7 +1,6 @@
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.document import Document
-from prompt_toolkit import __version__ as ptk_version
 
 from pyvim.completion import DocumentCompleter
 from pyvim.reporting import report
