@@ -7,7 +7,6 @@ from prompt_toolkit.filters import ViInsertMode
 from prompt_toolkit.key_binding.key_processor import KeyPress
 from prompt_toolkit.keys import Keys
 from subprocess import call
-import six
 
 __all__ = (
     'configure',
@@ -76,6 +75,6 @@ def configure(editor):
         # not destroy the window layout.
         def execute():
             call(['python3', editor_buffer.location])
-            six.moves.input('Press enter to continue...')
+            input('Press enter to continue...')
 
         run_in_terminal(execute)
