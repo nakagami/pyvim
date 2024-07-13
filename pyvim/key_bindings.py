@@ -1,7 +1,9 @@
 import os
+import re
 from prompt_toolkit.application import get_app
 from prompt_toolkit.filters import Condition, has_focus, vi_insert_mode, vi_navigation_mode
 from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit import document
 
 from .commands.commands import write_and_quit, quit
 
@@ -10,6 +12,9 @@ __all__ = (
     'create_key_bindings',
 )
 
+# monckey patch word regulaer expression
+document._FIND_WORD_RE = re.compile(r"([a-zA-Z0-9_]+|[^a-zA-Z0-9_\t\f\v]+)")
+document._FIND_CURRENT_WORD_RE = re.compile(r"^([a-zA-Z0-9_]+|[^a-zA-Z0-9_\t\f\v]+)")
 
 def create_key_bindings(editor):
     """
