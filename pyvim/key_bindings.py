@@ -16,6 +16,7 @@ __all__ = (
 document._FIND_WORD_RE = re.compile(r"([a-zA-Z0-9_]+|[^a-zA-Z0-9_\t\f\v]+)")
 document._FIND_CURRENT_WORD_RE = re.compile(r"^([a-zA-Z0-9_]+|[^a-zA-Z0-9_\t\f\v]+)")
 
+
 def create_key_bindings(editor):
     """
     Create custom key bindings.
