@@ -90,6 +90,11 @@ def create_key_bindings(editor):
         # Restore cursor.
         b.cursor_position -= pos
 
+    @kb.add('c-d', filter=in_insert_mode)
+    def dedent_line(event):
+        # TODO:
+        pass
+
     @kb.add('c-r', filter=in_navigation_mode, save_before=(lambda e: False))
     def redo(event):
         """
