@@ -44,7 +44,9 @@ def _document_find(
         else:
             text = text[1:]
 
-    flags = re.IGNORECASE if ignore_case else 0
+    flags = re.MULTILINE
+    if ignore_case:
+        flags |= re.IGNORECASE
     try:
         iterator = re.finditer(sub, text, flags)
     except re.error:
@@ -67,7 +69,9 @@ def _document_find_all(self, sub: str, ignore_case: bool = False) -> list[int]:
     Find all occurrences of the substring. Return a list of absolute
     positions in the document.
     """
-    flags = re.IGNORECASE if ignore_case else 0
+    flags = re.MULTILINE
+    if ignore_case:
+        flags |= re.IGNORECASE
     try:
         return [a.start() for a in re.finditer(sub, self.text, flags)]
     except re.error:
@@ -92,7 +96,9 @@ def _document_find_backwards(
     else:
         before_cursor = self.text_before_cursor[::-1]
 
-    flags = re.IGNORECASE if ignore_case else 0
+    flags = re.MULTILINE
+    if ignore_case:
+        flags |= re.IGNORECASE
     # TODO: search backword with regular expression like _document_find() and _document_find_all()
     iterator = re.finditer(re.escape(sub[::-1]), before_cursor, flags)
 
