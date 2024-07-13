@@ -91,7 +91,7 @@ def _document_find_backwards(
         before_cursor = self.text_before_cursor[::-1]
 
     flags = re.IGNORECASE if ignore_case else 0
-    # TODO: search backword like _document_find() and _document_find_all()
+    # TODO: search backword with regular expression like _document_find() and _document_find_all()
     iterator = re.finditer(re.escape(sub[::-1]), before_cursor, flags)
 
     try:
