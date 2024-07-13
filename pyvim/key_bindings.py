@@ -16,6 +16,7 @@ __all__ = (
 document._FIND_WORD_RE = re.compile(r"([a-zA-Z0-9_]+|[^a-zA-Z0-9_\t\f\v]+)")
 document._FIND_CURRENT_WORD_RE = re.compile(r"^([a-zA-Z0-9_]+|[^a-zA-Z0-9_\t\f\v]+)")
 
+
 def _document_find(
     self,
     sub: str,
@@ -71,6 +72,7 @@ def _document_find_all(self, sub: str, ignore_case: bool = False) -> list[int]:
         return [a.start() for a in re.finditer(sub, self.text, flags)]
     except re.error:
         return [a.start() for a in re.finditer(re.escape(sub), self.text, flags)]
+
 
 def _document_find_backwards(
     self,
