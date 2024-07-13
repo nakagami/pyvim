@@ -1,21 +1,14 @@
+import os
 from prompt_toolkit.application import get_app
 from prompt_toolkit.filters import Condition, has_focus, vi_insert_mode, vi_navigation_mode
 from prompt_toolkit.key_binding import KeyBindings
 
 from .commands.commands import write_and_quit, quit
 
-import os
 
 __all__ = (
     'create_key_bindings',
 )
-
-
-def _current_window_for_event(event):
-    """
-    Return the `Window` for the currently focussed Buffer.
-    """
-    return event.app.layout.current_window
 
 
 def create_key_bindings(editor):
