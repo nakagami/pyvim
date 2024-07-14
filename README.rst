@@ -43,7 +43,7 @@ We have already many nice things, for instance:
 
 - All of the functionality of `prompt_toolkit
   <http://github.com/prompt-toolkit/python-prompt-toolkit>`_. This includes a
-  lot of Vi key bindings, it's platform independent and runs on Python 3.8+ .
+  lot of Vi key bindings, it's platform independent and runs on Python 3.10+ .
 
 - Several ``:set ...`` commands have been implemented, like ``incsearch``,
   ``number``, ``ignorecase``, ``wildmenu``, ``expandtab``, ``hlsearch``,

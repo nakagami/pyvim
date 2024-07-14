@@ -17,6 +17,105 @@ document._FIND_WORD_RE = re.compile(r"([a-zA-Z0-9_]+|[^a-zA-Z0-9_\t\f\v]+)")
 document._FIND_CURRENT_WORD_RE = re.compile(r"^([a-zA-Z0-9_]+|[^a-zA-Z0-9_\t\f\v]+)")
 
 
+def _document_find(
+    self,
+    sub: str,
+    in_current_line: bool = False,
+    include_current_position: bool = False,
+    ignore_case: bool = False,
+    count: int = 1,
+) -> int | None:
+    """
+    Find `text` after the cursor, return position relative to the cursor
+    position. Return `None` if nothing was found.
+
+    :param count: Find the n-th occurrence.
+    """
+    assert isinstance(ignore_case, bool)
+
+    if in_current_line:
+        text = self.current_line_after_cursor
+    else:
+        text = self.text_after_cursor
+
+    if not include_current_position:
+        if len(text) == 0:
+            return None  # (Otherwise, we always get a match for the empty string.)
+        else:
+            text = text[1:]
+
+    flags = re.MULTILINE
+    if ignore_case:
+        flags |= re.IGNORECASE
+    try:
+        iterator = re.finditer(sub, text, flags)
+    except re.error:
+        iterator = re.finditer(re.escape(sub), text, flags)
+
+    try:
+        for i, match in enumerate(iterator):
+            if i + 1 == count:
+                if include_current_position:
+                    return match.start(0)
+                else:
+                    return match.start(0) + 1
+    except StopIteration:
+        pass
+    return None
+
+
+def _document_find_all(self, sub: str, ignore_case: bool = False) -> list[int]:
+    """
+    Find all occurrences of the substring. Return a list of absolute
+    positions in the document.
+    """
+    flags = re.MULTILINE
+    if ignore_case:
+        flags |= re.IGNORECASE
+    try:
+        return [a.start() for a in re.finditer(sub, self.text, flags)]
+    except re.error:
+        return [a.start() for a in re.finditer(re.escape(sub), self.text, flags)]
+
+
+def _document_find_backwards(
+    self,
+    sub: str,
+    in_current_line: bool = False,
+    ignore_case: bool = False,
+    count: int = 1,
+) -> int | None:
+    """
+    Find `text` before the cursor, return position relative to the cursor
+    position. Return `None` if nothing was found.
+
+    :param count: Find the n-th occurrence.
+    """
+    if in_current_line:
+        before_cursor = self.current_line_before_cursor[::-1]
+    else:
+        before_cursor = self.text_before_cursor[::-1]
+
+    flags = re.MULTILINE
+    if ignore_case:
+        flags |= re.IGNORECASE
+    # TODO: search backword with regular expression like _document_find() and _document_find_all()
+    iterator = re.finditer(re.escape(sub[::-1]), before_cursor, flags)
+
+    try:
+        for i, match in enumerate(iterator):
+            if i + 1 == count:
+                return -match.start(0) - len(sub)
+    except StopIteration:
+        pass
+    return None
+
+
+document.Document.find = _document_find
+document.Document.find_all = _document_find_all
+document.Document.find_backwards = _document_find_backwards
+
+
 def create_key_bindings(editor):
     """
     Create custom key bindings.
