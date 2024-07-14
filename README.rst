@@ -53,7 +53,7 @@ We have already many nice things, for instance:
   others.
 
 - For Python source code, auto completion uses the amazing Jedi library, and
-  code checking in done (asynchronously) through Pyflakes.
+  code checking in done through Pyflakes.
 
 - Colorschemes can be changed at runtime.
 
