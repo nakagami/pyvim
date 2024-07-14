@@ -9,8 +9,6 @@ import stat
 import os
 import weakref
 
-from asyncio import get_event_loop
-
 __all__ = (
     'EditorBuffer',
 )
@@ -191,37 +189,12 @@ class EditorBuffer(object):
     def run_reporter(self):
         " Buffer text changed. "
         if not self._reporter_is_running:
-            self._reporter_is_running = True
-
-            text = self.buffer.text
-            self.report_errors = []
-
             # Don't run reporter when we don't have a location. (We need to
             # know the filetype, actually.)
             if self.location is None:
                 return
 
-            # Better not to access the document in an executor.
-            document = self.buffer.document
-
-            loop = get_event_loop()
-
-            def in_executor():
-                # Call reporter
-                report_errors = report(self.location, document)
-
-                def ready():
-                    self._reporter_is_running = False
-
-                    # If the text has not been changed yet in the meantime, set
-                    # reporter errors. (We were running in another thread.)
-                    if text == self.buffer.text:
-                        self.report_errors = report_errors
-                        get_app().invalidate()
-                    else:
-                        # Restart reporter when the text was changed.
-                        self.run_reporter()
-
-                loop.call_soon_threadsafe(ready)
-
-            loop.run_in_executor(None, in_executor)
+            self._reporter_is_running = True
+            self.report_errors = report(self.location, self.buffer.document)
+            get_app().invalidate()
+            self._reporter_is_running = False
