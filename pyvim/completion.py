@@ -1,11 +1,43 @@
-from prompt_toolkit.completion import Completer, Completion
-
 import re
 import weakref
+from typing import Any
+import jedi
+from jedi import Interpreter
+
+from prompt_toolkit.completion import Completer, Completion
+from prompt_toolkit.document import Document
 
 __all__ = (
     'DocumentCompleter',
 )
+
+
+def get_jedi_script_from_document(
+    document: Document, path: str, locals: dict[str, Any], globals: dict[str, Any]
+) -> Interpreter:
+    try:
+        return jedi.Interpreter(
+            document.text,
+            path=path,
+            namespaces=[locals, globals],
+        )
+    except ValueError:
+        # Invalid cursor position.
+        # ValueError('`column` parameter is not in a valid range.')
+        return None
+    except AttributeError:
+        # Workaround for #65: https://github.com/jonathanslenders/python-prompt-toolkit/issues/65
+        # See also: https://github.com/davidhalter/jedi/issues/508
+        return None
+    except IndexError:
+        # Workaround Jedi issue #514: for https://github.com/davidhalter/jedi/issues/514
+        return None
+    except KeyError:
+        # Workaround for a crash when the input is "u'", the start of a unicode string.
+        return None
+    except Exception:
+        # Workaround for: https://github.com/jonathanslenders/ptpython/issues/91
+        return None
 
 
 class DocumentWordsCompleter(Completer):
@@ -61,10 +93,14 @@ class _PythonCompleter(Completer):
         self.location = location
 
     def get_completions(self, document, complete_event):
-        script = self._get_jedi_script_from_document(document)
+        script = get_jedi_script_from_document(document, self.location, locals(), globals())
+
         if script:
             try:
-                completions = script.completions()
+                completions = script.complete(
+                    column=document.cursor_position_col,
+                    line=document.cursor_position_row + 1,
+                )
             except TypeError:
                 # Issue #9: bad syntax causes completions() to fail in jedi.
                 # https://github.com/jonathanslenders/python-prompt-toolkit/issues/9
