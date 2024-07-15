@@ -12,20 +12,29 @@ issue, I appreciate it.
 Installation
 ------------
 
-Simply install ``pyvim`` using pip:
+Execute bellow pip command in the python virtual environment of your project.
 
 ::
 
     pip install git+https://github.com/nakagami/pyvim
 
 
-It is a good idea to add the following to your ``~/.bashrc`` if you really
-want to use it:
+And add the following to your ``~/.bashrc``,
+You can switch between `pyvim` and `vim`.
 
 ::
 
-    alias vi=pyvim
-    export EDITOR=pyvim
+   exec_vi()
+   {
+       if [ x`which pyvim` = x ];
+       then
+           /usr/bin/env vim "$@"
+       else
+           /usr/bin/env pyvim "$@"
+       fi
+   }
+
+   alias vi=exec_vi
 
 
 The good things
