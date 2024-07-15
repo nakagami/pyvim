@@ -51,7 +51,7 @@ def _search(
                     working_index,
                     Document(document.text, document.cursor_position + new_index),
                 )
-            else:
+            elif self._editor.enable_wrapscan:
                 # No match, go forward in the history. (Include len+1 to wrap around.)
                 # (Here we should always include all cursor positions, because
                 # it's a different line.)
@@ -73,7 +73,7 @@ def _search(
                     working_index,
                     Document(document.text, document.cursor_position + new_index),
                 )
-            else:
+            elif self._editor.enable_wrapscan:
                 # No match, go back in the history. (Include -1 to wrap around.)
                 for i in range(working_index - 1, -2, -1):
                     i %= len(self._working_lines)
@@ -143,6 +143,7 @@ class EditorBuffer(object):
             completer=DocumentCompleter(editor, self),
             document=Document(text, 0),
             on_text_changed=lambda _: self.run_reporter())
+        self.buffer._editor = editor
 
         # List of reporting errors.
         self.report_errors = []
