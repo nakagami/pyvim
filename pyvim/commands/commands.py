@@ -619,7 +619,7 @@ def wrapscan_enable(editor):
     editor.enable_wrapscan = True
 
 
-@set_cmd('wrapscan')
+@set_cmd('nowrapscan')
 @set_cmd('nows')
 def wrapscan_disable(editor):
     """ Disable search wrapscan. """
