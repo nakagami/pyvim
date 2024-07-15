@@ -2,6 +2,7 @@
 """
 Pyvim configuration. Save to file to: ~/.pyvimrc
 """
+import sys
 from prompt_toolkit.application import run_in_terminal
 from prompt_toolkit.filters import ViInsertMode
 from prompt_toolkit.key_binding.key_processor import KeyPress
@@ -74,7 +75,7 @@ def configure(editor):
         # `CommandLineInterface.run_in_terminal` to go to the background and
         # not destroy the window layout.
         def execute():
-            call(['python3', editor_buffer.location])
+            call([sys.executable, editor_buffer.location])
             input('Press enter to continue...')
 
         run_in_terminal(execute)
