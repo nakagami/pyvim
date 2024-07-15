@@ -19,8 +19,9 @@ Execute bellow pip command in the python virtual environment of your project.
     pip install git+https://github.com/nakagami/pyvim
 
 
-And add the following to your ``~/.bashrc``,
-You can switch between `pyvim` and `vim`.
+And you can execute `pyvim` command.
+
+In my case, I have configured ``~/.bashrc`` to switch vi between pyvim and vim as follows.
 
 ::
 
