@@ -612,6 +612,20 @@ def jedi_disable(editor):
     editor.enable_jedi = False
 
 
+@set_cmd('wrapscan')
+@set_cmd('ws')
+def wrapscan_enable(editor):
+    """ Enable search wrapscan. """
+    editor.enable_wrapscan = True
+
+
+@set_cmd('nowrapscan')
+@set_cmd('nows')
+def wrapscan_disable(editor):
+    """ Disable search wrapscan. """
+    editor.enable_wrapscan = False
+
+
 @set_cmd('relativenumber')
 @set_cmd('rnu')
 def relative_number(editor):

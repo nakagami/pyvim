@@ -58,6 +58,7 @@ class Editor(object):
         self.enable_mouse_support = False
         self.display_unprintable_characters = True  # ':set list'
         self.enable_jedi = True  # ':set jedi', for Python Jedi completion.
+        self.enable_wrapscan = True  # ':set ws', Search wrap scan.
         self.scroll_offset = 0  # ':set scrolloff'
         self.relative_number = False  # ':set relativenumber'
         self.wrap_lines = True  # ':set wrap'

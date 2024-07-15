@@ -41,8 +41,11 @@ def configure(editor):
     # Use Jedi for autocompletion of Python files. (:set jedi)
     editor.enable_jedi = True
 
-    # Apply colorscheme. (:colorscheme emacs)
-    editor.use_colorscheme('emacs')
+    # Search wrap scan. (:set ws)
+    editor.enable_wrapscan = True
+
+    # Apply colorscheme. (:colorscheme vim)
+    editor.use_colorscheme('vim')
 
 
     # Add custom key bindings:
