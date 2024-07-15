@@ -142,6 +142,7 @@ class EditorBuffer(object):
             multiline=True,
             completer=DocumentCompleter(editor, self),
             document=Document(text, 0),
+            complete_while_typing=True,
             on_text_changed=lambda _: self.run_reporter())
         self.buffer._editor = editor
 

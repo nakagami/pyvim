@@ -21,6 +21,7 @@ setup(
     install_requires=[
         'prompt_toolkit',
         'pyflakes',        # For Python error reporting.
+        'jedi',            # For Python autocompletion
         'pygments',        # For the syntax highlighting.
         'docopt',          # For command line arguments.
     ],
