@@ -43,7 +43,7 @@ def configure(editor):
     # Search wrap scan. (:set ws)
     editor.enable_wrapscan = True
 
-    # Apply colorscheme. (:colorscheme emacs)
+    # Apply colorscheme. (:colorscheme vim)
     editor.use_colorscheme('vim')
 
 
