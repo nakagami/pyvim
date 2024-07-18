@@ -64,7 +64,8 @@ def _search(
                     )
                     if new_index is not None:
                         return (i, Document(document.text, new_index))
-        else:
+            self._editor.show_message(f'Search hit BOTTOM without match for: {text}')
+        else:   # search BACKWARDS
             # Try find at the current input.
             new_index = document.find_backwards(text, ignore_case=ignore_case)
 
@@ -89,6 +90,7 @@ def _search(
                             i,
                             Document(document.text, len(document.text) + new_index),
                         )
+            self._editor.show_message(f'Search hit TOP without match for: {text}')
         return None
 
     # Do 'count' search iterations.
