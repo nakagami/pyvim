@@ -129,10 +129,6 @@ class _PythonCompleter(Completer):
                                      display=c.name_with_symbols)
 
     def _get_jedi_script_from_document(self, document):
-        # We keep this import in-line, to improve start-up time.
-        # Importing Jedi is 'slow'.
-        import jedi
-
         try:
             return jedi.Script(
                 document.text,
