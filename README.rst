@@ -133,22 +133,6 @@ Compared to Vi Improved, Pyvim is still less powerful in many aspects.
   wrong.)
 
 
-Roadmap
--------
-
-There is no roadmap. I mostly implement the stuff which I need or interests me,
-or which gives me the opportunity to learn. But feel free to create a GitHub
-issue to request a new feature. Pull requests are also welcome. (Maybe create
-an issue first to discuss it, if you're unsure whether I'll merge it.)
-
-Maybe some day we will have a better data structure (Rope), that makes it
-possible to open really large files. (With good algorithms, Python does not have
-to be slower than C code.)
-
-Maybe we will also have line folding and probably block editing. Maybe some
-day we will have a built-in Python debugger or mouse support. We'll see. :)
-
-
 Testing
 -------
 
@@ -193,16 +177,6 @@ Certainly have a look at the alternatives:
 - Kaa: https://github.com/kaaedit/kaa by @atsuoishimoto
 - Vai: https://github.com/stefanoborini/vai by @stefanoborini
 - Vis: https://github.com/martanne/vis by @martanne
-
-
-Q & A:
-------
-
-Q
- Do you use curses?
-A
- No, it uses only ``prompt-toolkit``.
-
 
 Thanks
 ------
