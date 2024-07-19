@@ -29,7 +29,7 @@ def _search(
 
     text = search_state.text
     direction = search_state.direction
-    ignore_case = search_state.ignore_case()
+    ignore_case = self._editor.ignore_case
 
     def search_once(
         working_index: int, document: Document
