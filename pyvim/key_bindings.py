@@ -190,8 +190,20 @@ def create_key_bindings(editor):
 
     @kb.add('c-d', filter=in_insert_mode)
     def dedent_line(event):
-        # TODO:
-        pass
+        buffer = event.current_buffer
+        document = buffer.document
+        a = document.cursor_position + document.get_start_of_line_position()
+        b = document.cursor_position + document.get_end_of_line_position()
+        text = document.text[a:b]
+        space_len = len(text) - len(text.lstrip(' '))
+        if space_len:
+            if space_len % 4:
+                remove_len = space_len % 4
+            else:
+                remove_len = 4
+            text = text[remove_len:]
+            buffer.text = document.text[:a] + text + document.text[b:]
+            buffer.cursor_position -= remove_len
 
     @kb.add('c-r', filter=in_navigation_mode, save_before=(lambda e: False))
     def redo(event):
