@@ -1,6 +1,5 @@
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.buffer import Buffer
-from prompt_toolkit.search import SearchDirection, SearchState
 from prompt_toolkit.document import Document
 
 from pyvim.completion import DocumentCompleter
