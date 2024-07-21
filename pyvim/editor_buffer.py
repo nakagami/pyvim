@@ -51,7 +51,7 @@ class EditorBuffer(object):
             document=Document(text, 0),
             complete_while_typing=True,
             on_text_changed=lambda _: self.run_reporter(),
-            editor = editor)
+            editor=editor)
 
         # List of reporting errors.
         self.report_errors = []
