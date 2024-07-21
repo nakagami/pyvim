@@ -1,7 +1,7 @@
 from prompt_toolkit.application.current import get_app
-from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.document import Document
 
+from pyvim.buffer import VimBuffer
 from pyvim.completion import DocumentCompleter
 from pyvim.reporting import report
 
@@ -45,13 +45,13 @@ class EditorBuffer(object):
         self._file_content = text
 
         # Create Buffer.
-        self.buffer = Buffer(
+        self.buffer = VimBuffer(
             multiline=True,
             completer=DocumentCompleter(editor, self),
             document=Document(text, 0),
             complete_while_typing=True,
-            on_text_changed=lambda _: self.run_reporter())
-        self.buffer._editor = editor
+            on_text_changed=lambda _: self.run_reporter(),
+            editor = editor)
 
         # List of reporting errors.
         self.report_errors = []

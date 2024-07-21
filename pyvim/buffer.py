@@ -3,7 +3,14 @@ from prompt_toolkit.search import SearchDirection, SearchState
 from prompt_toolkit.document import Document
 
 
-class _VimBuffer(buffer.Buffer):
+class VimBuffer(buffer.Buffer):
+    def __init__(self, *args, **kwargs):
+        editor = kwargs["editor"]
+        del kwargs["editor"]
+        super().__init__(*args, **kwargs)
+        self._editor = editor
+        self.mark = {}
+
     def _search(
         self,
         search_state: SearchState,
@@ -93,6 +100,3 @@ class _VimBuffer(buffer.Buffer):
                 working_index, document = result
 
         return (working_index, document.cursor_position)
-
-
-buffer.Buffer = _VimBuffer
