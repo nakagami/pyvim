@@ -124,6 +124,7 @@ def create_key_bindings(editor):
     kb = KeyBindings()
 
     text_object = create_text_object_decorator(kb)
+
     @text_object("w", no_move_handler=True)
     def _word_forward(event: E) -> TextObject:
         """
