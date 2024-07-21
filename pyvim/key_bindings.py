@@ -134,8 +134,10 @@ def create_key_bindings(editor):
         end =  document.find_next_word_beginning(count=event.arg)
         if end is None:
             end = event.current_buffer.document.get_end_of_document_position()
+            if not end:
+                end = 1
         else:
-            if end != 0 and not document.text_after_cursor[:1].isspace():
+            if end != 1 and not document.text_after_cursor[:1].isspace():
                 while document.text_after_cursor[end-1:end].isspace():
                     end -= 1
         return TextObject(end)
