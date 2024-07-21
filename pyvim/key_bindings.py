@@ -12,10 +12,6 @@ __all__ = (
     'create_key_bindings',
 )
 
-# monckey patch word regulaer expression
-document._FIND_WORD_RE = re.compile(r"([a-zA-Z0-9_]+|[^a-zA-Z0-9_\t\f\v]+)")
-document._FIND_CURRENT_WORD_RE = re.compile(r"^([a-zA-Z0-9_]+|[^a-zA-Z0-9_\t\f\v]+)")
-
 
 def _document_find(
     self,
