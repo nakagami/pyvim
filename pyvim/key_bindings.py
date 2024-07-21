@@ -134,7 +134,7 @@ def create_key_bindings(editor):
         if document.text_after_cursor[:1] == '':
             end = 1
         elif document.text_after_cursor[:1] == '\n':
-            end = 2
+            end = 1
         elif document.text_after_cursor[:1].isspace():
             end = document.find_next_word_beginning(count=event.arg)
             if eol := document.text_after_cursor[:end].find('\n') != -1:
