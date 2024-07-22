@@ -40,21 +40,29 @@ def _document_find(
         else:
             text = text[1:]
 
+    offset = len(self.text) - len(text)
+
     flags = re.MULTILINE
     if ignore_case:
         flags |= re.IGNORECASE
-    try:
-        iterator = re.finditer(sub, text, flags)
-    except re.error:
-        iterator = re.finditer(re.escape(sub), text, flags)
 
     try:
-        for i, match in enumerate(iterator):
+        match_all_set = set([(a.start() - offset, a.end() - offset) for a in re.finditer(sub, self.text, flags)])
+    except re.error:
+        match_all_set = set([(a.start() - offset, a.end() - offset) for a in re.finditer(re.escape(sub), self.text, flags)])
+
+    try:
+        match_partial = [(a.start(), a.end()) for a in re.finditer(sub, text, flags)]
+    except re.error:
+        match_partial = [(a.start(), a.end()) for a in re.finditer(re.escape(sub), text, flags)]
+
+    try:
+        for i, match in enumerate([m for m in match_partial if m in match_all_set]):
             if i + 1 == count:
                 if include_current_position:
-                    return match.start(0)
+                    return match[0]
                 else:
-                    return match.start(0) + 1
+                    return match[0] + 1
     except StopIteration:
         pass
     return None
