@@ -68,20 +68,6 @@ def _document_find(
     return None
 
 
-def _document_find_all(self, sub: str, ignore_case: bool = False) -> list[int]:
-    """
-    Find all occurrences of the substring. Return a list of absolute
-    positions in the document.
-    """
-    flags = re.MULTILINE
-    if ignore_case:
-        flags |= re.IGNORECASE
-    try:
-        return [a.start() for a in re.finditer(sub, self.text, flags)]
-    except re.error:
-        return [a.start() for a in re.finditer(re.escape(sub), self.text, flags)]
-
-
 def _document_find_backwards(
     self,
     sub: str,
@@ -115,7 +101,6 @@ def _document_find_backwards(
 
 
 document.Document.find = _document_find
-document.Document.find_all = _document_find_all
 document.Document.find_backwards = _document_find_backwards
 
 
