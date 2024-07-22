@@ -103,7 +103,7 @@ def _document_find_backwards(
     if len(matches) < count:
         return None
 
-    return matches[count-1].start(0) - len(text)
+    return matches[count - 1].start(0) - len(text)
 
 
 document.Document.find = _document_find
