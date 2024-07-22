@@ -88,23 +88,22 @@ def _document_find_backwards(
     :param count: Find the n-th occurrence.
     """
     if in_current_line:
-        before_cursor = self.current_line_before_cursor[::-1]
+        text = self.current_line_before_cursor
     else:
-        before_cursor = self.text_before_cursor[::-1]
+        text = self.text_before_cursor
 
     flags = re.MULTILINE
     if ignore_case:
         flags |= re.IGNORECASE
-    # TODO: search backword with regular expression like _document_find() and _document_find_all()
-    iterator = re.finditer(re.escape(sub[::-1]), before_cursor, flags)
-
     try:
-        for i, match in enumerate(iterator):
-            if i + 1 == count:
-                return -match.start(0) - len(sub)
-    except StopIteration:
-        pass
-    return None
+        iterator = re.finditer(sub, text, flags)
+    except re.error:
+        iterator = re.finditer(re.escape(sub), text, flags)
+    matches = list(reversed(list(iterator)))
+    if len(matches) < count:
+        return None
+
+    return matches[count-1].start(0) - len(text)
 
 
 document.Document.find = _document_find
