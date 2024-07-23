@@ -118,13 +118,14 @@ def create_key_bindings(editor):
         'word' forward. 'cw', 'dw': Delete/change one word.
         """
         document = event.current_buffer.document
-        if document.text_after_cursor[:1] == '':
+        if document.current_char == '':
             end = 1
-        elif document.text_after_cursor[:1] == '\n':
+        elif document.current_char == '\n':
             end = 1
-        elif document.text_after_cursor[:1].isspace():
+        elif document.current_char.isspace():
             end = document.find_next_word_beginning(count=event.arg)
-            if eol := document.text_after_cursor[:end].find('\n') != -1:
+            eol = document.text_after_cursor[:end].find('\n')
+            if eol != -1:
                 end = eol
         else:
             end = document.find_next_word_ending(count=event.arg)
