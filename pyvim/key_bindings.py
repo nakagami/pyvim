@@ -47,22 +47,17 @@ def _document_find(
         flags |= re.IGNORECASE
 
     try:
-        match_all_set = set([(a.start() - offset, a.end() - offset) for a in re.finditer(sub, self.text, flags)])
+        iterator = re.finditer(sub, self.text, flags)
     except re.error:
-        match_all_set = set([(a.start() - offset, a.end() - offset) for a in re.finditer(re.escape(sub), self.text, flags)])
+        iterator = re.finditer(re.escape(sub), text, flags)
 
     try:
-        match_partial = [(a.start(), a.end()) for a in re.finditer(sub, text, flags)]
-    except re.error:
-        match_partial = [(a.start(), a.end()) for a in re.finditer(re.escape(sub), text, flags)]
-
-    try:
-        for i, match in enumerate([m for m in match_partial if m in match_all_set]):
+        for i, match in enumerate([m for m in iterator if m.start() >= offset]):
             if i + 1 == count:
                 if include_current_position:
-                    return match[0]
+                    return match.start() - offset
                 else:
-                    return match[0] + 1
+                    return match.start() - offset + 1
     except StopIteration:
         pass
     return None
