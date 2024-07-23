@@ -42,38 +42,27 @@ def _document_find(
         else:
             text = text[1:]
 
+    offset = len(self.text) - len(text)
+
     flags = re.MULTILINE
     if ignore_case:
         flags |= re.IGNORECASE
+
     try:
-        iterator = re.finditer(sub, text, flags)
+        iterator = re.finditer(sub, self.text, flags)
     except re.error:
         iterator = re.finditer(re.escape(sub), text, flags)
 
     try:
-        for i, match in enumerate(iterator):
+        for i, match in enumerate([m for m in iterator if m.start() >= offset]):
             if i + 1 == count:
                 if include_current_position:
-                    return match.start(0)
+                    return match.start() - offset
                 else:
-                    return match.start(0) + 1
+                    return match.start() - offset + 1
     except StopIteration:
         pass
     return None
-
-
-def _document_find_all(self, sub: str, ignore_case: bool = False) -> list[int]:
-    """
-    Find all occurrences of the substring. Return a list of absolute
-    positions in the document.
-    """
-    flags = re.MULTILINE
-    if ignore_case:
-        flags |= re.IGNORECASE
-    try:
-        return [a.start() for a in re.finditer(sub, self.text, flags)]
-    except re.error:
-        return [a.start() for a in re.finditer(re.escape(sub), self.text, flags)]
 
 
 def _document_find_backwards(
@@ -90,27 +79,25 @@ def _document_find_backwards(
     :param count: Find the n-th occurrence.
     """
     if in_current_line:
-        before_cursor = self.current_line_before_cursor[::-1]
+        text = self.current_line_before_cursor
     else:
-        before_cursor = self.text_before_cursor[::-1]
+        text = self.text_before_cursor
 
     flags = re.MULTILINE
     if ignore_case:
         flags |= re.IGNORECASE
-    # TODO: search backword with regular expression like _document_find() and _document_find_all()
-    iterator = re.finditer(re.escape(sub[::-1]), before_cursor, flags)
-
     try:
-        for i, match in enumerate(iterator):
-            if i + 1 == count:
-                return -match.start(0) - len(sub)
-    except StopIteration:
-        pass
-    return None
+        iterator = re.finditer(sub, text, flags)
+    except re.error:
+        iterator = re.finditer(re.escape(sub), text, flags)
+    matches = list(reversed(list(iterator)))
+    if len(matches) < count:
+        return None
+
+    return matches[count - 1].start(0) - len(text)
 
 
 document.Document.find = _document_find
-document.Document.find_all = _document_find_all
 document.Document.find_backwards = _document_find_backwards
 
 
