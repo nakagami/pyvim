@@ -280,7 +280,6 @@ class Editor(object):
                 s = f"  {k}={v}"
             option_strings.append(s)
 
-
         self.window_arrangement.hsplit(text="\n".join(option_strings))
         self.sync_with_prompt_toolkit()  # Show new window.
 
