@@ -3,6 +3,7 @@ The actual layout for the renderer.
 """
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.filters import has_focus, is_searching, Condition, has_arg
+from prompt_toolkit.formatted_text.utils import fragment_list_to_text
 from prompt_toolkit.key_binding.vi_state import InputMode
 from prompt_toolkit.layout import HSplit, VSplit, FloatContainer, Float, Layout
 from prompt_toolkit.layout.containers import Window, ConditionalContainer, ColorColumn, WindowAlign, ScrollOffsets
@@ -11,7 +12,7 @@ from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.dimension import Dimension
 from prompt_toolkit.layout.margins import ConditionalMargin, NumberedMargin
 from prompt_toolkit.layout.menus import CompletionsMenu
-from prompt_toolkit.layout.processors import Processor, ConditionalProcessor, BeforeInput, ShowTrailingWhiteSpaceProcessor, Transformation, HighlightSelectionProcessor, HighlightSearchProcessor, HighlightIncrementalSearchProcessor, HighlightMatchingBracketProcessor, TabsProcessor, DisplayMultipleCursors
+from prompt_toolkit.layout.processors import Processor, ConditionalProcessor, BeforeInput, ShowTrailingWhiteSpaceProcessor, Transformation, HighlightSelectionProcessor, HighlightSearchProcessor, HighlightIncrementalSearchProcessor, HighlightMatchingBracketProcessor, TabsProcessor, DisplayMultipleCursors, TransformationInput
 from prompt_toolkit.layout.utils import explode_text_fragments
 from prompt_toolkit.mouse_events import MouseEventType
 from prompt_toolkit.selection import SelectionType
@@ -31,6 +32,70 @@ __all__ = (
     'EditorLayout',
     'get_terminal_title',
 )
+
+
+def _highlight_search_processor_apply_transformation(
+    self, transformation_input: TransformationInput
+) -> Transformation:
+    (
+        buffer_control,
+        document,
+        lineno,
+        source_to_display,
+        fragments,
+        _,
+        _,
+    ) = transformation_input.unpack()
+
+    search_text = self._get_search_text(buffer_control)
+    searchmatch_fragment = f" class:{self._classname} "
+    searchmatch_current_fragment = f" class:{self._classname_current} "
+
+    if search_text and not get_app().is_done:
+        # For each search match, replace the style string.
+        line_text = fragment_list_to_text(fragments)
+        fragments = explode_text_fragments(fragments)
+
+        if buffer_control.search_state.ignore_case():
+            flags = re.IGNORECASE
+        else:
+            flags = re.RegexFlag(0)
+
+        # Get cursor column.
+        cursor_column: int | None
+        if document.cursor_position_row == lineno:
+            cursor_column = source_to_display(document.cursor_position_col)
+        else:
+            cursor_column = None
+
+        try:
+            iterator = re.finditer(search_text, line_text, flags=flags)
+        except re.error:
+            iterator = re.finditer(re.escape(search_text), line_text, flags=flags)
+
+        for match in iterator:
+            if cursor_column is not None:
+                on_cursor = match.start() <= cursor_column < match.end()
+            else:
+                on_cursor = False
+
+            for i in range(match.start(), match.end()):
+                old_fragment, text, *_ = fragments[i]
+                if on_cursor:
+                    fragments[i] = (
+                        old_fragment + searchmatch_current_fragment,
+                        fragments[i][1],
+                    )
+                else:
+                    fragments[i] = (
+                        old_fragment + searchmatch_fragment,
+                        fragments[i][1],
+                    )
+
+    return Transformation(fragments)
+
+
+HighlightSearchProcessor.apply_transformation = _highlight_search_processor_apply_transformation
 
 
 def _try_char(character, backup, encoding=sys.stdout.encoding):
