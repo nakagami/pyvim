@@ -3,6 +3,8 @@ import re
 from prompt_toolkit.application import get_app
 from prompt_toolkit.filters import Condition, has_focus, vi_insert_mode, vi_navigation_mode
 from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.key_binding.bindings.vi import create_text_object_decorator, TextObject
+from prompt_toolkit.key_binding.key_processor import KeyPressEvent as E
 from prompt_toolkit import document
 
 from .commands.commands import write_and_quit, quit
@@ -107,6 +109,25 @@ def create_key_bindings(editor):
     the ones which are specific for the editor.
     """
     kb = KeyBindings()
+
+    text_object = create_text_object_decorator(kb)
+
+    @text_object("w", no_move_handler=True)
+    def _word_forward(event: E) -> TextObject:
+        """
+        'word' forward. 'cw', 'dw': Delete/change one word.
+        """
+        document = event.current_buffer.document
+        if document.current_char in ('\n', ''):
+            return None
+        if document.current_char.isspace():
+            end = document.find_next_word_beginning(count=event.arg)
+            eol = document.text_after_cursor[:end].find('\n')
+            if eol != -1:
+                end = eol
+        else:
+            end = document.find_next_word_ending(count=event.arg)
+        return TextObject(end)
 
     # Filters.
     @Condition
