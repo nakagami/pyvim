@@ -305,17 +305,32 @@ def create_key_bindings(editor):
             new_path, show_in_current_window=True)
         editor.sync_with_prompt_toolkit()
 
-    @kb.add("G", filter=vi_navigation_mode)
-    def to_nth_line(event):
+    def _nth_line(event, number):
         # I don't know why, but the default behaviour of the prompt toolkit is that <number>G does not work well.
         # With this implementation, 1G same as G and moves to the end of the line.
         # I don't know how to fix it, so please use gg instead of 1G when moving to the first line
         buf = event.current_buffer
-        count = (buf.document.line_count if event.arg == 1 else event.arg - 1) - buf.document.cursor_position_row
+        count = (buf.document.line_count if number == 1 else number - 1) - buf.document.cursor_position_row
         if count > 0:
             buf.auto_down(count=count, go_to_start_of_line_if_history_changes=True)
         elif count < 0:
             buf.auto_up(count=-count, go_to_start_of_line_if_history_changes=True)
+
+    @kb.add("G", filter=vi_navigation_mode)
+    def to_nth_line(event):
+        _nth_line(event, event.arg)
+
+    for c in "abcdefghijklmnopqrstuvwxyz":
+        @kb.add("m", c, filter=vi_navigation_mode)
+        def mark(event):
+            editor.current_editor_buffer.buffer.mark[event.key_sequence[1].data] = event.current_buffer.document.cursor_position_row + 1
+
+        @kb.add("'", c, filter=vi_navigation_mode)
+        def jump(event):
+            k = event.key_sequence[1].data
+            v = editor.current_editor_buffer.buffer.mark.get(k)
+            if v:
+                _nth_line(event, v)
 
     return kb
 
