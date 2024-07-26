@@ -244,6 +244,45 @@ class Editor(object):
         self.window_arrangement.hsplit(text=HELP_TEXT)
         self.sync_with_prompt_toolkit()  # Show new window.
 
+    def show_set_all(self):
+        """
+        Show :set all in new window.
+        """
+        options = {
+            "hlsearch": self.highlight_search,
+            "paste": self.paste_mode,
+            "ruler": self.show_ruler,
+            "wildmenu": self.show_wildmenu,
+            "expandtab": self.expand_tab,
+            "tabstop": self.tabstop,
+            "scrolloff": self.scroll_offset,
+            "incsearch": self.incsearch,
+            "ignorecase": self.ignore_case,
+            "list": self.display_unprintable_characters,
+            "jedi": self.enable_jedi,
+            "wrapscan": self.enable_wrapscan,
+            "relativenumber": self.relative_number,
+            "wrap": self.wrap_lines,
+            "breakindent": self.break_indent,
+            "mouse": self.enable_mouse_support,
+            "tildeop": self.application.vi_state.tilde_operator,
+            "cursorline": self.cursorline,
+            "corsorcolumn": self.cursorcolumn,
+            "colorcolumn": self.colorcolumn,
+        }
+
+        option_strings = []
+        for k in sorted(options):
+            v = options[k]
+            if isinstance(v, bool):
+                s = f"  {k}" if v else f"no{k}"
+            else:
+                s = f"  {k}={v}"
+            option_strings.append(s)
+
+        self.window_arrangement.hsplit(text="\n".join(option_strings))
+        self.sync_with_prompt_toolkit()  # Show new window.
+
     def run(self):
         """
         Run the event loop for the interface.

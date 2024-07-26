@@ -735,6 +735,11 @@ def set_color_column(editor, value):
         editor.colorcolumn = numbers
 
 
+@set_cmd('all')
+def set_all(editor):
+    editor.show_set_all()
+
+
 def substitute(editor, range_start, range_end, search, replace, flags):
     """ Substitute /search/ with /replace/ over a range of text """
     def get_line_index_iterator(cursor_position_row, range_start, range_end):
