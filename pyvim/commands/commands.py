@@ -747,8 +747,19 @@ def substitute(editor, range_start, range_end, search, replace, flags):
             assert not range_end
             range_start = range_end = cursor_position_row
         else:
+            if range_start[0] == "'":
+                range_start = editor.current_editor_buffer.buffer.mark[range_start[1]]
+            elif range_start[0] == "$":
+                range_start = editor.current_editor_buffer.buffer.document.line_count
             range_start = int(range_start) - 1
-            range_end = int(range_end) - 1 if range_end else range_start
+            if range_end:
+                if range_end[0] == "'":
+                    range_end = editor.current_editor_buffer.buffer.mark[range_end[1]]
+                elif range_end[0] == "$":
+                    range_end = editor.current_editor_buffer.buffer.document.line_count
+                range_end = int(range_end) - 1
+            else:
+                range_end = range_start
         return range(range_start, range_end + 1)
 
     def get_transform_callback(search, replace, flags):
