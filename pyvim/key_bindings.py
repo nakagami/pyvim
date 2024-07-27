@@ -1,5 +1,4 @@
 import os
-import re
 from prompt_toolkit.application import get_app
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.vi_state import InputMode
@@ -146,8 +145,7 @@ def create_key_bindings(editor):
         before = "\n".join(lines[: buffer.document.cursor_position_row])
         deleted = "\n".join(
             lines[
-                buffer.document.cursor_position_row: buffer.document.cursor_position_row
-                + event.arg
+                buffer.document.cursor_position_row: buffer.document.cursor_position_row + event.arg
             ]
         )
         after = "\n".join(lines[buffer.document.cursor_position_row + event.arg:])
