@@ -8,105 +8,19 @@ from prompt_toolkit.key_binding.bindings.vi import (
 )
 from prompt_toolkit.key_binding.key_processor import KeyPressEvent as E
 from prompt_toolkit.clipboard import ClipboardData
-from prompt_toolkit.document import Document
 from prompt_toolkit.filters import (
     Condition, has_focus, vi_insert_mode, vi_navigation_mode, is_read_only
 )
 from prompt_toolkit.filters.app import in_paste_mode, vi_selection_mode
 from prompt_toolkit.selection import SelectionType
 
+from .document import Document
 from .commands.commands import write_and_quit, quit
 
 
 __all__ = (
     'create_key_bindings',
 )
-
-
-def _document_find(
-    self,
-    sub: str,
-    in_current_line: bool = False,
-    include_current_position: bool = False,
-    ignore_case: bool = False,
-    count: int = 1,
-) -> int | None:
-    """
-    Find `text` after the cursor, return position relative to the cursor
-    position. Return `None` if nothing was found.
-
-    :param count: Find the n-th occurrence.
-    """
-    assert isinstance(ignore_case, bool)
-
-    if in_current_line:
-        text = self.current_line_after_cursor
-    else:
-        text = self.text_after_cursor
-
-    if not include_current_position:
-        if len(text) == 0:
-            return None  # (Otherwise, we always get a match for the empty string.)
-        else:
-            text = text[1:]
-
-    offset = len(self.text) - len(text)
-
-    flags = re.MULTILINE
-    if ignore_case:
-        flags |= re.IGNORECASE
-
-    try:
-        iterator = re.finditer(sub, self.text, flags)
-    except re.error:
-        iterator = re.finditer(re.escape(sub), text, flags)
-
-    try:
-        for i, match in enumerate([m for m in iterator if m.start() >= offset]):
-            if i + 1 == count:
-                if include_current_position:
-                    return match.start() - offset
-                else:
-                    return match.start() - offset + 1
-    except StopIteration:
-        pass
-    return None
-
-
-def _document_find_backwards(
-    self,
-    sub: str,
-    in_current_line: bool = False,
-    ignore_case: bool = False,
-    count: int = 1,
-) -> int | None:
-    """
-    Find `text` before the cursor, return position relative to the cursor
-    position. Return `None` if nothing was found.
-
-    :param count: Find the n-th occurrence.
-    """
-    if in_current_line:
-        text = self.current_line_before_cursor
-    else:
-        text = self.text_before_cursor
-
-    flags = re.MULTILINE
-    if ignore_case:
-        flags |= re.IGNORECASE
-    try:
-        iterator = re.finditer(sub, text, flags)
-    except re.error:
-        iterator = re.finditer(re.escape(sub), text, flags)
-    matches = list(reversed(list(iterator)))
-    if len(matches) < count:
-        return None
-
-    return matches[count - 1].start(0) - len(text)
-
-
-Document.find = _document_find
-Document.find_backwards = _document_find_backwards
 
 
 def create_key_bindings(editor):
