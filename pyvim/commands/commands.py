@@ -740,17 +740,29 @@ def set_all(editor):
     editor.show_set_all()
 
 
+def _get_line_index_iterator(editor, cursor_position_row, range_start, range_end):
+    if not range_start:
+        assert not range_end
+        range_start = range_end = cursor_position_row
+    else:
+        if range_start[0] == "'":
+            range_start = editor.current_editor_buffer.buffer.mark[range_start[1]]
+        elif range_start[0] == "$":
+            range_start = editor.current_editor_buffer.buffer.document.line_count
+        range_start = int(range_start) - 1
+        if range_end:
+            if range_end[0] == "'":
+                range_end = editor.current_editor_buffer.buffer.mark[range_end[1]]
+            elif range_end[0] == "$":
+                range_end = editor.current_editor_buffer.buffer.document.line_count
+            range_end = int(range_end) - 1
+        else:
+            range_end = range_start
+    return range(range_start, range_end + 1)
+
+
 def substitute(editor, range_start, range_end, search, replace, flags):
     """ Substitute /search/ with /replace/ over a range of text """
-    def get_line_index_iterator(cursor_position_row, range_start, range_end):
-        if not range_start:
-            assert not range_end
-            range_start = range_end = cursor_position_row
-        else:
-            range_start = int(range_start) - 1
-            range_end = int(range_end) - 1 if range_end else range_start
-        return range(range_start, range_end + 1)
-
     def get_transform_callback(search, replace, flags):
         SUBSTITUTE_ALL, SUBSTITUTE_ONE = 0, 1
         sub_count = SUBSTITUTE_ALL if 'g' in flags else SUBSTITUTE_ONE
@@ -767,7 +779,7 @@ def substitute(editor, range_start, range_end, search, replace, flags):
     if replace is None:
         replace = editor.last_substitute_text
 
-    line_index_iterator = get_line_index_iterator(cursor_position_row, range_start, range_end)
+    line_index_iterator = _get_line_index_iterator(editor, cursor_position_row, range_start, range_end)
     transform_callback = get_transform_callback(search, replace, flags)
     new_text = buffer.transform_lines(line_index_iterator, transform_callback)
 
