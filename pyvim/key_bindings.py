@@ -489,11 +489,8 @@ def create_key_bindings(editor):
         editor.show_help()
 
     def _nth_line(event, number):
-        # I don't know why, but the default behaviour of the prompt toolkit is that <number>G does not work well.
-        # With this implementation, 1G same as G and moves to the end of the line.
-        # I don't know how to fix it, so please use gg instead of 1G when moving to the first line
         buf = event.current_buffer
-        count = (buf.document.line_count if number == 1 else number - 1) - buf.document.cursor_position_row
+        count = number - buf.document.cursor_position_row - 1
         if count > 0:
             buf.auto_down(count=count, go_to_start_of_line_if_history_changes=True)
         elif count < 0:
@@ -501,7 +498,11 @@ def create_key_bindings(editor):
 
     @kb.add("G", filter=vi_navigation_mode)
     def to_nth_line(event):
-        _nth_line(event, event.arg)
+        if event._arg is None:
+            # G without line number, move to last line
+            _nth_line(event, event.current_buffer.document.line_count)
+        else:
+            _nth_line(event, event.arg)
 
     for c in "abcdefghijklmnopqrstuvwxyz":
         @kb.add("m", c, filter=vi_navigation_mode)
