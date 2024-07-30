@@ -1,6 +1,6 @@
 import asyncio
 from .grammar import COMMAND_GRAMMAR
-from .commands import call_command_handler, has_command_handler, substitute
+from .commands import call_command_handler, has_command_handler, substitute, yank, delete
 
 __all__ = (
     'handle_command',
@@ -44,7 +44,10 @@ def handle_command(editor, input_string):
     elif command in ('s', 'substitute'):
         flags = flags.lstrip('/')
         substitute(editor, range_start, range_end, search, replace, flags)
-
+    elif command in ('ya', 'yank'):
+        yank(editor, range_start, range_end)
+    elif command in ('d', 'delete'):
+        delete(editor, range_start, range_end)
     else:
         # For unknown commands, show error message.
         editor.show_message('Not an editor command: %s' % input_string)

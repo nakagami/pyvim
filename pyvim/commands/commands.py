@@ -1,4 +1,7 @@
 from prompt_toolkit.application import run_in_terminal
+from prompt_toolkit.application.current import get_app
+from prompt_toolkit.clipboard import ClipboardData
+from prompt_toolkit.selection import SelectionType
 from prompt_toolkit.document import Document
 
 import os
@@ -740,7 +743,7 @@ def set_all(editor):
     editor.show_set_all()
 
 
-def _get_line_index_iterator(editor, cursor_position_row, range_start, range_end):
+def _get_line_index(editor, cursor_position_row, range_start, range_end):
     if not range_start:
         assert not range_end
         range_start = range_end = cursor_position_row
@@ -758,7 +761,7 @@ def _get_line_index_iterator(editor, cursor_position_row, range_start, range_end
             range_end = int(range_end) - 1
         else:
             range_end = range_start
-    return range(range_start, range_end + 1)
+    return range_start, range_end + 1
 
 
 def substitute(editor, range_start, range_end, search, replace, flags):
@@ -779,7 +782,8 @@ def substitute(editor, range_start, range_end, search, replace, flags):
     if replace is None:
         replace = editor.last_substitute_text
 
-    line_index_iterator = _get_line_index_iterator(editor, cursor_position_row, range_start, range_end)
+    start, end = _get_line_index(editor, cursor_position_row, range_start, range_end)
+    line_index_iterator = range(start, end)
     transform_callback = get_transform_callback(search, replace, flags)
     new_text = buffer.transform_lines(line_index_iterator, transform_callback)
 
@@ -797,3 +801,34 @@ def substitute(editor, range_start, range_end, search, replace, flags):
     # update editor state
     editor.last_substitute_text = replace
     search_state.text = search
+
+
+def yank(editor, range_start, range_end):
+    buffer = editor.current_editor_buffer.buffer
+    cursor_position_row = buffer.document.cursor_position_row
+    start, end = _get_line_index(editor, cursor_position_row, range_start, range_end)
+    lines = buffer.document.lines
+
+    yanked = "\n".join(lines[start: end])
+    get_app().clipboard.set_data(ClipboardData(yanked, SelectionType.LINES))
+
+
+def delete(editor, range_start, range_end):
+    buffer = editor.current_editor_buffer.buffer
+    cursor_position_row = buffer.document.cursor_position_row
+    start, end = _get_line_index(editor, cursor_position_row, range_start, range_end)
+
+    lines = buffer.document.lines
+
+    before = "\n".join(lines[: start])
+    deleted = "\n".join(lines[start: end])
+    after = "\n".join(lines[end:])
+    get_app().clipboard.set_data(ClipboardData(deleted, SelectionType.LINES))
+
+    new_text = before + after
+    # update text buffer
+    buffer.document = Document(
+        new_text,
+        Document(new_text).translate_row_col_to_index(start, 0),
+    )
+    buffer.cursor_position += start
