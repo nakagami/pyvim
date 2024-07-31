@@ -12,6 +12,12 @@ COMMAND_GRAMMAR = compile(r"""
         # Substitute command
         ((?P<range_start>\d+|\.|\'[a-z])(,(?P<range_end>\d+|\.|\'[a-z]|\$))?)?  (?P<command>s|substitute) \s* / (?P<search>[^/]*) ( / (?P<replace>[^/]*) (?P<flags> /(g)? )? )?   |
 
+        # Yank command
+        ((?P<range_start>\d+|\.|\'[a-z])(,(?P<range_end>\d+|\.|\'[a-z]|\$))?)?  (?P<command>ya|yank[^\s]+) |
+
+        # Delete command
+        ((?P<range_start>\d+|\.|\'[a-z])(,(?P<range_end>\d+|\.|\'[a-z]|\$))?)?  (?P<command>d|delete[^\s]+) |
+
         # Commands accepting a location.
         (?P<command>%(commands_taking_locations)s)(?P<force>!?)  \s+   (?P<location>[^\s]+)   |
 
