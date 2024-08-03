@@ -7,7 +7,9 @@ Usage::
     e = Editor(files_to_edit)
     e.run()  # Runs the event loop, starts interaction.
 """
+import logging
 from prompt_toolkit.application import Application
+from prompt_toolkit.application.application import _CombinedRegistry
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.filters import Condition
@@ -24,9 +26,14 @@ from .layout import EditorLayout
 from .style import generate_built_in_styles, get_editor_style_by_name
 from .window_arrangement import WindowArrangement
 from .io import FileIO, DirectoryIO, HttpIO, GZipFileIO
+from .key_processor import VimKeyProcessor
 
 import pygments
 import os
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+# logger.addHandler(logging.FileHandler("./pyvim.log"))
 
 __all__ = (
     'Editor',
@@ -130,6 +137,9 @@ class Editor(object):
 
         self.last_substitute_text = ''
 
+        self._last_edit_command = []
+        self._in_edit_command = False
+
     def load_initial_files(self, locations, in_tab_pages=False, hsplit=False, vsplit=False):
         """
         Load a list of files.
@@ -175,6 +185,7 @@ class Editor(object):
             mouse_support=Condition(lambda: self.enable_mouse_support),
             full_screen=True,
             enable_page_navigation_bindings=True)
+        application.key_processor = VimKeyProcessor(_CombinedRegistry(application), self)
 
         # Handle command line previews.
         # (e.g. when typing ':colorscheme blue', it should already show the
@@ -317,3 +328,31 @@ class Editor(object):
         self.application.vi_state.input_mode = InputMode.NAVIGATION
 
         self.command_buffer.reset(append_to_history=append_to_history)
+
+    def start_edit_command(self, event=None):
+        if event:
+            self._last_edit_command = event.key_sequence[:]
+        else:
+            self._last_edit_command = []
+        self._in_edit_command = True
+        logger.debug(f"start_edit_command():{self.application.vi_state.input_mode}:{event}")
+        logger.debug(self._last_edit_command)
+
+    def append_edit_command(self, key):
+        if self._in_edit_command:
+            self._last_edit_command.append(key)
+            logger.debug(f"append_edit_command():{self.application.vi_state.input_mode}:{key}")
+            logger.debug(self._last_edit_command)
+
+    def finish_edit_command(self, event=None):
+        if self._in_edit_command:
+            if event:
+                self._last_edit_command.extend(event.key_sequence)
+            logger.debug(f"finish_edit_command():{self.application.vi_state.input_mode}:{event}")
+            logger.debug(self._last_edit_command)
+        self._in_edit_command = False
+
+    def replay_edit_command(self):
+        logger.debug("replay_edit_command")
+        logger.debug(self._last_edit_command)
+        self.application.key_processor.feed_multiple(self._last_edit_command[:])

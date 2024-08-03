@@ -2,15 +2,17 @@ import os
 from prompt_toolkit.application import get_app
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.vi_state import InputMode
+from prompt_toolkit.key_binding.bindings import vi
 from prompt_toolkit.key_binding.bindings.vi import (
-    create_text_object_decorator, in_block_selection, TextObject
+    create_text_object_decorator, TextObjectType, TextObject,
+    Callable, _OF, Filter, Always, Keys, vi_waiting_for_text_object_mode,
 )
 from prompt_toolkit.key_binding.key_processor import KeyPressEvent as E
 from prompt_toolkit.clipboard import ClipboardData
 from prompt_toolkit.filters import (
     Condition, has_focus, vi_insert_mode, vi_navigation_mode, is_read_only
 )
-from prompt_toolkit.filters.app import in_paste_mode, vi_selection_mode
+from prompt_toolkit.filters.app import in_paste_mode, vi_selection_mode, vi_replace_single_mode
 from prompt_toolkit.selection import SelectionType
 
 from .document import Document
@@ -20,6 +22,85 @@ from .commands.commands import write_and_quit, quit
 __all__ = (
     'create_key_bindings',
 )
+
+
+def _create_operator_decorator(
+    key_bindings: KeyBindings,
+) -> Callable[..., Callable[[_OF], _OF]]:
+    """
+    Create a decorator that can be used for registering Vi operators.
+    """
+
+    def operator_decorator(
+        *keys: Keys | str, filter: Filter = Always(), eager: bool = False
+    ) -> Callable[[_OF], _OF]:
+        """
+        Register a Vi operator.
+
+        Usage::
+
+            @operator('d', filter=...)
+            def handler(event, text_object):
+                # Do something with the text object here.
+        """
+
+        def decorator(operator_func: _OF) -> _OF:
+            @key_bindings.add(
+                *keys,
+                filter=~vi_waiting_for_text_object_mode & filter & vi_navigation_mode,
+                eager=eager,
+            )
+            def _operator_in_navigation(event: E) -> None:
+                """
+                Handle operator in navigation mode.
+                """
+                # When this key binding is matched, only set the operator
+                # function in the ViState. We should execute it after a text
+                # object has been received.
+                event.app.key_processor._editor.start_edit_command(event)
+                event.app.vi_state.operator_func = operator_func
+                event.app.vi_state.operator_arg = event.arg
+
+            @key_bindings.add(
+                *keys,
+                filter=~vi_waiting_for_text_object_mode & filter & vi_selection_mode,
+                eager=eager,
+            )
+            def _operator_in_selection(event: E) -> None:
+                """
+                Handle operator in selection mode.
+                """
+                buff = event.current_buffer
+                selection_state = buff.selection_state
+
+                if selection_state is not None:
+                    # Create text object from selection.
+                    if selection_state.type == SelectionType.LINES:
+                        text_obj_type = TextObjectType.LINEWISE
+                    elif selection_state.type == SelectionType.BLOCK:
+                        text_obj_type = TextObjectType.BLOCK
+                    else:
+                        text_obj_type = TextObjectType.INCLUSIVE
+
+                    text_object = TextObject(
+                        selection_state.original_cursor_position - buff.cursor_position,
+                        type=text_obj_type,
+                    )
+
+                    # Execute operator.
+                    operator_func(event, text_object)
+
+                    # Quit selection mode.
+                    buff.selection_state = None
+
+            return operator_func
+
+        return decorator
+
+    return operator_decorator
+
+
+vi.create_operator_decorator = _create_operator_decorator
 
 
 def create_key_bindings(editor):
@@ -49,6 +130,8 @@ def create_key_bindings(editor):
         """
         Escape goes to vi navigation mode.
         """
+        editor.finish_edit_command(event)
+
         buffer = event.current_buffer
         vi_state = event.app.vi_state
 
@@ -67,6 +150,7 @@ def create_key_bindings(editor):
         """
         Pressing the Insert key.
         """
+        editor.start_edit_command()
         event.app.vi_state.input_mode = InputMode.INSERT
 
     @kb.add("insert", filter=vi_insert_mode)
@@ -74,12 +158,15 @@ def create_key_bindings(editor):
         """
         Pressing the Insert key.
         """
+        editor.finish_edit_command(event)
         event.app.vi_state.input_mode = InputMode.NAVIGATION
 
     @kb.add("a", filter=vi_navigation_mode & ~is_read_only)
     # ~IsReadOnly, because we want to stay in navigation mode for
     # read-only buffers.
     def _a(event: E) -> None:
+        editor.start_edit_command()
+
         event.current_buffer.cursor_position += (
             event.current_buffer.document.get_cursor_right_position()
         )
@@ -87,6 +174,8 @@ def create_key_bindings(editor):
 
     @kb.add("A", filter=vi_navigation_mode & ~is_read_only)
     def _A(event: E) -> None:
+        editor.start_edit_command()
+
         event.current_buffer.cursor_position += (
             event.current_buffer.document.get_end_of_line_position()
         )
@@ -98,6 +187,8 @@ def create_key_bindings(editor):
         Change to end of line.
         Same as 'c$' (which is implemented elsewhere.)
         """
+        editor.start_edit_command(event)
+
         buffer = event.current_buffer
 
         deleted = buffer.delete(count=buffer.document.get_end_of_line_position())
@@ -110,6 +201,8 @@ def create_key_bindings(editor):
         """
         Change current line
         """
+        editor.start_edit_command(event)
+
         buffer = event.current_buffer
 
         # We copy the whole line.
@@ -128,15 +221,21 @@ def create_key_bindings(editor):
         """
         Delete from cursor position until the end of the line.
         """
+        editor.start_edit_command()
+
         buffer = event.current_buffer
         deleted = buffer.delete(count=buffer.document.get_end_of_line_position())
         event.app.clipboard.set_text(deleted)
+
+        editor.finish_edit_command()
 
     @kb.add("d", "d", filter=vi_navigation_mode)
     def _delete_line(event: E) -> None:
         """
         Delete line. (Or the following 'n' lines.)
         """
+        editor.start_edit_command()
+
         buffer = event.current_buffer
 
         # Split string in before/deleted/after text.
@@ -164,21 +263,18 @@ def create_key_bindings(editor):
         # Set clipboard data
         event.app.clipboard.set_data(ClipboardData(deleted, SelectionType.LINES))
 
-    @kb.add("x", filter=vi_selection_mode)
-    def _cut(event: E) -> None:
-        """
-        Cut selection.
-        ('x' is not an operator.)
-        """
-        clipboard_data = event.current_buffer.cut_selection()
-        event.app.clipboard.set_data(clipboard_data)
+        editor.finish_edit_command()
 
     @kb.add("i", filter=vi_navigation_mode & ~is_read_only)
     def _i(event: E) -> None:
+        editor.start_edit_command()
+
         event.app.vi_state.input_mode = InputMode.INSERT
 
     @kb.add("I", filter=vi_navigation_mode & ~is_read_only)
     def _I(event: E) -> None:
+        editor.start_edit_command()
+
         event.app.vi_state.input_mode = InputMode.INSERT
         event.current_buffer.cursor_position += (
             event.current_buffer.document.get_start_of_line_position(
@@ -186,76 +282,37 @@ def create_key_bindings(editor):
             )
         )
 
-    @kb.add("I", filter=in_block_selection & ~is_read_only)
-    def insert_in_block_selection(event: E, after: bool = False) -> None:
-        """
-        Insert in block selection mode.
-        """
-        buff = event.current_buffer
-
-        # Store all cursor positions.
-        positions = []
-
-        if after:
-
-            def get_pos(from_to: tuple[int, int]) -> int:
-                return from_to[1]
-
-        else:
-
-            def get_pos(from_to: tuple[int, int]) -> int:
-                return from_to[0]
-
-        for i, from_to in enumerate(buff.document.selection_ranges()):
-            positions.append(get_pos(from_to))
-            if i == 0:
-                buff.cursor_position = get_pos(from_to)
-
-        buff.multiple_cursor_positions = positions
-
-        # Go to 'INSERT_MULTIPLE' mode.
-        event.app.vi_state.input_mode = InputMode.INSERT_MULTIPLE
-        buff.exit_selection()
-
-    @kb.add("A", filter=in_block_selection & ~is_read_only)
-    def _append_after_block(event: E) -> None:
-        insert_in_block_selection(event, after=True)
-
     @kb.add("J", filter=vi_navigation_mode & ~is_read_only)
     def _join(event: E) -> None:
         """
         Join lines.
         """
+        editor.start_edit_command()
+
         for i in range(event.arg):
             event.current_buffer.join_next_line()
+
+        editor.finish_edit_command()
 
     @kb.add("g", "J", filter=vi_navigation_mode & ~is_read_only)
     def _join_nospace(event: E) -> None:
         """
         Join lines without space.
         """
+        editor.start_edit_command()
+
         for i in range(event.arg):
             event.current_buffer.join_next_line(separator="")
 
-    @kb.add("J", filter=vi_selection_mode & ~is_read_only)
-    def _join_selection(event: E) -> None:
-        """
-        Join selected lines.
-        """
-        event.current_buffer.join_selected_lines()
-
-    @kb.add("g", "J", filter=vi_selection_mode & ~is_read_only)
-    def _join_selection_nospace(event: E) -> None:
-        """
-        Join selected lines without space.
-        """
-        event.current_buffer.join_selected_lines(separator="")
+        editor.finish_edit_command()
 
     @kb.add("r", filter=vi_navigation_mode)
     def _replace(event: E) -> None:
         """
         Go to 'replace-single'-mode.
         """
+        editor.start_edit_command()
+
         event.app.vi_state.input_mode = InputMode.REPLACE_SINGLE
 
     @kb.add("R", filter=vi_navigation_mode)
@@ -263,6 +320,8 @@ def create_key_bindings(editor):
         """
         Go to 'replace'-mode.
         """
+        editor.start_edit_command()
+
         event.app.vi_state.input_mode = InputMode.REPLACE
 
     @kb.add("s", filter=vi_navigation_mode & ~is_read_only)
@@ -271,6 +330,8 @@ def create_key_bindings(editor):
         Substitute with new text
         (Delete character(s) and go to insert mode.)
         """
+        editor.start_edit_command()
+
         text = event.current_buffer.delete(count=event.arg)
         event.app.clipboard.set_text(text)
         event.app.vi_state.input_mode = InputMode.INSERT
@@ -280,6 +341,8 @@ def create_key_bindings(editor):
         """
         Delete character.
         """
+        editor.start_edit_command()
+
         buff = event.current_buffer
         count = min(event.arg, len(buff.document.current_line_after_cursor))
         if count:
@@ -288,6 +351,8 @@ def create_key_bindings(editor):
 
     @kb.add("X", filter=vi_navigation_mode)
     def _delete_before_cursor(event: E) -> None:
+        editor.start_edit_command()
+
         buff = event.current_buffer
         count = min(event.arg, len(buff.document.current_line_before_cursor))
         if count:
@@ -328,6 +393,8 @@ def create_key_bindings(editor):
         """
         Open line above and enter insertion mode
         """
+        editor.start_edit_command()
+
         event.current_buffer.insert_line_above(copy_margin=not in_paste_mode())
         event.app.vi_state.input_mode = InputMode.INSERT
 
@@ -336,6 +403,8 @@ def create_key_bindings(editor):
         """
         Open line below and enter insertion mode
         """
+        editor.start_edit_command()
+
         event.current_buffer.insert_line_below(copy_margin=not in_paste_mode())
         event.app.vi_state.input_mode = InputMode.INSERT
 
@@ -344,27 +413,39 @@ def create_key_bindings(editor):
         """
         Reverse case of current character and move cursor forward.
         """
+        editor.start_edit_command()
+
         buffer = event.current_buffer
         c = buffer.document.current_char
 
         if c is not None and c != "\n":
             buffer.insert_text(c.swapcase(), overwrite=True)
 
+        editor.finish_edit_command()
+
     @kb.add("g", "u", "u", filter=vi_navigation_mode & ~is_read_only)
     def _lowercase_line(event: E) -> None:
         """
         Lowercase current line.
         """
+        editor.start_edit_command()
+
         buff = event.current_buffer
         buff.transform_current_line(lambda s: s.lower())
+
+        editor.finish_edit_command()
 
     @kb.add("g", "U", "U", filter=vi_navigation_mode & ~is_read_only)
     def _uppercase_line(event: E) -> None:
         """
         Uppercase current line.
         """
+        editor.start_edit_command()
+
         buff = event.current_buffer
         buff.transform_current_line(lambda s: s.upper())
+
+        editor.finish_edit_command()
 
     @kb.add('Z', 'Z', filter=in_navigation_mode)
     def _(event):
@@ -516,6 +597,10 @@ def create_key_bindings(editor):
             if v:
                 _nth_line(event, v)
 
+    @kb.add(".", filter=vi_navigation_mode)
+    def dot(event):
+        editor.replay_edit_command()
+
     # ** In explorer mode **
 
     @Condition
@@ -543,6 +628,20 @@ def create_key_bindings(editor):
         editor.window_arrangement.open_buffer(
             new_path, show_in_current_window=True)
         editor.sync_with_prompt_toolkit()
+
+
+    @kb.add(Keys.Any, filter=vi_replace_single_mode)
+    def _replace_single(event: E) -> None:
+        """
+        Replace single character at cursor position.
+        """
+        editor.append_edit_command(event.key_sequence[0])
+
+        event.current_buffer.insert_text(event.data, overwrite=True)
+        event.current_buffer.cursor_position -= 1
+        event.app.vi_state.input_mode = InputMode.NAVIGATION
+
+        editor.finish_edit_command()
 
     #
     # *** Operators ***
