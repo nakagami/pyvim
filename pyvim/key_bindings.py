@@ -629,7 +629,6 @@ def create_key_bindings(editor):
             new_path, show_in_current_window=True)
         editor.sync_with_prompt_toolkit()
 
-
     @kb.add(Keys.Any, filter=vi_replace_single_mode)
     def _replace_single(event: E) -> None:
         """
