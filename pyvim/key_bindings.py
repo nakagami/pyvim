@@ -234,7 +234,7 @@ def create_key_bindings(editor):
         """
         Delete line. (Or the following 'n' lines.)
         """
-        editor.start_edit_command()
+        editor.start_edit_command(event)
 
         buffer = event.current_buffer
 
