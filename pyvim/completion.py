@@ -26,8 +26,8 @@ class DocumentCompleter(Completer):
         if location.endswith('.py') and editor.enable_jedi:
             completer = PythonCompleter(location)
             return completer.get_completions(document, complete_event)
-        else:
-            return []
+
+        return []
 
 
 class PythonCompleter(Completer):
