@@ -1,4 +1,3 @@
-import re
 import weakref
 import jedi
 
@@ -7,26 +6,6 @@ from prompt_toolkit.completion import Completer, Completion
 __all__ = (
     'DocumentCompleter',
 )
-
-
-class DocumentWordsCompleter(Completer):
-    """
-    Completer that completes on words that appear already in the open document.
-    """
-    def get_completions(self, document, complete_event):
-        word_before_cursor = document.get_word_before_cursor()
-
-        # Create a set of words that could be a possible completion.
-        words = set()
-
-        for w in re.split(r'\W', document.text):
-            if len(w) > 1:
-                if w.startswith(word_before_cursor) and w != word_before_cursor:
-                    words.add(w)
-
-        # Yield Completion instances.
-        for w in sorted(words):
-            yield Completion(w, start_position=-len(word_before_cursor))
 
 
 class DocumentCompleter(Completer):
