@@ -1,43 +1,12 @@
 import re
 import weakref
-from typing import Any
 import jedi
-from jedi import Interpreter
 
 from prompt_toolkit.completion import Completer, Completion
-from prompt_toolkit.document import Document
 
 __all__ = (
     'DocumentCompleter',
 )
-
-
-def get_jedi_script_from_document(
-    document: Document, path: str, locals: dict[str, Any], globals: dict[str, Any]
-) -> Interpreter:
-    try:
-        return jedi.Interpreter(
-            document.text,
-            path=path,
-            namespaces=[locals, globals],
-        )
-    except ValueError:
-        # Invalid cursor position.
-        # ValueError('`column` parameter is not in a valid range.')
-        return None
-    except AttributeError:
-        # Workaround for #65: https://github.com/jonathanslenders/python-prompt-toolkit/issues/65
-        # See also: https://github.com/davidhalter/jedi/issues/508
-        return None
-    except IndexError:
-        # Workaround Jedi issue #514: for https://github.com/davidhalter/jedi/issues/514
-        return None
-    except KeyError:
-        # Workaround for a crash when the input is "u'", the start of a unicode string.
-        return None
-    except Exception:
-        # Workaround for: https://github.com/jonathanslenders/ptpython/issues/91
-        return None
 
 
 class DocumentWordsCompleter(Completer):
@@ -76,13 +45,13 @@ class DocumentCompleter(Completer):
         location = self._editor_buffer_ref().location or '.txt'
 
         if location.endswith('.py') and editor.enable_jedi:
-            completer = _PythonCompleter(location)
+            completer = PythonCompleter(location)
             return completer.get_completions(document, complete_event)
         else:
             return []
 
 
-class _PythonCompleter(Completer):
+class PythonCompleter(Completer):
     """
     Wrapper around the Jedi completion engine.
     """
@@ -90,7 +59,14 @@ class _PythonCompleter(Completer):
         self.location = location
 
     def get_completions(self, document, complete_event):
-        script = get_jedi_script_from_document(document, self.location, locals(), globals())
+        try:
+            script = jedi.Interpreter(
+                document.text,
+                path=self.location,
+                namespaces=[locals(), globals()],
+            )
+        except Exception:
+            return None
 
         if script:
             try:
