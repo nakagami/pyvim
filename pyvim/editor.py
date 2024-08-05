@@ -334,6 +334,7 @@ class Editor(object):
             self._last_edit_command = event.key_sequence[:]
         else:
             self._last_edit_command = []
+        self.application.current_buffer.save_to_undo_stack()
         self._in_edit_command = True
         logger.debug(f"start_edit_command():{self.application.vi_state.input_mode}:{event}")
         logger.debug(self._last_edit_command)

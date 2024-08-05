@@ -68,3 +68,8 @@ class VimKeyProcessor(KeyProcessor):
         # Skip timeout if the last key was flush.
         if not is_flush:
             self._start_timeout()
+
+    def _call_handler(self, handler, key_sequence):
+        # monkey patch. Don't save to undo stack per key press.
+        handler.save_before = lambda a: False
+        super()._call_handler(handler, key_sequence)
