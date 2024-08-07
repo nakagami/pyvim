@@ -1,5 +1,6 @@
 import re
 from prompt_toolkit.document import Document
+from .utils import re_finditer
 
 
 __all__ = (
@@ -40,10 +41,7 @@ def _document_find(
     if ignore_case:
         flags |= re.IGNORECASE
 
-    try:
-        iterator = re.finditer(sub, self.text, flags)
-    except re.error:
-        iterator = re.finditer(re.escape(sub), text, flags)
+    iterator = re_finditer(sub, text, flags)
 
     try:
         for i, match in enumerate([m for m in iterator if m.start() >= offset]):
@@ -78,10 +76,8 @@ def _document_find_backwards(
     flags = re.MULTILINE
     if ignore_case:
         flags |= re.IGNORECASE
-    try:
-        iterator = re.finditer(sub, text, flags)
-    except re.error:
-        iterator = re.finditer(re.escape(sub), text, flags)
+    iterator = re_finditer(sub, text, flags)
+
     matches = list(reversed(list(iterator)))
     if len(matches) < count:
         return None

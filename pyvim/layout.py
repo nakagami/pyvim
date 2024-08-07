@@ -18,6 +18,7 @@ from prompt_toolkit.mouse_events import MouseEventType
 from prompt_toolkit.selection import SelectionType
 from prompt_toolkit.widgets.toolbars import FormattedTextToolbar, SystemToolbar, SearchToolbar, ValidationToolbar, CompletionsToolbar
 
+from .utils import re_finditer
 from .commands.lexer import create_command_lexer
 from .lexer import DocumentLexer
 from .welcome_message import WELCOME_MESSAGE_TOKENS, WELCOME_MESSAGE_HEIGHT, WELCOME_MESSAGE_WIDTH
@@ -68,10 +69,7 @@ def _highlight_search_processor_apply_transformation(
         else:
             cursor_column = None
 
-        try:
-            iterator = re.finditer(search_text, line_text, flags=flags)
-        except re.error:
-            iterator = re.finditer(re.escape(search_text), line_text, flags=flags)
+        iterator = re_finditer(search_text, line_text, flags=flags)
 
         for match in iterator:
             if cursor_column is not None:
