@@ -41,7 +41,7 @@ def _document_find(
     if ignore_case:
         flags |= re.IGNORECASE
 
-    iterator = re_finditer(sub, text, flags)
+    iterator = re_finditer(sub, self.text, flags)
 
     try:
         for i, match in enumerate([m for m in iterator if m.start() >= offset]):
