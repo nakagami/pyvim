@@ -9,8 +9,9 @@ Usage::
 
     errors = report('location.py', Document('file content'))
 """
-import pyflakes.api
 import string
+import warnings
+import pyflakes.api
 
 __all__ = (
     'report',
@@ -52,7 +53,9 @@ def report_pyflakes(document):
     """
     # Run pyflakes on input.
     reporter = _FlakesReporter()
-    pyflakes.api.check(document.text, '', reporter=reporter)
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        pyflakes.api.check(document.text, '', reporter=reporter)
 
     def format_flake_message(message):
         return [
