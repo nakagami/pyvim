@@ -375,6 +375,7 @@ def create_key_bindings(editor):
     def _unindent(event):
         buffer = event.current_buffer
         document = buffer.document
+        cursor_position = buffer.cursor_position
         a = document.cursor_position + document.get_start_of_line_position()
         b = document.cursor_position + document.get_end_of_line_position()
         text = document.text[a:b]
@@ -386,7 +387,7 @@ def create_key_bindings(editor):
                 remove_len = 4
             text = text[remove_len:]
             buffer.text = document.text[:a] + text + document.text[b:]
-            buffer.cursor_position -= remove_len
+            buffer.cursor_position = cursor_position - remove_len
 
     @kb.add("O", filter=vi_navigation_mode & ~is_read_only)
     def _open_above(event: E) -> None:
