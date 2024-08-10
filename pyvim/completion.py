@@ -79,25 +79,3 @@ class PythonCompleter(Completer):
                 for c in completions:
                     yield Completion(c.name_with_symbols, len(c.complete) - len(c.name_with_symbols),
                                      display=c.name_with_symbols)
-
-    def _get_jedi_script_from_document(self, document):
-        try:
-            return jedi.Script(
-                document.text,
-                column=document.cursor_position_col,
-                line=document.cursor_position_row + 1,
-                path=self.location)
-        except ValueError:
-            # Invalid cursor position.
-            # ValueError('`column` parameter is not in a valid range.')
-            return None
-        except AttributeError:
-            # Workaround for #65: https://github.com/jonathanslenders/python-prompt-toolkit/issues/65
-            # See also: https://github.com/davidhalter/jedi/issues/508
-            return None
-        except IndexError:
-            # Workaround Jedi issue #514: for https://github.com/davidhalter/jedi/issues/514
-            return None
-        except KeyError:
-            # Workaround for a crash when the input is "u'", the start of a unicode string.
-            return None
