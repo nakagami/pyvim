@@ -103,7 +103,6 @@ class VimBuffer(buffer.Buffer):
 
     def undo(self):
         text = self.text
-        cursor_position = self.cursor_position
         super().undo()
         if self.text != text:
-            self._undo_stack.append((text, cursor_position))
+            self._undo_stack.append((text, self.cursor_position))
