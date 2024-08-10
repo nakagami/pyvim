@@ -53,7 +53,7 @@ class Editor(object):
         self.output = output
 
         # Vi options.
-        self.show_line_numbers = True
+        self.show_line_numbers = False
         self.highlight_search = True
         self.paste_mode = False
         self.show_ruler = True

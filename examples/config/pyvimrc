@@ -20,7 +20,7 @@ def configure(editor):
     argument that we can manipulate in here.
     """
     # Show line numbers by default. (:set number)
-    editor.show_line_numbers = True
+    editor.show_line_numbers = False
 
     # Highlight search. (:set hlsearch)
     editor.highlight_search = True
