@@ -31,6 +31,7 @@ def configure(editor):
     # Expand tab. (Pressing Tab will insert spaces.)
     editor.expand_tab = True  # (:set expandtab)
     editor.tabstop = 4  # (:set tabstop=4)
+    editor.shiftwidth = 4  # (:set shiftwidth=4)
 
     # Scroll offset (:set scrolloff)
     editor.scroll_offset = 2

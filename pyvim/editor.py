@@ -60,6 +60,7 @@ class Editor(object):
         self.show_wildmenu = True
         self.expand_tab = True  # Insect spaces instead of tab characters.
         self.tabstop = 4  # Number of spaces that a tab character represents.
+        self.shiftwidth = 4  # Number of spaces at indent/unindent
         self.incsearch = True  # Show matches while typing search string.
         self.ignore_case = False  # Ignore case while searching.
         self.enable_mouse_support = False
@@ -266,6 +267,7 @@ class Editor(object):
             "wildmenu": self.show_wildmenu,
             "expandtab": self.expand_tab,
             "tabstop": self.tabstop,
+            "shiftwidth": self.shiftwidth,
             "scrolloff": self.scroll_offset,
             "incsearch": self.incsearch,
             "ignorecase": self.ignore_case,

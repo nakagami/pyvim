@@ -544,6 +544,25 @@ def tab_stop(editor, value):
             editor.show_message('Number required after =')
 
 
+@set_cmd('shiftwidth', accepts_value=True)
+@set_cmd('sw', accepts_value=True)
+def shift_width(editor, value):
+    """
+    Set shiftwidth.
+    """
+    if value is None:
+        editor.show_message('shiftwidth=%i' % editor.shiftwidth)
+    else:
+        try:
+            value = int(value)
+            if value > 0:
+                editor.shiftwidth = value
+            else:
+                editor.show_message('Argument must be positive')
+        except ValueError:
+            editor.show_message('Number required after =')
+
+
 @set_cmd('scrolloff', accepts_value=True)
 @set_cmd('so', accepts_value=True)
 def set_scroll_offset(editor, value):
