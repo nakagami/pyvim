@@ -373,7 +373,7 @@ def create_key_bindings(editor):
     @kb.add("<", "<", filter=vi_navigation_mode)
     @kb.add('c-d', filter=in_insert_mode)
     def _unindent(event):
-        a = event.current_buffer
+        b = event.current_buffer
         document = b.document
         cursor_position = b.cursor_position
         a = document.cursor_position + document.get_start_of_line_position()
@@ -391,7 +391,7 @@ def create_key_bindings(editor):
         else:
             for i in range(a, b):
                 if document.text[i] == '\t':
-                    b.text = document.text[:i] + document.text[i+1:]
+                    b.text = document.text[:i] + document.text[i + 1:]
                     b.cursor_position = cursor_position - 1
                     break
 
