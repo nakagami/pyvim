@@ -282,6 +282,7 @@ def buffer_edit(editor, location, force=False):
         editor.file_explorer = ''
         editor.window_arrangement.open_buffer(location, show_in_current_window=True)
 
+
 def _open_from_nth_location(editor, n: int):
     """
     Edit n-th location.
