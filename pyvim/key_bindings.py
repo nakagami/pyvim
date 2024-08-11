@@ -373,7 +373,7 @@ def create_key_bindings(editor):
     @kb.add("<", "<", filter=vi_navigation_mode)
     @kb.add('c-d', filter=in_insert_mode)
     def _unindent(event):
-        buffer event.current_buffer
+        buffer = event.current_buffer
         document = buffer.document
         cursor_position = buffer.cursor_position
         a = document.cursor_position + document.get_start_of_line_position()
@@ -384,6 +384,7 @@ def create_key_bindings(editor):
             if space_len:
                 if space_len % buffer.shiftwidth:
                     remove_len = space_len % buffer.shiftwidth
+                else:
                     remove_len = buffer.shiftwidth
                 text = text[remove_len:]
                 buffer.text = document.text[:a] + text + document.text[b:]
