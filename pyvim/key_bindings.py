@@ -373,21 +373,27 @@ def create_key_bindings(editor):
     @kb.add("<", "<", filter=vi_navigation_mode)
     @kb.add('c-d', filter=in_insert_mode)
     def _unindent(event):
-        buffer = event.current_buffer
-        document = buffer.document
-        cursor_position = buffer.cursor_position
+        a = event.current_buffer
+        document = b.document
+        cursor_position = b.cursor_position
         a = document.cursor_position + document.get_start_of_line_position()
         b = document.cursor_position + document.get_end_of_line_position()
         text = document.text[a:b]
-        space_len = len(text) - len(text.lstrip(' '))
-        if space_len:
-            if space_len % 4:
-                remove_len = space_len % 4
-            else:
-                remove_len = 4
-            text = text[remove_len:]
-            buffer.text = document.text[:a] + text + document.text[b:]
-            buffer.cursor_position = cursor_position - remove_len
+        if b.tabexpand:
+            space_len = len(text) - len(text.lstrip(' '))
+            if space_len:
+                if space_len % b.shiftwidth:
+                    remove_len = space_len % b.shiftwidth
+                    remove_len = b.shiftwidth
+                text = text[remove_len:]
+                b.text = document.text[:a] + text + document.text[b:]
+                b.cursor_position = cursor_position - remove_len
+        else:
+            for i in range(a, b):
+                if document.text[i] == '\t':
+                    b.text = document.text[:i] + document.text[i+1:]
+                    b.cursor_position = cursor_position - 1
+                    break
 
     @kb.add("O", filter=vi_navigation_mode & ~is_read_only)
     def _open_above(event: E) -> None:
@@ -492,8 +498,8 @@ def create_key_bindings(editor):
         b.cursor_position += pos
 
         # Insert tab.
-        if editor.expand_tab:
-            b.insert_text('    ')
+        if b.expand_tab:
+            b.insert_text(' ' * b.shiftwidth)
         else:
             b.insert_text('\t')
 
@@ -521,8 +527,8 @@ def create_key_bindings(editor):
         cursor, do autocompletion. Otherwise, insert indentation.
         """
         b = event.app.current_buffer
-        if editor.expand_tab:
-            b.insert_text('    ')
+        if b.expand_tab:
+            b.insert_text(' ' * b.tabstop)
         else:
             b.insert_text('\t')
 

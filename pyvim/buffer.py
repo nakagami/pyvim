@@ -101,6 +101,18 @@ class VimBuffer(buffer.Buffer):
 
         return (working_index, document.cursor_position)
 
+    @property
+    def expand_tab(self):
+        return self._editor.expand_tab
+
+    @property
+    def tabstop(self):
+        return self._editor.tabstop
+
+    @property
+    def shiftwidth(self):
+        return self._editor.shiftwidth
+
     def undo(self):
         text = self.text
         super().undo()
