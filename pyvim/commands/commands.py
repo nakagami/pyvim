@@ -283,6 +283,33 @@ def buffer_edit(editor, location, force=False):
         editor.window_arrangement.open_buffer(location, show_in_current_window=True)
 
 
+def _open_from_nth_location(editor, n: int):
+    """
+    Edit n-th location.
+    """
+    if len(editor.locations) < 1:
+        editor.show_message("There is only one file to edit")
+        return
+    if n < 0 or len(editor.locations) <= n:
+        editor.show_message("No more file")
+        return
+    editor.file_explorer = ''
+    editor.window_arrangement.open_buffer(editor.locations[n], show_in_current_window=True)
+    editor.current_location_index = n
+
+
+@location_cmd('n', accepts_force=True)
+@location_cmd('next', accepts_force=True)
+def next_file(editor, location, force=False):
+    _open_from_nth_location(editor, editor.current_location_index + 1)
+
+
+@location_cmd('p', accepts_force=True)
+@location_cmd('previous', accepts_force=True)
+def previous_file(editor, location, force=False):
+    _open_from_nth_location(editor, editor.current_location_index - 1)
+
+
 @cmd('q', accepts_force=True)
 @cmd('quit', accepts_force=True)
 def quit(editor, force=False):

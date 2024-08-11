@@ -75,6 +75,9 @@ class Editor(object):
         self.cursorcolumn = False  # ':set cursorcolumn'
         self.colorcolumn = []  # ':set colorcolumn'. List of integers.
 
+        self.locations = []
+        self.current_location_index = 0
+
         # Ensure config directory exists.
         self.config_directory = os.path.abspath(os.path.expanduser(config_directory))
         if not os.path.exists(self.config_directory):
@@ -167,6 +170,8 @@ class Editor(object):
 
         if locations and len(locations) > 1:
             self.show_message('%i files loaded.' % len(locations))
+            self.locations = locations
+            self.current_location_index = 0
 
     def _create_application(self):
         """
