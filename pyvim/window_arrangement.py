@@ -448,7 +448,7 @@ class WindowArrangement(object):
             self.editor.location_history.append(location)
 
         if self.editor.on_open_buffer:
-            self.editor.on_open_buffer(eb)
+            self.editor.on_open_buffer(location, eb.buffer)
         if show_in_current_window:
             self.show_editor_buffer(eb)
 
