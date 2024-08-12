@@ -437,7 +437,6 @@ class WindowArrangement(object):
                 self._add_editor_buffer(eb)
 
                 return eb
-            self.editor.location_history.append(location)
             return eb
 
     def open_buffer(self, location=None, show_in_current_window=False):
@@ -445,7 +444,11 @@ class WindowArrangement(object):
         Open/create a file, load it, and show it in a new buffer.
         """
         eb = self._get_or_create_editor_buffer(location)
+        if location:
+            self.editor.location_history.append(location)
 
+        if self.editor.on_open_buffer:
+            self.editor.on_open_buffer(location, eb.buffer)
         if show_in_current_window:
             self.show_editor_buffer(eb)
 

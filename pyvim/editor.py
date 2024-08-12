@@ -80,6 +80,8 @@ class Editor(object):
         # open file history
         self.location_history = []
 
+        self.on_open_buffer = None
+
         # Ensure config directory exists.
         self.config_directory = os.path.abspath(os.path.expanduser(config_directory))
         if not os.path.exists(self.config_directory):
