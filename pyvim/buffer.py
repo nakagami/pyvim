@@ -11,6 +11,11 @@ class VimBuffer(buffer.Buffer):
         self._editor = editor
         self.mark = {}
 
+        # Vi options.
+        self._expand_tab = None
+        self._tabstop = None
+        self._shiftwidth = None
+
     def _search(
         self,
         search_state: SearchState,
@@ -103,15 +108,15 @@ class VimBuffer(buffer.Buffer):
 
     @property
     def expand_tab(self):
-        return self._editor.expand_tab
+        return self._editor.expand_tab if self._expand_tab is None else self._expand_tab
 
     @property
     def tabstop(self):
-        return self._editor.tabstop
+        return self._editor.tabstop if self._tabstop is None else self._tabstop
 
     @property
     def shiftwidth(self):
-        return self._editor.shiftwidth
+        return self._editor.shiftwidth if self._shiftwidth is None else self._shiftwidth
 
     def undo(self):
         text = self.text
