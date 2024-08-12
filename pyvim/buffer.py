@@ -110,13 +110,25 @@ class VimBuffer(buffer.Buffer):
     def expand_tab(self):
         return self._editor.expand_tab if self._expand_tab is None else self._expand_tab
 
+    @expand_tab.setter
+    def expand_tab(self, v):
+        self._expand_tab = v
+
     @property
     def tabstop(self):
         return self._editor.tabstop if self._tabstop is None else self._tabstop
 
+    @tabstop.setter
+    def tabstop(self, v):
+        self._tabstop = v
+
     @property
     def shiftwidth(self):
         return self._editor.shiftwidth if self._shiftwidth is None else self._shiftwidth
+
+    @shiftwidth.setter
+    def shiftwidth(self, v):
+        self._shiftwidth = v
 
     def undo(self):
         text = self.text
