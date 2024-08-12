@@ -437,9 +437,8 @@ class WindowArrangement(object):
                 self._add_editor_buffer(eb)
 
                 return eb
-            else:
-                # Found! Return it.
-                return eb
+            self.editor.location_history.append(location)
+            return eb
 
     def open_buffer(self, location=None, show_in_current_window=False):
         """

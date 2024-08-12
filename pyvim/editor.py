@@ -74,9 +74,11 @@ class Editor(object):
         self.cursorline = False  # ':set cursorline'
         self.cursorcolumn = False  # ':set cursorcolumn'
         self.colorcolumn = []  # ':set colorcolumn'. List of integers.
-
+        # locations in command argument
         self.locations = []
         self.current_location_index = 0
+        # open file history
+        self.location_history = []
 
         # Ensure config directory exists.
         self.config_directory = os.path.abspath(os.path.expanduser(config_directory))
