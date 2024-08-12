@@ -392,8 +392,8 @@ def create_key_bindings(editor):
         else:
             for i in range(a, b):
                 if document.text[i] == '\t':
-                    b.text = document.text[:i] + document.text[i + 1:]
-                    b.cursor_position = cursor_position - 1
+                    buffer.text = document.text[:i] + document.text[i + 1:]
+                    buffer.cursor_position = cursor_position - 1
                     break
 
     @kb.add("O", filter=vi_navigation_mode & ~is_read_only)
