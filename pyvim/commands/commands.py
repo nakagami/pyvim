@@ -279,6 +279,8 @@ def buffer_edit(editor, location, force=False):
         else:
             eb.reload()
     else:
+        if len(editor.location_history) > 1:
+            location = location.replace("#", editor.location_history[-2])
         editor.file_explorer = ''
         editor.window_arrangement.open_buffer(location, show_in_current_window=True)
 
