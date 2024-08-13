@@ -663,7 +663,7 @@ def create_key_bindings(editor):
         if document.current_char in ('\n', ''):
             return None
         if document.current_char.isspace():
-            end = document.find_next_word_beginning(count=event.arg)
+            end = document.find_next_word_beginning(count=event.arg) or document.get_end_of_document_position()
             eol = document.text_after_cursor[:end].find('\n')
             if eol != -1:
                 end = eol
