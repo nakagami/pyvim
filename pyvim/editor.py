@@ -364,7 +364,11 @@ class Editor(object):
             logger.debug(self._last_edit_command)
         self._in_edit_command = False
 
+    def last_edit_command(self):
+        return self._last_edit_command[:]
+
     def replay_edit_command(self):
         logger.debug("replay_edit_command")
         logger.debug(self._last_edit_command)
-        self.application.key_processor.feed_multiple(self._last_edit_command[:])
+        self.application.key_processor.feed_multiple(self.last_edit_command())
+
