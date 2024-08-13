@@ -15,4 +15,4 @@ def getLogger():
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
     # logger.addHandler(logging.FileHandler("./pyvim.log"))
-
+    return logger

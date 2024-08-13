@@ -7,7 +7,6 @@ Usage::
     e = Editor(files_to_edit)
     e.run()  # Runs the event loop, starts interaction.
 """
-import logging
 from prompt_toolkit.application import Application
 from prompt_toolkit.application.application import _CombinedRegistry
 from prompt_toolkit.buffer import Buffer
