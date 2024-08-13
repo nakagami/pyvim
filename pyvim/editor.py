@@ -371,4 +371,3 @@ class Editor(object):
         logger.debug("replay_edit_command")
         logger.debug(self._last_edit_command)
         self.application.key_processor.feed_multiple(self.last_edit_command())
-
