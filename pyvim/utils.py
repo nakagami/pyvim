@@ -1,4 +1,5 @@
 import re
+import logging
 
 
 def re_finditer(sub, text, flags):
@@ -8,3 +9,10 @@ def re_finditer(sub, text, flags):
         iterator = re.finditer(re.escape(sub), text, flags)
 
     return iterator
+
+
+def getLogger():
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    # logger.addHandler(logging.FileHandler("./pyvim.log"))
+

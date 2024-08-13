@@ -27,17 +27,17 @@ from .style import generate_built_in_styles, get_editor_style_by_name
 from .window_arrangement import WindowArrangement
 from .io import FileIO, DirectoryIO, HttpIO, GZipFileIO
 from .key_processor import VimKeyProcessor
+from .utils import getLogger
 
 import pygments
 import os
 
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-# logger.addHandler(logging.FileHandler("./pyvim.log"))
-
 __all__ = (
     'Editor',
 )
+
+
+logger = getLogger()
 
 
 class Editor(object):
