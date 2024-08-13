@@ -668,7 +668,7 @@ def create_key_bindings(editor):
             if eol != -1:
                 end = eol
         else:
-            end = document.find_next_word_ending(count=event.arg)
+            end = document.find_next_word_ending(include_current_position=True, count=event.arg)
         return TextObject(end)
 
     return kb
