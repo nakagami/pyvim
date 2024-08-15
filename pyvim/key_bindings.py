@@ -12,7 +12,7 @@ from prompt_toolkit.clipboard import ClipboardData
 from prompt_toolkit.filters import (
     Condition, has_focus, vi_insert_mode, vi_navigation_mode, is_read_only
 )
-from prompt_toolkit.filters.app import in_paste_mode, vi_selection_mode, vi_replace_single_mode
+from prompt_toolkit.filters.app import in_paste_mode, vi_selection_mode, vi_replace_single_mode, vi_replace_mode
 from prompt_toolkit.selection import SelectionType
 
 from .document import Document
@@ -636,6 +636,16 @@ def create_key_bindings(editor):
         editor.window_arrangement.open_buffer(
             new_path, show_in_current_window=True)
         editor.sync_with_prompt_toolkit()
+
+    @kb.add(Keys.Any, filter=vi_replace_mode)
+    def _insert_text(event: E) -> None:
+        """
+        Insert data at cursor position.
+        """
+        event.app.key_processor._editor.start_edit_command(event)
+        editor.append_edit_command(event.key_sequence[0])
+        event.current_buffer.insert_text(event.data, overwrite=True)
+        editor.finish_edit_command()
 
     @kb.add(Keys.Any, filter=vi_replace_single_mode)
     def _replace_single(event: E) -> None:
