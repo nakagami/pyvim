@@ -13,6 +13,7 @@ def re_finditer(sub, text, flags):
 
 def getLogger():
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
-    # logger.addHandler(logging.FileHandler("./pyvim.log"))
+    if not logger.hasHandlers():
+        # logger.addHandler(logging.FileHandler("./pyvim.log"))
+        logger.setLevel(logging.DEBUG)
     return logger
