@@ -5,6 +5,7 @@ from prompt_toolkit.document import Document
 from .utils import getLogger
 logger = getLogger()
 
+
 class VimBuffer(buffer.Buffer):
     def __init__(self, *args, **kwargs):
         editor = kwargs["editor"]
