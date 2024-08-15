@@ -2,6 +2,8 @@ from prompt_toolkit import buffer
 from prompt_toolkit.search import SearchDirection, SearchState
 from prompt_toolkit.document import Document
 
+from .utils import getLogger
+logger = getLogger()
 
 class VimBuffer(buffer.Buffer):
     def __init__(self, *args, **kwargs):
@@ -135,3 +137,35 @@ class VimBuffer(buffer.Buffer):
         super().undo()
         if self.text != text:
             self._undo_stack.append((text, self.cursor_position))
+
+    def start_completion(self, *args, **kwargs):
+        logger.debug("start_completion()")
+        super().start_completion(*args, **kwargs)
+
+    def complete_next(self, *args, **kwargs):
+        logger.debug("complete_next()")
+        super().complete_next(*args, **kwargs)
+
+    def complete_previous(self, *args, **kwargs):
+        logger.debug("complete_previous()")
+        super().complete_previous(*args, **kwargs)
+
+    def cancel_completion(self, *args, **kwargs):
+        logger.debug("complete_cancel()")
+        super().cancel_completion(*args, **kwargs)
+
+    def _set_completions(self, *args, **kwargs):
+        logger.debug("_set_completions()")
+        super()._set_completions(*args, **kwargs)
+
+    def start_history_lines_completion(self):
+        logger.debug("start_history_lines_completion()")
+        super().start_history_lines_completion()
+
+    def go_to_completion(self, index):
+        logger.debug(f"go_to_completion():{index}")
+        super().go_to_completion(index)
+
+    def apply_completion(self, *args, **kwargs):
+        logger.debug("apply_completion()")
+        super().apply_completion(*args, **kwargs)
