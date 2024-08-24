@@ -6,6 +6,27 @@ from .utils import getLogger
 logger = getLogger()
 
 
+def _new_text_and_position(self) -> tuple[str, int]:
+    if self.complete_index is None:
+        return self.original_document.text, self.original_document.cursor_position
+    else:
+        original_text_before_cursor = self.original_document.text_before_cursor
+        original_text_after_cursor = self.original_document.text_after_cursor
+
+        c = self.completions[self.complete_index]
+        if c.start_position == 0:
+            before = original_text_before_cursor
+        else:
+            before = original_text_before_cursor[: c.start_position]
+
+        new_text = before + c.text + original_text_after_cursor
+        new_cursor_position = len(before) + len(c.text)
+        return new_text, new_cursor_position
+
+
+buffer.CompletionState.new_text_and_position = _new_text_and_position
+
+
 class VimBuffer(buffer.Buffer):
     def __init__(self, *args, **kwargs):
         editor = kwargs["editor"]
