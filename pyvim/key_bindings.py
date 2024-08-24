@@ -341,23 +341,24 @@ def create_key_bindings(editor):
         """
         Delete character.
         """
-        editor.start_edit_command()
-
-        buff = event.current_buffer
-        count = min(event.arg, len(buff.document.current_line_after_cursor))
+        buffer = event.current_buffer
+        count = min(event.arg, len(buffer.document.current_line_after_cursor))
         if count:
+            editor.start_edit_command(event)
             text = event.current_buffer.delete(count=count)
             event.app.clipboard.set_text(text)
+            editor.finish_edit_command()
 
     @kb.add("X", filter=vi_navigation_mode)
     def _delete_before_cursor(event: E) -> None:
-        editor.start_edit_command()
 
-        buff = event.current_buffer
-        count = min(event.arg, len(buff.document.current_line_before_cursor))
+        buffer = event.current_buffer
+        count = min(event.arg, len(buffer.document.current_line_before_cursor))
         if count:
+            editor.start_edit_command(event)
             text = event.current_buffer.delete_before_cursor(count=count)
             event.app.clipboard.set_text(text)
+            editor.finish_edit_command()
 
     @kb.add(">", ">", filter=vi_navigation_mode)
     @kb.add("c-t", filter=vi_insert_mode)
