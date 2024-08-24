@@ -8,6 +8,8 @@ logger = getLogger()
 
 def _new_text_and_position(self) -> tuple[str, int]:
     if self.complete_index is None:
+        self.completion_start = 0
+        self.completion_text = ""
         return self.original_document.text, self.original_document.cursor_position
     else:
         original_text_before_cursor = self.original_document.text_before_cursor
@@ -21,6 +23,8 @@ def _new_text_and_position(self) -> tuple[str, int]:
 
         new_text = before + c.text + original_text_after_cursor
         new_cursor_position = len(before) + len(c.text)
+        self.completion_start = c.start_position
+        self.completion_text = c.text
         return new_text, new_cursor_position
 
 
@@ -187,6 +191,8 @@ class VimBuffer(buffer.Buffer):
     def go_to_completion(self, index):
         logger.debug(f"go_to_completion():{index}")
         super().go_to_completion(index)
+        s = self.complete_state
+        logger.debug(f"completion_start={s.completion_start},completion_text={s.completion_text}")
 
     def apply_completion(self, *args, **kwargs):
         logger.debug("apply_completion()")
