@@ -483,13 +483,13 @@ def create_key_bindings(editor):
         editor.enter_command_mode()
 
     @kb.add('tab', filter=vi_insert_mode)
-    def autocomplete_or_indent(event):
+    def tab_indent(event):
         """
-        Insert tab key
+        indent by tab key
         """
         b = event.app.current_buffer
         if b.expand_tab:
-            b.insert_text(' ' * b.tabstop)
+            b.insert_text(' ' * b.shiftwidth)
         else:
             b.insert_text('\t')
 
