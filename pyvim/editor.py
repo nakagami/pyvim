@@ -352,7 +352,7 @@ class Editor(object):
 
     def append_edit_command(self, key_event):
         if self._in_edit_command:
-            if key_event.key  in (Keys.ControlG, Keys.ControlP, Keys.ControlN):
+            if key_event.key in (Keys.ControlG, Keys.ControlP, Keys.ControlN):
                 return
             self._last_edit_command.append(key_event)
             logger.debug(f"append_edit_command():{self.application.vi_state.input_mode}:{key_event}")
