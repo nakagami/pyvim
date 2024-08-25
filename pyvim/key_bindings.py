@@ -647,15 +647,3 @@ def create_key_bindings(editor):
         return TextObject(end)
 
     return kb
-
-
-@Condition
-def whitespace_before_cursor_on_line():
-    """
-    Filter which evaluates to True when the characters before the cursor are
-    whitespace, or we are at the start of te line.
-    """
-    b = get_app().current_buffer
-    before_cursor = b.document.current_line_before_cursor
-
-    return bool(not before_cursor or before_cursor[-1].isspace())
