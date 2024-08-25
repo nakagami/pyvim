@@ -4,6 +4,7 @@ pyvim
 *An implementation of Vim in Python*
 
 The original `pyvim` seems to have been written to prove the usefulness of the prompt toolkit.
+
 I am trying to fork pyvim into a more vi/vim-like editor.
 
 .. image :: https://github.com/nakagami/pyvim/raw/master/docs/images/welcome-screen.png
