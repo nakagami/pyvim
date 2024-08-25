@@ -360,17 +360,6 @@ def create_key_bindings(editor):
             event.app.clipboard.set_text(text)
             editor.finish_edit_command()
 
-    @kb.add(">", ">", filter=vi_navigation_mode)
-    @kb.add("c-t", filter=vi_insert_mode)
-    def _indent(event: E) -> None:
-        """
-        Indent lines.
-        """
-        from prompt_toolkit.buffer import indent
-        buffer = event.current_buffer
-        current_row = buffer.document.cursor_position_row
-        indent(buffer, current_row, current_row + event.arg)
-
     @kb.add("<", "<", filter=vi_navigation_mode)
     @kb.add('c-d', filter=in_insert_mode)
     def _unindent(event):
@@ -478,35 +467,6 @@ def create_key_bindings(editor):
         Suspend process to background.
         """
         event.app.suspend_to_background()
-
-    @kb.add('c-t')
-    def _(event):
-        """
-        Override default behaviour of prompt-toolkit.
-        (Control-T will swap the last two characters before the cursor, because
-        that's what readline does.)
-        """
-        pass
-
-    @kb.add('c-t', filter=in_insert_mode)
-    def indent_line(event):
-        """
-        Indent current line.
-        """
-        b = event.app.current_buffer
-
-        # Move to start of line.
-        pos = b.document.get_start_of_line_position(after_whitespace=True)
-        b.cursor_position += pos
-
-        # Insert tab.
-        if b.expand_tab:
-            b.insert_text(' ' * b.shiftwidth)
-        else:
-            b.insert_text('\t')
-
-        # Restore cursor.
-        b.cursor_position -= pos
 
     @kb.add('c-r', filter=in_navigation_mode, save_before=(lambda e: False))
     def redo(event):
