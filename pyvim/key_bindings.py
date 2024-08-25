@@ -482,11 +482,10 @@ def create_key_bindings(editor):
         """
         editor.enter_command_mode()
 
-    @kb.add('tab', filter=vi_insert_mode & ~has_focus(editor.command_buffer) & whitespace_before_cursor_on_line)
+    @kb.add('tab', filter=vi_insert_mode)
     def autocomplete_or_indent(event):
         """
-        When the 'tab' key is pressed with only whitespace character before the
-        cursor, do autocompletion. Otherwise, insert indentation.
+        Insert tab key
         """
         b = event.app.current_buffer
         if b.expand_tab:
