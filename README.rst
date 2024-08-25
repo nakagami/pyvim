@@ -67,7 +67,7 @@ Certainly have a look at the alternatives:
 Thanks
 ------
 
-- Original Pyvim: https://github.com/prompt-toolkit/pyvim, by Jonathan Slenders.
+- To original Pyvim: https://github.com/prompt-toolkit/pyvim, by Jonathan Slenders.
 - To Vi Improved, by Bram Moolenaar. For the inspiration.
 - To Jedi, pyflakes and the docopt Python libraries.
 - To the Python wcwidth port of Jeff Quast for support of double width characters.
