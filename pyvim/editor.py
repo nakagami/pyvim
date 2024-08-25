@@ -14,6 +14,7 @@ from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.filters import Condition
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.key_binding.vi_state import InputMode
+from prompt_toolkit.key_binding.bindings.vi import Keys
 from prompt_toolkit.styles import DynamicStyle
 
 from .commands.completer import create_command_completer
@@ -349,10 +350,12 @@ class Editor(object):
         logger.debug(f"start_edit_command():{self.application.vi_state.input_mode}:{event}")
         logger.debug(self._last_edit_command)
 
-    def append_edit_command(self, key):
+    def append_edit_command(self, key_event):
         if self._in_edit_command:
-            self._last_edit_command.append(key)
-            logger.debug(f"append_edit_command():{self.application.vi_state.input_mode}:{key}")
+            if key_event.key  in (Keys.ControlG, Keys.ControlP, Keys.ControlN):
+                return
+            self._last_edit_command.append(key_event)
+            logger.debug(f"append_edit_command():{self.application.vi_state.input_mode}:{key_event}")
             logger.debug(self._last_edit_command)
 
     def finish_edit_command(self, event=None):
