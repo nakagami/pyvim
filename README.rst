@@ -3,7 +3,8 @@ pyvim
 
 *An implementation of Vim in Python*
 
-The original `pyvim <https://github.com/prompt-toolkit/pyvim>`_ seems to have been written to prove the usefulness of the prompt toolkit.
+The original `pyvim <https://github.com/prompt-toolkit/pyvim>`_ seems to have been written
+to prove the usefulness of the `python-prompt-toolkit <https://github.com/prompt-toolkit/python-prompt-toolkit>`_ .
 
 I am trying to fork pyvim into a more vi/vim-like editor.
 
