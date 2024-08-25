@@ -142,6 +142,7 @@ def create_key_bindings(editor):
 
         if bool(buffer.selection_state):
             buffer.exit_selection()
+        event.current_buffer.complete_state = None
 
     # ** In navigation mode **
 
