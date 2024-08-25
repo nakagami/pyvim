@@ -489,7 +489,11 @@ def create_key_bindings(editor):
         """
         b = event.app.current_buffer
         if b.expand_tab:
-            b.insert_text(' ' * b.shiftwidth)
+            sw = b.shiftwidth
+            col_mod = b.document.cursor_position_col % b.shiftwidth
+            if col_mod:
+                sw -= col_mod
+            b.insert_text(' ' * sw)
         else:
             b.insert_text('\t')
 
