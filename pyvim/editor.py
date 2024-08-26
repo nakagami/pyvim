@@ -13,9 +13,9 @@ from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.filters import Condition
 from prompt_toolkit.history import FileHistory
-from prompt_toolkit.key_binding.vi_state import InputMode
-from prompt_toolkit.key_binding.bindings.vi import Keys
+from prompt_toolkit.keys import Keys
 from prompt_toolkit.styles import DynamicStyle
+from prompt_toolkit.key_binding.vi_state import InputMode
 
 from .commands.completer import create_command_completer
 from .commands.handler import handle_command
