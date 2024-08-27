@@ -294,7 +294,7 @@ class Editor(object):
         """
         Show :set all in new window.
         """
-        options = self.get_options()
+        options = self.get_options() |  self.application.current_buffer.get_options()
 
         option_strings = []
         for k in sorted(options):

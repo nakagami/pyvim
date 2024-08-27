@@ -158,6 +158,13 @@ class VimBuffer(buffer.Buffer):
     def shiftwidth(self, v):
         self._shiftwidth = v
 
+    def get_options(self):
+        return {
+            "expandtab": self.expand_tab,
+            "tabstop": self.tabstop,
+            "shiftwidth": self.shiftwidth,
+        }
+
     def undo(self):
         text = self.text
         super().undo()
