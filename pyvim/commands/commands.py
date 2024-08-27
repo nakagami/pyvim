@@ -544,14 +544,14 @@ def wild_menu_hide(editor):
 @set_cmd('et')
 def tab_expand(editor):
     """ Enable tab expension. """
-    editor.expand_tab = True
+    editor.current_editor_buffer.buffer.expand_tab = True
 
 
 @set_cmd('noexpandtab')
 @set_cmd('noet')
 def tab_no_expand(editor):
     """ Disable tab expension. """
-    editor.expand_tab = False
+    editor.current_editor_buffer.buffer.expand_tab = False
 
 
 @set_cmd('tabstop', accepts_value=True)
@@ -566,7 +566,7 @@ def tab_stop(editor, value):
         try:
             value = int(value)
             if value > 0:
-                editor.tabstop = value
+                editor.current_editor_buffer.buffer.tabstop = value
             else:
                 editor.show_message('Argument must be positive')
         except ValueError:
@@ -585,7 +585,7 @@ def shift_width(editor, value):
         try:
             value = int(value)
             if value > 0:
-                editor.shiftwidth = value
+                editor.current_editor_buffer.buffer.shiftwidth = value
             else:
                 editor.show_message('Argument must be positive')
         except ValueError:
