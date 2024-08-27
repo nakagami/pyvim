@@ -58,6 +58,7 @@ def _create_operator_decorator(
                 # function in the ViState. We should execute it after a text
                 # object has been received.
                 event.app.key_processor._editor.start_edit_command(event)
+                event.app.vi_state.operator_event = event
                 event.app.vi_state.operator_func = operator_func
                 event.app.vi_state.operator_arg = event.arg
 
@@ -644,6 +645,14 @@ def create_key_bindings(editor):
                 end = eol
         else:
             end = document.find_next_word_ending(include_current_position=True, count=event.arg)
+
+        # dw remove word and trailing spaces
+        if event.app.vi_state.operator_event.key_sequence[0].key == 'd':
+            c = document._get_char_relative_to_cursor(end)
+            while c != "\n" and c.isspace():
+                end += 1
+                c = document._get_char_relative_to_cursor(end)
+
         return TextObject(end)
 
     return kb
