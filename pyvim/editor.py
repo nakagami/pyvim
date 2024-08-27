@@ -265,11 +265,8 @@ class Editor(object):
         self.window_arrangement.hsplit(text=HELP_TEXT)
         self.sync_with_prompt_toolkit()  # Show new window.
 
-    def show_set_all(self):
-        """
-        Show :set all in new window.
-        """
-        options = {
+    def get_options(self):
+        return {
             "hlsearch": self.highlight_search,
             "paste": self.paste_mode,
             "ruler": self.show_ruler,
@@ -292,6 +289,12 @@ class Editor(object):
             "corsorcolumn": self.cursorcolumn,
             "colorcolumn": self.colorcolumn,
         }
+
+    def show_set_all(self):
+        """
+        Show :set all in new window.
+        """
+        options = self.get_options()
 
         option_strings = []
         for k in sorted(options):
