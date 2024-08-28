@@ -83,6 +83,7 @@ def _document_find_backwards(
 
     return matches[count - 1].start(0) - len(text)
 
+
 Document.find_orig = Document.find
 Document.find_backwards_orig = Document.find_backwards
 
