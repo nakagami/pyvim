@@ -25,9 +25,9 @@ def _document_find(
     assert isinstance(ignore_case, bool)
 
     if in_current_line:
-        text = self.current_line_after_cursor
-    else:
-        text = self.text_after_cursor
+        self.find_orig(sub, in_current_line, include_current_position, ignore_case, count)
+
+    text = self.text_after_cursor
 
     if not include_current_position:
         if len(text) == 0:
@@ -69,9 +69,8 @@ def _document_find_backwards(
     :param count: Find the n-th occurrence.
     """
     if in_current_line:
-        text = self.current_line_before_cursor
-    else:
-        text = self.text_before_cursor
+        return self.find_backwards_orig(sub, in_current_line, ignore_case, count)
+    text = self.text_before_cursor
 
     flags = re.MULTILINE
     if ignore_case:
@@ -84,6 +83,8 @@ def _document_find_backwards(
 
     return matches[count - 1].start(0) - len(text)
 
+Document.find_orig = Document.find
+Document.find_backwards_orig = Document.find_backwards
 
 Document.find = _document_find
 Document.find_backwards = _document_find_backwards
