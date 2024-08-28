@@ -6,7 +6,7 @@ pyvim
 The original `pyvim <https://github.com/prompt-toolkit/pyvim>`_ seems to have been written
 to prove the usefulness of the `python-prompt-toolkit <https://github.com/prompt-toolkit/python-prompt-toolkit>`_ .
 
-I am trying to fork it and make it a more vi/vim like editor.
+I am trying to modify it to a more vi/vim like editor.
 
 .. image :: https://github.com/nakagami/pyvim/raw/master/docs/images/welcome-screen.png
 
