@@ -25,7 +25,7 @@ def _document_find(
     assert isinstance(ignore_case, bool)
 
     if in_current_line:
-        self.find_orig(sub, in_current_line, include_current_position, ignore_case, count)
+        return self.find_orig(sub, in_current_line, include_current_position, ignore_case, count)
 
     text = self.text_after_cursor
 
@@ -82,7 +82,6 @@ def _document_find_backwards(
         return None
 
     return matches[count - 1].start(0) - len(text)
-
 
 Document.find_orig = Document.find
 Document.find_backwards_orig = Document.find_backwards
