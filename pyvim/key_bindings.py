@@ -677,7 +677,7 @@ def create_key_bindings(editor):
         cursor to the previous occurrence of character. 'x'.
         """
         event.app.vi_state.last_character_find = CharacterFind(event.data, True)
-        match =  event.current_buffer.document.find_backwards(
+        match = event.current_buffer.document.find_backwards(
             event.data, in_current_line=True, count=event.arg
         )
         if match:
