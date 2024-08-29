@@ -290,23 +290,8 @@ class Editor(object):
             "colorcolumn": self.colorcolumn,
         }
 
-    def show_set_all(self):
-        """
-        Show :set all in new window.
-        """
-        options = self.get_options() | self.application.current_buffer.get_options()
-
-        option_strings = []
-        for k in sorted(options):
-            v = options[k]
-            if isinstance(v, bool):
-                s = f"  {k}" if v else f"no{k}"
-            else:
-                s = f"  {k}={v}"
-            option_strings.append(s)
-
-        self.window_arrangement.hsplit(text="\n".join(option_strings))
-        self.sync_with_prompt_toolkit()  # Show new window.
+    def get_current_buffer_options(self):
+        return self.get_options() | self.application.current_buffer.get_options()
 
     def run(self):
         """

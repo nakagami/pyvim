@@ -788,7 +788,19 @@ def set_color_column(editor, value):
 
 @set_cmd('all')
 def set_all(editor):
-    editor.show_set_all()
+    def handler():
+        options = editor.get_current_buffer_options()
+        option_strings = []
+        for k in sorted(options):
+            v = options[k]
+            if isinstance(v, bool):
+                s = f"  {k}" if v else f"no{k}"
+            else:
+                s = f"  {k}={v}"
+            option_strings.append(s)
+        print("\n".join(option_strings))
+        input('\nPress ENTER to continue...')
+    run_in_terminal(handler)
 
 
 def _get_line_index(editor, cursor_position_row, range_start, range_end):
