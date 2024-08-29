@@ -1,7 +1,7 @@
 import os
 from prompt_toolkit.application import get_app
 from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.key_binding.vi_state import InputMode
+from prompt_toolkit.key_binding.vi_state import CharacterFind, InputMode
 from prompt_toolkit.key_binding.bindings import vi
 from prompt_toolkit.key_binding.bindings.vi import (
     create_text_object_decorator, TextObjectType, TextObject,
@@ -654,5 +654,60 @@ def create_key_bindings(editor):
                 c = document._get_char_relative_to_cursor(end)
 
         return TextObject(end)
+
+    @text_object("f", Keys.Any)
+    def _find_next_occurrence(event: E) -> TextObject:
+        """
+        Go to next occurrence of character. Typing 'fx' will move the
+        cursor to the next occurrence of character. 'x'.
+        """
+        event.app.vi_state.last_character_find = CharacterFind(event.data, False)
+        match = event.current_buffer.document.find(
+            event.data, in_current_line=True, count=event.arg
+        )
+        if match:
+            return TextObject(match, type=TextObjectType.INCLUSIVE)
+        else:
+            return None
+
+    @text_object("F", Keys.Any)
+    def _find_previous_occurrence(event: E) -> TextObject:
+        """
+        Go to previous occurrence of character. Typing 'Fx' will move the
+        cursor to the previous occurrence of character. 'x'.
+        """
+        event.app.vi_state.last_character_find = CharacterFind(event.data, True)
+        match =  event.current_buffer.document.find_backwards(
+            event.data, in_current_line=True, count=event.arg
+        )
+        if match:
+            return TextObject(match)
+        return None
+
+    @text_object("t", Keys.Any)
+    def _t(event: E) -> TextObject:
+        """
+        Move right to the next occurrence of c, then one char backward.
+        """
+        event.app.vi_state.last_character_find = CharacterFind(event.data, False)
+        match = event.current_buffer.document.find(
+            event.data, in_current_line=True, count=event.arg
+        )
+        if match:
+            return TextObject(match - 1, type=TextObjectType.INCLUSIVE)
+        return None
+
+    @text_object("T", Keys.Any)
+    def _T(event: E) -> TextObject:
+        """
+        Move left to the previous occurrence of c, then one char forward.
+        """
+        event.app.vi_state.last_character_find = CharacterFind(event.data, True)
+        match = event.current_buffer.document.find_backwards(
+            event.data, in_current_line=True, count=event.arg
+        )
+        if match:
+            return TextObject(match + 1)
+        return None
 
     return kb
