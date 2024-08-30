@@ -1,4 +1,5 @@
 import os
+import string
 from prompt_toolkit.application import get_app
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.vi_state import CharacterFind, InputMode
@@ -311,7 +312,7 @@ def create_key_bindings(editor):
 
         editor.finish_edit_command()
 
-    @kb("p", filter=vi_navigation_mode)
+    @kb.add("p", filter=vi_navigation_mode)
     def _paste(event: E) -> None:
         """
         Paste after
@@ -324,7 +325,7 @@ def create_key_bindings(editor):
         )
         editor.finish_edit_command()
 
-    @kb("P", filter=vi_navigation_mode)
+    @kb.add("P", filter=vi_navigation_mode)
     def _paste_before(event: E) -> None:
         """
         Paste before
@@ -337,7 +338,7 @@ def create_key_bindings(editor):
         )
         editor.finish_edit_command()
 
-    @kb('"', Keys.Any, "p", filter=vi_navigation_mode)
+    @kb.add('"', Keys.Any, "p", filter=vi_navigation_mode)
     def _paste_register(event: E) -> None:
         """
         Paste from named register.
@@ -352,7 +353,7 @@ def create_key_bindings(editor):
                 )
         editor.finish_edit_command()
 
-    @kb('"', Keys.Any, "P", filter=vi_navigation_mode)
+    @kb.add('"', Keys.Any, "P", filter=vi_navigation_mode)
     def _paste_register_before(event: E) -> None:
         """
         Paste (before) from named register.
