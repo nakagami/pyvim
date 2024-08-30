@@ -13,7 +13,7 @@ from prompt_toolkit.filters import (
     Condition, has_focus, vi_insert_mode, vi_navigation_mode, is_read_only
 )
 from prompt_toolkit.filters.app import in_paste_mode, vi_selection_mode, vi_replace_single_mode, vi_replace_mode
-from prompt_toolkit.selection import SelectionType
+from prompt_toolkit.selection import PasteMode, SelectionType
 
 from .document import Document
 from .commands.commands import write_and_quit, quit
@@ -22,6 +22,9 @@ from .commands.commands import write_and_quit, quit
 __all__ = (
     'create_key_bindings',
 )
+
+
+vi_register_names = string.ascii_lowercase + "0123456789"
 
 
 def _create_operator_decorator(
@@ -306,6 +309,62 @@ def create_key_bindings(editor):
         for i in range(event.arg):
             event.current_buffer.join_next_line(separator="")
 
+        editor.finish_edit_command()
+
+    @kb("p", filter=vi_navigation_mode)
+    def _paste(event: E) -> None:
+        """
+        Paste after
+        """
+        editor.start_edit_command()
+        event.current_buffer.paste_clipboard_data(
+            event.app.clipboard.get_data(),
+            count=event.arg,
+            paste_mode=PasteMode.VI_AFTER,
+        )
+        editor.finish_edit_command()
+
+    @kb("P", filter=vi_navigation_mode)
+    def _paste_before(event: E) -> None:
+        """
+        Paste before
+        """
+        editor.start_edit_command()
+        event.current_buffer.paste_clipboard_data(
+            event.app.clipboard.get_data(),
+            count=event.arg,
+            paste_mode=PasteMode.VI_BEFORE,
+        )
+        editor.finish_edit_command()
+
+    @kb('"', Keys.Any, "p", filter=vi_navigation_mode)
+    def _paste_register(event: E) -> None:
+        """
+        Paste from named register.
+        """
+        editor.start_edit_command()
+        c = event.key_sequence[1].data
+        if c in vi_register_names:
+            data = event.app.vi_state.named_registers.get(c)
+            if data:
+                event.current_buffer.paste_clipboard_data(
+                    data, count=event.arg, paste_mode=PasteMode.VI_AFTER
+                )
+        editor.finish_edit_command()
+
+    @kb('"', Keys.Any, "P", filter=vi_navigation_mode)
+    def _paste_register_before(event: E) -> None:
+        """
+        Paste (before) from named register.
+        """
+        editor.start_edit_command()
+        c = event.key_sequence[1].data
+        if c in vi_register_names:
+            data = event.app.vi_state.named_registers.get(c)
+            if data:
+                event.current_buffer.paste_clipboard_data(
+                    data, count=event.arg, paste_mode=PasteMode.VI_BEFORE
+                )
         editor.finish_edit_command()
 
     @kb.add("r", filter=vi_navigation_mode)
