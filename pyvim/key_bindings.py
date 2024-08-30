@@ -317,7 +317,7 @@ def create_key_bindings(editor):
         """
         Paste after
         """
-        editor.start_edit_command()
+        editor.start_edit_command(event)
         event.current_buffer.paste_clipboard_data(
             event.app.clipboard.get_data(),
             count=event.arg,
@@ -330,7 +330,7 @@ def create_key_bindings(editor):
         """
         Paste before
         """
-        editor.start_edit_command()
+        editor.start_edit_command(event)
         event.current_buffer.paste_clipboard_data(
             event.app.clipboard.get_data(),
             count=event.arg,
@@ -343,7 +343,7 @@ def create_key_bindings(editor):
         """
         Paste from named register.
         """
-        editor.start_edit_command()
+        editor.start_edit_command(event)
         c = event.key_sequence[1].data
         if c in vi_register_names:
             data = event.app.vi_state.named_registers.get(c)
@@ -358,7 +358,7 @@ def create_key_bindings(editor):
         """
         Paste (before) from named register.
         """
-        editor.start_edit_command()
+        editor.start_edit_command(event)
         c = event.key_sequence[1].data
         if c in vi_register_names:
             data = event.app.vi_state.named_registers.get(c)
