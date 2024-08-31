@@ -16,6 +16,7 @@ from prompt_toolkit.history import FileHistory
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.styles import DynamicStyle
 from prompt_toolkit.key_binding.vi_state import InputMode
+from prompt_toolkit.key_binding.key_processor import KeyPress
 
 from .commands.completer import create_command_completer
 from .commands.handler import handle_command
@@ -362,8 +363,18 @@ class Editor(object):
         self._in_edit_command = False
 
     def last_edit_command(self):
-        # TODO: Convert completion string to keypress event
-        return self._last_edit_command[:]
+        key_event_list = []
+        for command in self._last_edit_command:
+            if isinstance(command, KeyPress):
+                key_event_list.append(command)
+            elif isinstance(command, tuple):
+                # Convert completion string to keypress event
+                start, text = command
+                for _ in range(-start):
+                    key_event_list.append(KeyPress(Keys.ControlH, "\x7f"))
+                for c in text:
+                    key_event_list.append(KeyPress(c, c))
+        return key_event_list
 
     def replay_edit_command(self):
         logger.debug("replay_edit_command")
