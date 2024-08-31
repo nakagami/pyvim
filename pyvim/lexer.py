@@ -1,4 +1,5 @@
 from prompt_toolkit.lexers import Lexer, SimpleLexer, PygmentsLexer
+import pygments.lexers
 from pygments.lexer import RegexLexer
 from pygments.token import Token
 
@@ -18,6 +19,9 @@ class DocumentLexer(Lexer):
         """
         Call the lexer and return a get_tokens_for_line function.
         """
+        if self.editor_buffer.buffer.filetype:
+            return pygments.lexers.get_by_lexer_name(self.filetype)
+
         location = self.editor_buffer.location
 
         if location:

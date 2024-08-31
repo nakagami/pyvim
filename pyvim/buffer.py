@@ -40,6 +40,7 @@ class VimBuffer(buffer.Buffer):
         self.mark = {}
 
         # Vi options.
+        self._filetype = ""
         self._expand_tab = None
         self._tabstop = None
         self._shiftwidth = None
@@ -135,6 +136,14 @@ class VimBuffer(buffer.Buffer):
         return (working_index, document.cursor_position)
 
     @property
+    def filetype(self):
+        return self._filetype
+
+    @filetype.setter
+    def filetype(self, v):
+        self._filetype = v
+
+    @property
     def expand_tab(self):
         return self._editor.expand_tab if self._expand_tab is None else self._expand_tab
 
@@ -160,6 +169,7 @@ class VimBuffer(buffer.Buffer):
 
     def get_options(self):
         return {
+            "filetype": self.filetype,
             "expandtab": self.expand_tab,
             "tabstop": self.tabstop,
             "shiftwidth": self.shiftwidth,
