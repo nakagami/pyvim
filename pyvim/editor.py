@@ -348,7 +348,9 @@ class Editor(object):
     def append_edit_completion(self, start, text):
         if self._in_edit_command:
             logger.debug(f"append_edit_completion():{start}:{text}")
-            # TODO: record completion
+            if isinstance(self._last_edit_command[-1], tuple):
+                self._last_edit_commit.pop()
+            self._last_edit_command.append((start, text))
             logger.debug(self._last_edit_command)
 
     def finish_edit_command(self, event=None):
