@@ -539,6 +539,7 @@ def wild_menu_hide(editor):
     """ Hide wildmenu. """
     editor.show_wildmenu = False
 
+
 @set_cmd('filetype', accepts_value=True)
 @set_cmd('ft', accepts_value=True)
 def filetype(editor, value):
@@ -549,6 +550,7 @@ def filetype(editor, value):
         editor.show_message('filetype=%s' % editor.current_editor_buffer.buffer.filetype)
     else:
         editor.current_editor_buffer.buffer.filetype = value
+
 
 @set_cmd('expandtab')
 @set_cmd('et')
