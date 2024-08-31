@@ -349,7 +349,7 @@ class Editor(object):
         if self._in_edit_command:
             logger.debug(f"append_edit_completion():{start}:{text}")
             if isinstance(self._last_edit_command[-1], tuple):
-                self._last_edit_commit.pop()
+                self._last_edit_command.pop()
             self._last_edit_command.append((start, text))
             logger.debug(self._last_edit_command)
 
