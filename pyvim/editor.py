@@ -346,6 +346,12 @@ class Editor(object):
             logger.debug(f"append_edit_command():{self.application.vi_state.input_mode}:{key_event}")
             logger.debug(self._last_edit_command)
 
+    def append_edit_completion(self, start, text):
+        if self._in_edit_command:
+            logger.debug(f"append_edit_completion():{start}:{text}")
+            # TODO: record completion
+            logger.debug(self._last_edit_command)
+
     def finish_edit_command(self, event=None):
         if self._in_edit_command:
             if event:
@@ -355,6 +361,7 @@ class Editor(object):
         self._in_edit_command = False
 
     def last_edit_command(self):
+        # TODO: Convert completion string to keypress event
         return self._last_edit_command[:]
 
     def replay_edit_command(self):

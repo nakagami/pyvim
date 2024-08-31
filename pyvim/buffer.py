@@ -206,10 +206,10 @@ class VimBuffer(buffer.Buffer):
         super().start_history_lines_completion()
 
     def go_to_completion(self, index):
-        logger.debug(f"go_to_completion():{index}")
         super().go_to_completion(index)
         s = self.complete_state
-        logger.debug(f"completion_start={s.completion_start},completion_text={s.completion_text}")
+        logger.debug(f"go_to_completion({index}) completion_start={s.completion_start},completion_text={s.completion_text}")
+        self._editor.append_edit_completion(s.completion_start, s.completion_text)
 
     def apply_completion(self, *args, **kwargs):
         logger.debug("apply_completion()")
