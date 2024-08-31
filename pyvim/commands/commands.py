@@ -1,11 +1,12 @@
+import os
+import re
 from prompt_toolkit.application import run_in_terminal
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.clipboard import ClipboardData
 from prompt_toolkit.selection import SelectionType
 from prompt_toolkit.document import Document
+from ..lexer import DocumentLexer
 
-import os
-import re
 
 __all__ = (
     'has_command_handler',
@@ -550,6 +551,8 @@ def filetype(editor, value):
         editor.show_message('filetype=%s' % editor.current_editor_buffer.buffer.filetype)
     else:
         editor.current_editor_buffer.buffer.filetype = value
+        window = editor.window_arrangement.active_pt_window
+        window.content.lexer=DocumentLexer(editor.current_editor_buffer)
 
 
 @set_cmd('expandtab')

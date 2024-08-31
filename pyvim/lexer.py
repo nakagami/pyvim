@@ -19,8 +19,11 @@ class DocumentLexer(Lexer):
         """
         Call the lexer and return a get_tokens_for_line function.
         """
-        if self.editor_buffer.buffer.filetype:
-            return pygments.lexers.get_by_lexer_name(self.filetype)
+        filetype = self.editor_buffer.buffer.filetype
+        if filetype:
+            pygments_lexer_cls = pygments.lexers.find_lexer_class_by_name(filetype)
+            if pygments_lexer_cls:
+                return PygmentsLexer(pygments_lexer_cls, sync_from_start=False).lex_document(document)
 
         location = self.editor_buffer.location
 
