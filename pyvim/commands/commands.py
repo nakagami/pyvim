@@ -552,7 +552,7 @@ def filetype(editor, value):
     else:
         editor.current_editor_buffer.buffer.filetype = value
         window = editor.window_arrangement.active_pt_window
-        window.content.lexer=DocumentLexer(editor.current_editor_buffer)
+        window.content.lexer = DocumentLexer(editor.current_editor_buffer)
 
 
 @set_cmd('expandtab')
