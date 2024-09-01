@@ -11,4 +11,16 @@ Thanks to:
     - Pygments: Python syntax highlighter.
     - prompt_toolkit: the terminal UI toolkit.
 
+Keybinds in autocompletion
+------------------------------
+
+When editing Python with Jedi enabled, an autocomplete window appears and follows these key bindings
+
+- Ctrl+n: select next candidate
+- Ctrl+p: select previsous candidate
+- Ctrl+g: close autocompletion window
+
+This key binding may change in the future.
+
+
 More help and documentation will follow."""
