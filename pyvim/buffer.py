@@ -41,6 +41,7 @@ class VimBuffer(buffer.Buffer):
 
         # Vi options.
         self._filetype = ""
+        self._autoindent = None
         self._expand_tab = None
         self._tabstop = None
         self._shiftwidth = None
@@ -142,6 +143,14 @@ class VimBuffer(buffer.Buffer):
     @filetype.setter
     def filetype(self, v):
         self._filetype = v
+
+    @property
+    def autoindent(self):
+        return self._editor.autoindent if self._autoindent is None else self._autoindent
+
+    @autoindent.setter
+    def autoindent(self, v):
+        self._autoindent = v
 
     @property
     def expand_tab(self):

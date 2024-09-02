@@ -11,9 +11,17 @@ from prompt_toolkit.key_binding.bindings.vi import (
 from prompt_toolkit.key_binding.key_processor import KeyPressEvent as E
 from prompt_toolkit.clipboard import ClipboardData
 from prompt_toolkit.filters import (
-    Condition, has_focus, vi_insert_mode, vi_navigation_mode, is_read_only
+    Condition, has_focus, is_read_only
 )
-from prompt_toolkit.filters.app import in_paste_mode, vi_selection_mode, vi_replace_single_mode, vi_replace_mode
+from prompt_toolkit.filters.app import (
+    in_paste_mode,
+    is_multiline,
+    vi_insert_mode,
+    vi_navigation_mode,
+    vi_replace_mode,
+    vi_replace_single_mode,
+    vi_selection_mode,
+)
 from prompt_toolkit.selection import PasteMode, SelectionType
 
 from .document import Document
@@ -448,6 +456,14 @@ def create_key_bindings(editor):
                     buffer.cursor_position = cursor_position - 1
                     break
 
+    @kb.add("enter", filter=in_insert_mode & is_multiline)
+    def _newline(event: E) -> None:
+        """
+        Newline (in case of multiline input.
+        """
+        copy_margin = event.current_buffer.autoindent and not in_paste_mode()
+        event.current_buffer.newline(copy_margin=copy_margin)
+
     @kb.add("O", filter=vi_navigation_mode & ~is_read_only)
     def _open_above(event: E) -> None:
         """
@@ -455,7 +471,8 @@ def create_key_bindings(editor):
         """
         editor.start_edit_command()
 
-        event.current_buffer.insert_line_above(copy_margin=not in_paste_mode())
+        copy_margin = event.current_buffer.autoindent and not in_paste_mode()
+        event.current_buffer.insert_line_above(copy_margin=copy_margin)
         event.app.vi_state.input_mode = InputMode.INSERT
 
     @kb.add("o", filter=vi_navigation_mode & ~is_read_only)
@@ -465,7 +482,8 @@ def create_key_bindings(editor):
         """
         editor.start_edit_command()
 
-        event.current_buffer.insert_line_below(copy_margin=not in_paste_mode())
+        copy_margin = event.current_buffer.autoindent and not in_paste_mode()
+        event.current_buffer.insert_line_below(copy_margin=copy_margin)
         event.app.vi_state.input_mode = InputMode.INSERT
 
     @kb.add("~", filter=vi_navigation_mode)
