@@ -554,6 +554,19 @@ def filetype(editor, value):
         window = editor.window_arrangement.active_pt_window
         window.content.lexer = DocumentLexer(editor.current_editor_buffer)
 
+@set_cmd('autoindent')
+@set_cmd('ai')
+def autoindent(editor):
+    """ Enable autoindent. """
+    editor.current_editor_buffer.buffer.autoindent = True
+
+
+@set_cmd('noautoindent')
+@set_cmd('noai')
+def noautoindent(editor):
+    """ Disable tab expension. """
+    editor.current_editor_buffer.buffer.autoindent = False
+
 
 @set_cmd('expandtab')
 @set_cmd('et')

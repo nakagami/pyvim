@@ -59,6 +59,7 @@ class Editor(object):
         self.paste_mode = False
         self.show_ruler = True
         self.show_wildmenu = True
+        self.autoindent = True  # Autoindent
         self.expand_tab = True  # Insect spaces instead of tab characters.
         self.tabstop = 4  # Number of spaces that a tab character represents.
         self.shiftwidth = 4  # Number of spaces at indent/unindent
@@ -271,6 +272,7 @@ class Editor(object):
             "paste": self.paste_mode,
             "ruler": self.show_ruler,
             "wildmenu": self.show_wildmenu,
+            "autoindent": self.autoindent,
             "expandtab": self.expand_tab,
             "tabstop": self.tabstop,
             "shiftwidth": self.shiftwidth,
