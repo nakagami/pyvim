@@ -449,6 +449,7 @@ class WindowArrangement(object):
 
         if self.editor.on_open_buffer:
             self.editor.on_open_buffer(location, eb.buffer)
+        # TODO: issue #42
         if show_in_current_window:
             self.show_editor_buffer(eb)
 
