@@ -554,6 +554,7 @@ def filetype(editor, value):
         window = editor.window_arrangement.active_pt_window
         window.content.lexer = DocumentLexer(editor.current_editor_buffer)
 
+
 @set_cmd('autoindent')
 @set_cmd('ai')
 def autoindent(editor):
