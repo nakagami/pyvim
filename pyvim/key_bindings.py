@@ -461,7 +461,8 @@ def create_key_bindings(editor):
         """
         Newline (in case of multiline input.
         """
-        event.current_buffer.newline(copy_margin=not in_paste_mode())
+        copy_margin = event.current_buffer.autoindent and not in_paste_mode()
+        event.current_buffer.newline(copy_margin=copy_margin)
 
     @kb.add("O", filter=vi_navigation_mode & ~is_read_only)
     def _open_above(event: E) -> None:
@@ -470,7 +471,8 @@ def create_key_bindings(editor):
         """
         editor.start_edit_command()
 
-        event.current_buffer.insert_line_above(copy_margin=not in_paste_mode())
+        copy_margin = event.current_buffer.autoindent and not in_paste_mode()
+        event.current_buffer.insert_line_above(copy_margin=copy_margin)
         event.app.vi_state.input_mode = InputMode.INSERT
 
     @kb.add("o", filter=vi_navigation_mode & ~is_read_only)
@@ -480,7 +482,8 @@ def create_key_bindings(editor):
         """
         editor.start_edit_command()
 
-        event.current_buffer.insert_line_below(copy_margin=not in_paste_mode())
+        copy_margin = event.current_buffer.autoindent and not in_paste_mode()
+        event.current_buffer.insert_line_below(copy_margin=copy_margin)
         event.app.vi_state.input_mode = InputMode.INSERT
 
     @kb.add("~", filter=vi_navigation_mode)
