@@ -6,6 +6,14 @@ import pyvim
 with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as f:
     long_description = f.read()
 
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'License :: OSI Approved :: BSD License',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Topic :: Text Editors',
+]
 
 setup(
     name='pyvim',
@@ -15,6 +23,7 @@ setup(
     version=pyvim.__version__,
     license='BSD License',
     url='https://github.com/nakagami/pyvim',
+    classifiers=classifiers,
     description='Pure Python Vi Implementation',
     long_description=long_description,
     packages=find_packages('.'),
