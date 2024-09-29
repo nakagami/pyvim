@@ -723,6 +723,8 @@ def create_key_bindings(editor):
                 end = eol
         else:
             end = document.find_next_word_ending(include_current_position=True, count=event.arg)
+            if not end:
+                end = document.get_end_of_line_position()
 
         # dw remove word and trailing spaces
         if event.app.vi_state.operator_event.key_sequence[0].key == 'd':
