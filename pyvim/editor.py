@@ -333,8 +333,10 @@ class Editor(object):
     def start_edit_command(self, event=None):
         if event:
             self._last_edit_command = event.key_sequence[:]
+            self._last_edit_command_arg = event.arg
         else:
             self._last_edit_command = []
+            self._last_edit_command_arg = 1
         self.application.current_buffer.save_to_undo_stack()
         self._in_edit_command = True
         logger.debug(f"start_edit_command():{self.application.vi_state.input_mode}:{event}")
@@ -380,5 +382,8 @@ class Editor(object):
 
     def replay_edit_command(self):
         logger.debug("replay_edit_command")
-        logger.debug(self._last_edit_command)
+        if self._last_edit_command_arg != 1:
+            self.application.key_processor.feed_multiple(
+                [KeyPress(c, data=c) for c in str(self._last_edit_command_arg)]
+            )
         self.application.key_processor.feed_multiple(self.last_edit_command())
