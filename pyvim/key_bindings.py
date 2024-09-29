@@ -5,7 +5,7 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.vi_state import CharacterFind, InputMode
 from prompt_toolkit.key_binding.bindings import vi
 from prompt_toolkit.key_binding.bindings.vi import (
-    create_text_object_decorator, TextObjectType, TextObject,
+    TextObjectType, TextObject,
     Callable, _OF, Filter, Always, Keys, vi_waiting_for_text_object_mode,
 )
 from prompt_toolkit.key_binding.key_processor import KeyPressEvent as E
@@ -24,6 +24,7 @@ from prompt_toolkit.filters.app import (
 )
 from prompt_toolkit.selection import PasteMode, SelectionType
 
+from .vi import create_text_object_decorator
 from .document import Document
 from .commands.commands import write_and_quit, quit
 
