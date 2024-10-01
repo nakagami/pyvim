@@ -349,6 +349,9 @@ class Editor(object):
             self._last_edit_command.append(key_event)
             logger.debug(f"append_edit_command():{self.application.vi_state.input_mode}:{key_event}")
             logger.debug(self._last_edit_command)
+            # 'dw' finish edit command. If there is another suitable line, I would like to move it.
+            if [k.data for k in self._last_edit_command] == ["d", "w"]:
+                self.finish_edit_command()
 
     def append_edit_completion(self, start, text):
         if self._in_edit_command:
