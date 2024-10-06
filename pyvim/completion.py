@@ -27,7 +27,7 @@ class DocumentCompleter(Completer):
         editor = self._editor_ref()
         location = self._editor_buffer_ref().location or '.txt'
 
-        if location.endswith('.py') and editor.enable_jedi and editor.application.vi_state.input_mode==InputMode.INSERT:
+        if location.endswith('.py') and editor.enable_jedi and editor.application.vi_state.input_mode == InputMode.INSERT:
             completer = PythonCompleter(location)
             return completer.get_completions(document, complete_event)
 
