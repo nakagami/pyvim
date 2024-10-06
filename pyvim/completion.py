@@ -2,6 +2,7 @@ import weakref
 import jedi
 
 from prompt_toolkit.completion import Completer, Completion
+from prompt_toolkit.key_binding.vi_state import InputMode
 
 from .utils import getLogger
 logger = getLogger()
@@ -26,9 +27,8 @@ class DocumentCompleter(Completer):
         editor = self._editor_ref()
         location = self._editor_buffer_ref().location or '.txt'
 
-        if location.endswith('.py') and editor.enable_jedi:
+        if location.endswith('.py') and editor.enable_jedi and editor.application.vi_state.input_mode==InputMode.INSERT:
             completer = PythonCompleter(location)
-            logger.debug(f"DocumentCompleter::get_completions():{completer=}")
             return completer.get_completions(document, complete_event)
 
         return []
