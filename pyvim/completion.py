@@ -82,6 +82,30 @@ class PythonCompleter(Completer):
                 pass
             else:
                 logger.debug(f"screipt.complete() {len(completions)=}")
+                completions = sorted(
+                    completions,
+                    key=lambda jc: (
+                        # Private at the end.
+                        jc.name.startswith("_"),
+                        # Then sort by name.
+                        jc.name_with_symbols.lower(),
+                    ),
+                )
                 for c in completions:
-                    yield Completion(c.name_with_symbols, len(c.complete) - len(c.name_with_symbols),
-                                     display=c.name_with_symbols)
+                    if c.type == "function":
+                        suffix = "()"
+                    else:
+                        suffix = ""
+
+                    if c.type in ("param", "instance", "path"):
+                        continue
+
+                    # No completion until a key input.
+                    if len(c.complete) - len(c.name_with_symbols) == 0:
+                        continue
+
+                    yield Completion(
+                        c.name_with_symbols,
+                        len(c.complete) - len(c.name_with_symbols),
+                        display=c.name_with_symbols + suffix,
+                    )
