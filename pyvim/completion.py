@@ -3,6 +3,9 @@ import jedi
 
 from prompt_toolkit.completion import Completer, Completion
 
+from .utils import getLogger
+logger = getLogger()
+
 __all__ = (
     'DocumentCompleter',
 )
@@ -25,6 +28,7 @@ class DocumentCompleter(Completer):
 
         if location.endswith('.py') and editor.enable_jedi:
             completer = PythonCompleter(location)
+            logger.debug(f"DocumentCompleter::get_completions():{completer=}")
             return completer.get_completions(document, complete_event)
 
         return []

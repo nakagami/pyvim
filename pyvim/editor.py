@@ -384,9 +384,10 @@ class Editor(object):
         return key_event_list
 
     def replay_edit_command(self):
-        logger.debug("replay_edit_command")
+        logger.debug("replay_edit_command() start")
         if self._last_edit_command_arg != 1:
             self.application.key_processor.feed_multiple(
                 [KeyPress(c, data=c) for c in str(self._last_edit_command_arg)]
             )
         self.application.key_processor.feed_multiple(self.last_edit_command())
+        logger.debug("replay_edit_command() end")
