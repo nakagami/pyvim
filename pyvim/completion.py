@@ -52,6 +52,7 @@ class PythonCompleter(Completer):
             return None
 
         if script:
+            logger.debug(f'get_completions() line="{document.lines[document.cursor_position_row]}" col={document.cursor_position_col}')
             try:
                 completions = script.complete(
                     column=document.cursor_position_col,
@@ -80,6 +81,7 @@ class PythonCompleter(Completer):
                 # https://github.com/jonathanslenders/ptpython/issues/71
                 pass
             else:
+                logger.debug(f"screipt.complete() {len(completions)=}")
                 for c in completions:
                     yield Completion(c.name_with_symbols, len(c.complete) - len(c.name_with_symbols),
                                      display=c.name_with_symbols)
