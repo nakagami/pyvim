@@ -29,5 +29,5 @@ jobs:
         python -m pip install -e .
     - name: Test
       run: |
-        flake8 --ignore=E501
+        flake8 --ignore=E501,E203,W503
         py.test
