@@ -461,6 +461,13 @@ def create_key_bindings(editor):
                     buffer.cursor_position = cursor_position - 1
                     break
 
+    @kb.add("c-e", filter=vi_insert_mode)
+    def _cancel_completion(event: E) -> None:
+        """
+        Cancel completion. Go back to originally typed text.
+        """
+        event.current_buffer.cancel_completion()
+
     @kb.add("enter", filter=in_insert_mode & is_multiline)
     def _newline(event: E) -> None:
         """
