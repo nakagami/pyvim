@@ -3,9 +3,7 @@ from prompt_toolkit.document import Document
 from .utils import re_finditer
 
 
-__all__ = (
-    'Document',
-)
+__all__ = ("Document",)
 
 
 def _document_find(
@@ -25,7 +23,9 @@ def _document_find(
     assert isinstance(ignore_case, bool)
 
     if in_current_line:
-        return self.find_orig(sub, in_current_line, include_current_position, ignore_case, count)
+        return self.find_orig(
+            sub, in_current_line, include_current_position, ignore_case, count
+        )
 
     text = self.text_after_cursor
 

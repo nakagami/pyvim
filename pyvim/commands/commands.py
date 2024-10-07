@@ -9,8 +9,8 @@ from ..lexer import DocumentLexer
 
 
 __all__ = (
-    'has_command_handler',
-    'call_command_handler',
+    "has_command_handler",
+    "call_command_handler",
 )
 
 
@@ -20,8 +20,8 @@ SET_COMMANDS = {}  # Mapping ':set'-commands to their handler.
 SET_COMMANDS_TAKING_VALUE = set()
 
 
-_NO_WRITE_SINCE_LAST_CHANGE_TEXT = 'No write since last change (add ! to override)'
-_NO_FILE_NAME = 'No file name'
+_NO_WRITE_SINCE_LAST_CHANGE_TEXT = "No write since last change (add ! to override)"
+_NO_FILE_NAME = "No file name"
 
 
 def has_command_handler(command):
@@ -45,13 +45,16 @@ def get_commands_taking_locations():
 
 # Decorators
 
+
 def _cmd(name):
     """
     Base decorator for registering commands in this namespace.
     """
+
     def decorator(func):
         COMMANDS_TO_HANDLERS[name] = func
         return func
+
     return decorator
 
 
@@ -65,16 +68,18 @@ def location_cmd(name, accepts_force=False):
     def decorator(func):
         @_cmd(name)
         def command_wrapper(editor, variables):
-            location = variables.get('location')
-            force = bool(variables['force'])
+            location = variables.get("location")
+            force = bool(variables["force"])
 
             if force and not accepts_force:
-                editor.show_message('No ! allowed')
+                editor.show_message("No ! allowed")
             elif accepts_force:
                 func(editor, location, force=force)
             else:
                 func(editor, location)
+
         return func
+
     return decorator
 
 
@@ -82,18 +87,21 @@ def cmd(name, accepts_force=False):
     """
     Decarator that registers a command that doesn't take any parameters.
     """
+
     def decorator(func):
         @_cmd(name)
         def command_wrapper(editor, variables):
-            force = bool(variables['force'])
+            force = bool(variables["force"])
 
             if force and not accepts_force:
-                editor.show_message('No ! allowed')
+                editor.show_message("No ! allowed")
             elif accepts_force:
                 func(editor, force=force)
             else:
                 func(editor)
+
         return func
+
     return decorator
 
 
@@ -101,23 +109,26 @@ def set_cmd(name, accepts_value=False):
     """
     Docorator that registers a ':set'-command.
     """
+
     def decorator(func):
         SET_COMMANDS[name] = func
         if accepts_value:
             SET_COMMANDS_TAKING_VALUE.add(name)
         return func
+
     return decorator
 
 
 # Actual command implementations
 
-@_cmd('set')
+
+@_cmd("set")
 def set_command_execute(editor, variables):
     """
     Execute a ':set' command.
     """
-    option = variables.get('set_option')
-    value = variables.get('set_value')
+    option = variables.get("set_option")
+    value = variables.get("set_value")
 
     if option in SET_COMMANDS:
         # Call the correct handler.
@@ -126,10 +137,10 @@ def set_command_execute(editor, variables):
         else:
             SET_COMMANDS[option](editor)
     else:
-        editor.show_message('Unknown option: %s' % option)
+        editor.show_message("Unknown option: %s" % option)
 
 
-@cmd('bn', accepts_force=True)
+@cmd("bn", accepts_force=True)
 def _bn(editor, force=False):
     """
     Go to next buffer.
@@ -142,7 +153,7 @@ def _bn(editor, force=False):
         editor.window_arrangement.go_to_next_buffer()
 
 
-@cmd('bp', accepts_force=True)
+@cmd("bp", accepts_force=True)
 def _bp(editor, force=False):
     """
     Go to previous buffer.
@@ -155,7 +166,7 @@ def _bp(editor, force=False):
         editor.window_arrangement.go_to_previous_buffer()
 
 
-@cmd('only')
+@cmd("only")
 def only(editor):
     """
     Keep only the current window.
@@ -163,7 +174,7 @@ def only(editor):
     editor.window_arrangement.keep_only_current_window()
 
 
-@cmd('hide')
+@cmd("hide")
 def hide(editor):
     """
     Hide the current window.
@@ -171,8 +182,8 @@ def hide(editor):
     editor.window_arrangement.close_window()
 
 
-@location_cmd('sp')
-@location_cmd('split')
+@location_cmd("sp")
+@location_cmd("split")
 def horizontal_split(editor, location):
     """
     Split window horizontally.
@@ -180,8 +191,8 @@ def horizontal_split(editor, location):
     editor.window_arrangement.hsplit(location or None)
 
 
-@location_cmd('vsp')
-@location_cmd('vsplit')
+@location_cmd("vsp")
+@location_cmd("vsplit")
 def vertical_split(editor, location):
     """
     Split window vertically.
@@ -189,7 +200,7 @@ def vertical_split(editor, location):
     editor.window_arrangement.vsplit(location or None)
 
 
-@cmd('new')
+@cmd("new")
 def new_buffer(editor):
     """
     Create new buffer.
@@ -197,7 +208,7 @@ def new_buffer(editor):
     editor.window_arrangement.hsplit(new=True)
 
 
-@cmd('vnew')
+@cmd("vnew")
 def new_vertical_buffer(editor):
     """
     Create new buffer, splitting vertically.
@@ -205,7 +216,7 @@ def new_vertical_buffer(editor):
     editor.window_arrangement.vsplit(new=True)
 
 
-@location_cmd('badd')
+@location_cmd("badd")
 def buffer_add(editor, location):
     """
     Add a new buffer.
@@ -213,34 +224,43 @@ def buffer_add(editor, location):
     editor.window_arrangement.open_buffer(location)
 
 
-@cmd('files')
-@cmd('ls')
-@cmd('buffers')
+@cmd("files")
+@cmd("ls")
+@cmd("buffers")
 def buffer_list(editor):
     """
     List all buffers.
     """
+
     def handler():
         wa = editor.window_arrangement
         for info in wa.list_open_buffers():
-            char = '%' if info.is_active else ''
+            char = "%" if info.is_active else ""
             eb = info.editor_buffer
-            print(' %3i %-2s %-20s  line %i' % (
-                  info.index, char, eb.location, (eb.buffer.document.cursor_position_row + 1)))
-        input('\nPress ENTER to continue...')
+            print(
+                " %3i %-2s %-20s  line %i"
+                % (
+                    info.index,
+                    char,
+                    eb.location,
+                    (eb.buffer.document.cursor_position_row + 1),
+                )
+            )
+        input("\nPress ENTER to continue...")
+
     run_in_terminal(handler)
 
 
-@_cmd('b')
-@_cmd('buffer')
+@_cmd("b")
+@_cmd("buffer")
 def _buffer(editor, variables, force=False):
     """
     Go to one of the open buffers.
     """
     eb = editor.window_arrangement.active_editor_buffer
-    force = bool(variables['force'])
+    force = bool(variables["force"])
 
-    buffer_name = variables.get('buffer_name')
+    buffer_name = variables.get("buffer_name")
     if buffer_name:
         if not force and eb.has_unsaved_changes:
             editor.show_message(_NO_WRITE_SINCE_LAST_CHANGE_TEXT)
@@ -248,8 +268,8 @@ def _buffer(editor, variables, force=False):
             editor.window_arrangement.go_to_buffer(buffer_name)
 
 
-@cmd('bw', accepts_force=True)
-@cmd('bd', accepts_force=True)
+@cmd("bw", accepts_force=True)
+@cmd("bd", accepts_force=True)
 def buffer_wipe(editor, force=False):
     """
     Wipe buffer.
@@ -261,10 +281,10 @@ def buffer_wipe(editor, force=False):
         editor.window_arrangement.close_buffer()
 
 
-@location_cmd('o', accepts_force=True)
-@location_cmd('open', accepts_force=True)
-@location_cmd('e', accepts_force=True)
-@location_cmd('edit', accepts_force=True)
+@location_cmd("o", accepts_force=True)
+@location_cmd("open", accepts_force=True)
+@location_cmd("e", accepts_force=True)
+@location_cmd("edit", accepts_force=True)
 def buffer_edit(editor, location, force=False):
     """
     Edit new buffer.
@@ -282,7 +302,7 @@ def buffer_edit(editor, location, force=False):
     else:
         if len(editor.location_history) > 1:
             location = location.replace("#", editor.location_history[-2])
-        editor.file_explorer = ''
+        editor.file_explorer = ""
         editor.window_arrangement.open_buffer(location, show_in_current_window=True)
 
 
@@ -296,41 +316,48 @@ def _open_from_nth_location(editor, n: int):
     if n < 0 or len(editor.locations) <= n:
         editor.show_message("No more file")
         return
-    editor.file_explorer = ''
-    editor.window_arrangement.open_buffer(editor.locations[n], show_in_current_window=True)
+    editor.file_explorer = ""
+    editor.window_arrangement.open_buffer(
+        editor.locations[n], show_in_current_window=True
+    )
     editor.current_location_index = n
 
 
-@location_cmd('n', accepts_force=True)
-@location_cmd('next', accepts_force=True)
+@location_cmd("n", accepts_force=True)
+@location_cmd("next", accepts_force=True)
 def next_file(editor, location, force=False):
     _open_from_nth_location(editor, editor.current_location_index + 1)
 
 
-@location_cmd('p', accepts_force=True)
-@location_cmd('previous', accepts_force=True)
+@location_cmd("p", accepts_force=True)
+@location_cmd("previous", accepts_force=True)
 def previous_file(editor, location, force=False):
     _open_from_nth_location(editor, editor.current_location_index - 1)
 
 
-@cmd('q', accepts_force=True)
-@cmd('quit', accepts_force=True)
+@cmd("q", accepts_force=True)
+@cmd("quit", accepts_force=True)
 def quit(editor, force=False):
     """
     Quit.
     """
     eb = editor.window_arrangement.active_editor_buffer
-    eb_is_open_in_another_window = len(list(editor.window_arrangement.get_windows_for_buffer(eb))) > 1
+    eb_is_open_in_another_window = (
+        len(list(editor.window_arrangement.get_windows_for_buffer(eb))) > 1
+    )
     if not force and eb.has_unsaved_changes and not eb_is_open_in_another_window:
         editor.show_message(_NO_WRITE_SINCE_LAST_CHANGE_TEXT)
-    elif editor.window_arrangement.active_tab.window_count() == 1 and len(editor.window_arrangement.tab_pages) == 1:
+    elif (
+        editor.window_arrangement.active_tab.window_count() == 1
+        and len(editor.window_arrangement.tab_pages) == 1
+    ):
         editor.application.exit()
     else:
         editor.window_arrangement.close_window()
 
 
-@cmd('qa', accepts_force=True)
-@cmd('qall', accepts_force=True)
+@cmd("qa", accepts_force=True)
+@cmd("qall", accepts_force=True)
 def quit_all(editor, force=False):
     """
     Quit all.
@@ -342,14 +369,14 @@ def quit_all(editor, force=False):
         editor.application.exit()
 
 
-@location_cmd('w', accepts_force=True)
-@location_cmd('write', accepts_force=True)
+@location_cmd("w", accepts_force=True)
+@location_cmd("write", accepts_force=True)
 def write(editor, location, force=False):
     """
     Write file.
     """
     if location and not force and os.path.exists(location):
-        editor.show_message('File exists (add ! to overriwe)')
+        editor.show_message("File exists (add ! to overriwe)")
     else:
         eb = editor.window_arrangement.active_editor_buffer
         if location is None and eb.location is None:
@@ -358,7 +385,7 @@ def write(editor, location, force=False):
             eb.write(location, force)
 
 
-@location_cmd('wq', accepts_force=True)
+@location_cmd("wq", accepts_force=True)
 def write_and_quit(editor, location, force=False):
     """
     Write file and quit.
@@ -367,7 +394,7 @@ def write_and_quit(editor, location, force=False):
     quit(editor)
 
 
-@cmd('cq')
+@cmd("cq")
 def quit_nonzero(editor):
     """
     Quit with non zero exit status.
@@ -378,7 +405,7 @@ def quit_nonzero(editor):
     editor.application.exit()
 
 
-@cmd('wa')
+@cmd("wa")
 def write_all(editor):
     """
     Write all changed buffers
@@ -391,7 +418,7 @@ def write_all(editor):
             eb.write()
 
 
-@location_cmd('wqa', accepts_force=True)
+@location_cmd("wqa", accepts_force=True)
 def write_and_quit_all(editor, location, force=False):
     """
     Write all changed buffers and quit all.
@@ -400,8 +427,8 @@ def write_and_quit_all(editor, location, force=False):
     quit_all(editor)
 
 
-@cmd('h')
-@cmd('help')
+@cmd("h")
+@cmd("help")
 def help(editor):
     """
     Show help.
@@ -409,9 +436,9 @@ def help(editor):
     editor.show_help()
 
 
-@location_cmd('tabe')
-@location_cmd('tabedit')
-@location_cmd('tabnew')
+@location_cmd("tabe")
+@location_cmd("tabedit")
+@location_cmd("tabnew")
 def tab_new(editor, location):
     """
     Create new tab page.
@@ -419,8 +446,8 @@ def tab_new(editor, location):
     editor.window_arrangement.create_tab(location or None)
 
 
-@cmd('tabclose')
-@cmd('tabc')
+@cmd("tabclose")
+@cmd("tabc")
 def tab_close(editor):
     """
     Close tab page.
@@ -428,8 +455,8 @@ def tab_close(editor):
     editor.window_arrangement.close_tab()
 
 
-@cmd('tabnext')
-@cmd('tabn')
+@cmd("tabnext")
+@cmd("tabn")
 def tab_next(editor):
     """
     Go to next tab.
@@ -437,8 +464,8 @@ def tab_next(editor):
     editor.window_arrangement.go_to_next_tab()
 
 
-@cmd('tabprevious')
-@cmd('tabp')
+@cmd("tabprevious")
+@cmd("tabp")
 def tab_previous(editor):
     """
     Go to previous tab.
@@ -446,376 +473,377 @@ def tab_previous(editor):
     editor.window_arrangement.go_to_previous_tab()
 
 
-@cmd('pwd')
+@cmd("pwd")
 def pwd(editor):
-    " Print working directory. "
+    "Print working directory."
     directory = os.getcwd()
-    editor.show_message('{}'.format(directory))
+    editor.show_message("{}".format(directory))
 
 
-@location_cmd('cd', accepts_force=False)
+@location_cmd("cd", accepts_force=False)
 def cd(editor, location):
-    " Change working directory. "
+    "Change working directory."
     try:
         os.chdir(os.path.expanduser(location))
     except OSError as e:
-        editor.show_message('{}'.format(e))
+        editor.show_message("{}".format(e))
 
 
-@_cmd('colorscheme')
-@_cmd('colo')
+@_cmd("colorscheme")
+@_cmd("colo")
 def color_scheme(editor, variables):
     """
     Go to one of the open buffers.
     """
-    colorscheme = variables.get('colorscheme')
+    colorscheme = variables.get("colorscheme")
     if colorscheme:
         editor.use_colorscheme(colorscheme)
 
 
-@set_cmd('nu')
-@set_cmd('number')
+@set_cmd("nu")
+@set_cmd("number")
 def line_numbers_show(editor):
-    """ Show line numbers.  """
+    """Show line numbers."""
     editor.show_line_numbers = True
 
 
-@set_cmd('nonu')
-@set_cmd('nonumber')
+@set_cmd("nonu")
+@set_cmd("nonumber")
 def line_numbers_hide(editor):
-    """ Hide line numbers. """
+    """Hide line numbers."""
     editor.show_line_numbers = False
 
 
-@set_cmd('hlsearch')
-@set_cmd('hls')
+@set_cmd("hlsearch")
+@set_cmd("hls")
 def search_highlight(editor):
-    """ Highlight search matches. """
+    """Highlight search matches."""
     editor.highlight_search = True
 
 
-@set_cmd('nohlsearch')
-@set_cmd('nohls')
+@set_cmd("nohlsearch")
+@set_cmd("nohls")
 def search_no_highlight(editor):
-    """ Don't highlight search matches. """
+    """Don't highlight search matches."""
     editor.highlight_search = False
 
 
-@set_cmd('paste')
+@set_cmd("paste")
 def paste_mode(editor):
-    """ Enter paste mode. """
+    """Enter paste mode."""
     editor.paste_mode = True
 
 
-@set_cmd('nopaste')
+@set_cmd("nopaste")
 def paste_mode_leave(editor):
-    """ Leave paste mode. """
+    """Leave paste mode."""
     editor.paste_mode = False
 
 
-@set_cmd('ruler')
-@set_cmd('ru')
+@set_cmd("ruler")
+@set_cmd("ru")
 def ruler_show(editor):
-    """ Show ruler. """
+    """Show ruler."""
     editor.show_ruler = True
 
 
-@set_cmd('noruler')
-@set_cmd('noru')
+@set_cmd("noruler")
+@set_cmd("noru")
 def ruler_hide(editor):
-    """ Hide ruler. """
+    """Hide ruler."""
     editor.show_ruler = False
 
 
-@set_cmd('wildmenu')
-@set_cmd('wmnu')
+@set_cmd("wildmenu")
+@set_cmd("wmnu")
 def wild_menu_show(editor):
-    """ Show wildmenu. """
+    """Show wildmenu."""
     editor.show_wildmenu = True
 
 
-@set_cmd('nowildmenu')
-@set_cmd('nowmnu')
+@set_cmd("nowildmenu")
+@set_cmd("nowmnu")
 def wild_menu_hide(editor):
-    """ Hide wildmenu. """
+    """Hide wildmenu."""
     editor.show_wildmenu = False
 
 
-@set_cmd('filetype', accepts_value=True)
-@set_cmd('ft', accepts_value=True)
+@set_cmd("filetype", accepts_value=True)
+@set_cmd("ft", accepts_value=True)
 def filetype(editor, value):
     """
     Set filetype.
     """
     if value is None:
-        editor.show_message('filetype=%s' % editor.current_editor_buffer.buffer.filetype)
+        editor.show_message(
+            "filetype=%s" % editor.current_editor_buffer.buffer.filetype
+        )
     else:
         editor.current_editor_buffer.buffer.filetype = value
         window = editor.window_arrangement.active_pt_window
         window.content.lexer = DocumentLexer(editor.current_editor_buffer)
 
 
-@set_cmd('autoindent')
-@set_cmd('ai')
+@set_cmd("autoindent")
+@set_cmd("ai")
 def autoindent(editor):
-    """ Enable autoindent. """
+    """Enable autoindent."""
     editor.current_editor_buffer.buffer.autoindent = True
 
 
-@set_cmd('noautoindent')
-@set_cmd('noai')
+@set_cmd("noautoindent")
+@set_cmd("noai")
 def noautoindent(editor):
-    """ Disable tab expension. """
+    """Disable tab expension."""
     editor.current_editor_buffer.buffer.autoindent = False
 
 
-@set_cmd('expandtab')
-@set_cmd('et')
+@set_cmd("expandtab")
+@set_cmd("et")
 def tab_expand(editor):
-    """ Enable tab expension. """
+    """Enable tab expension."""
     editor.current_editor_buffer.buffer.expand_tab = True
 
 
-@set_cmd('noexpandtab')
-@set_cmd('noet')
+@set_cmd("noexpandtab")
+@set_cmd("noet")
 def tab_no_expand(editor):
-    """ Disable tab expension. """
+    """Disable tab expension."""
     editor.current_editor_buffer.buffer.expand_tab = False
 
 
-@set_cmd('tabstop', accepts_value=True)
-@set_cmd('ts', accepts_value=True)
+@set_cmd("tabstop", accepts_value=True)
+@set_cmd("ts", accepts_value=True)
 def tab_stop(editor, value):
     """
     Set tabstop.
     """
     if value is None:
-        editor.show_message('tabstop=%i' % editor.tabstop)
+        editor.show_message("tabstop=%i" % editor.tabstop)
     else:
         try:
             value = int(value)
             if value > 0:
                 editor.current_editor_buffer.buffer.tabstop = value
             else:
-                editor.show_message('Argument must be positive')
+                editor.show_message("Argument must be positive")
         except ValueError:
-            editor.show_message('Number required after =')
+            editor.show_message("Number required after =")
 
 
-@set_cmd('shiftwidth', accepts_value=True)
-@set_cmd('sw', accepts_value=True)
+@set_cmd("shiftwidth", accepts_value=True)
+@set_cmd("sw", accepts_value=True)
 def shift_width(editor, value):
     """
     Set shiftwidth.
     """
     if value is None:
-        editor.show_message('shiftwidth=%i' % editor.shiftwidth)
+        editor.show_message("shiftwidth=%i" % editor.shiftwidth)
     else:
         try:
             value = int(value)
             if value > 0:
                 editor.current_editor_buffer.buffer.shiftwidth = value
             else:
-                editor.show_message('Argument must be positive')
+                editor.show_message("Argument must be positive")
         except ValueError:
-            editor.show_message('Number required after =')
+            editor.show_message("Number required after =")
 
 
-@set_cmd('scrolloff', accepts_value=True)
-@set_cmd('so', accepts_value=True)
+@set_cmd("scrolloff", accepts_value=True)
+@set_cmd("so", accepts_value=True)
 def set_scroll_offset(editor, value):
     """
     Set scroll offset.
     """
     if value is None:
-        editor.show_message('scrolloff=%i' % editor.scroll_offset)
+        editor.show_message("scrolloff=%i" % editor.scroll_offset)
     else:
         try:
             value = int(value)
             if value >= 0:
                 editor.scroll_offset = value
             else:
-                editor.show_message('Argument must be positive')
+                editor.show_message("Argument must be positive")
         except ValueError:
-            editor.show_message('Number required after =')
+            editor.show_message("Number required after =")
 
 
-@set_cmd('incsearch')
-@set_cmd('is')
+@set_cmd("incsearch")
+@set_cmd("is")
 def incsearch_enable(editor):
-    """ Enable incsearch. """
+    """Enable incsearch."""
     editor.incsearch = True
 
 
-@set_cmd('noincsearch')
-@set_cmd('nois')
+@set_cmd("noincsearch")
+@set_cmd("nois")
 def incsearch_disable(editor):
-    """ Disable incsearch. """
+    """Disable incsearch."""
     editor.incsearch = False
 
 
-@set_cmd('ignorecase')
-@set_cmd('ic')
+@set_cmd("ignorecase")
+@set_cmd("ic")
 def search_ignorecase(editor):
-    """ Enable case insensitive searching. """
+    """Enable case insensitive searching."""
     editor.ignore_case = True
 
 
-@set_cmd('noignorecase')
-@set_cmd('noic')
+@set_cmd("noignorecase")
+@set_cmd("noic")
 def searc_no_ignorecase(editor):
-    """ Disable case insensitive searching. """
+    """Disable case insensitive searching."""
     editor.ignore_case = False
 
 
-@set_cmd('list')
+@set_cmd("list")
 def unprintable_show(editor):
-    """ Display unprintable characters. """
+    """Display unprintable characters."""
     editor.display_unprintable_characters = True
 
 
-@set_cmd('nolist')
+@set_cmd("nolist")
 def unprintable_hide(editor):
-    """ Hide unprintable characters. """
+    """Hide unprintable characters."""
     editor.display_unprintable_characters = False
 
 
-@set_cmd('jedi')
+@set_cmd("jedi")
 def jedi_enable(editor):
-    """ Enable Jedi autocompletion for Python files. """
+    """Enable Jedi autocompletion for Python files."""
     editor.enable_jedi = True
 
 
-@set_cmd('nojedi')
+@set_cmd("nojedi")
 def jedi_disable(editor):
-    """ Disable Jedi autocompletion. """
+    """Disable Jedi autocompletion."""
     editor.enable_jedi = False
 
 
-@set_cmd('wrapscan')
-@set_cmd('ws')
+@set_cmd("wrapscan")
+@set_cmd("ws")
 def wrapscan_enable(editor):
-    """ Enable search wrapscan. """
+    """Enable search wrapscan."""
     editor.enable_wrapscan = True
 
 
-@set_cmd('nowrapscan')
-@set_cmd('nows')
+@set_cmd("nowrapscan")
+@set_cmd("nows")
 def wrapscan_disable(editor):
-    """ Disable search wrapscan. """
+    """Disable search wrapscan."""
     editor.enable_wrapscan = False
 
 
-@set_cmd('relativenumber')
-@set_cmd('rnu')
+@set_cmd("relativenumber")
+@set_cmd("rnu")
 def relative_number(editor):
-    " Enable relative number "
+    "Enable relative number"
     editor.relative_number = True
 
 
-@set_cmd('norelativenumber')
-@set_cmd('nornu')
+@set_cmd("norelativenumber")
+@set_cmd("nornu")
 def no_relative_number(editor):
-    " Disable relative number "
+    "Disable relative number"
     editor.relative_number = False
 
 
-@set_cmd('wrap')
+@set_cmd("wrap")
 def enable_wrap(editor):
-    " Enable line wrapping. "
+    "Enable line wrapping."
     editor.wrap_lines = True
 
 
-@set_cmd('nowrap')
+@set_cmd("nowrap")
 def disable_wrap(editor):
-    " disable line wrapping. "
+    "disable line wrapping."
     editor.wrap_lines = False
 
 
-@set_cmd('breakindent')
-@set_cmd('bri')
+@set_cmd("breakindent")
+@set_cmd("bri")
 def enable_breakindent(editor):
-    " Enable the breakindent option. "
+    "Enable the breakindent option."
     editor.break_indent = True
 
 
-@set_cmd('nobreakindent')
-@set_cmd('nobri')
+@set_cmd("nobreakindent")
+@set_cmd("nobri")
 def disable_breakindent(editor):
-    " Enable the breakindent option. "
+    "Enable the breakindent option."
     editor.break_indent = False
 
 
-@set_cmd('mouse')
+@set_cmd("mouse")
 def enable_mouse(editor):
-    " Enable mouse . "
+    "Enable mouse ."
     editor.enable_mouse_support = True
 
 
-@set_cmd('nomouse')
+@set_cmd("nomouse")
 def disable_mouse(editor):
-    " Disable mouse. "
+    "Disable mouse."
     editor.enable_mouse_support = False
 
 
-@set_cmd('tildeop')
-@set_cmd('top')
+@set_cmd("tildeop")
+@set_cmd("top")
 def enable_tildeop(editor):
-    " Enable tilde operator. "
+    "Enable tilde operator."
     editor.application.vi_state.tilde_operator = True
 
 
-@set_cmd('notildeop')
-@set_cmd('notop')
+@set_cmd("notildeop")
+@set_cmd("notop")
 def disable_tildeop(editor):
-    " Disable tilde operator. "
+    "Disable tilde operator."
     editor.application.vi_state.tilde_operator = False
 
 
-@set_cmd('cursorline')
-@set_cmd('cul')
+@set_cmd("cursorline")
+@set_cmd("cul")
 def enable_cursorline(editor):
-    " Highlight the line that contains the cursor. "
+    "Highlight the line that contains the cursor."
     editor.cursorline = True
 
 
-@set_cmd('nocursorline')
-@set_cmd('nocul')
+@set_cmd("nocursorline")
+@set_cmd("nocul")
 def disable_cursorline(editor):
-    " No cursorline. "
+    "No cursorline."
     editor.cursorline = False
 
 
-@set_cmd('cursorcolumn')
-@set_cmd('cuc')
+@set_cmd("cursorcolumn")
+@set_cmd("cuc")
 def enable_cursorcolumn(editor):
-    " Highlight the column that contains the cursor. "
+    "Highlight the column that contains the cursor."
     editor.cursorcolumn = True
 
 
-@set_cmd('nocursorcolumn')
-@set_cmd('nocuc')
+@set_cmd("nocursorcolumn")
+@set_cmd("nocuc")
 def disable_cursorcolumn(editor):
-    " No cursorcolumn. "
+    "No cursorcolumn."
     editor.cursorcolumn = False
 
 
-@set_cmd('colorcolumn', accepts_value=True)
-@set_cmd('cc', accepts_value=True)
+@set_cmd("colorcolumn", accepts_value=True)
+@set_cmd("cc", accepts_value=True)
 def set_color_column(editor, value):
     try:
         if value:
-            numbers = [int(val) for val in value.split(',')]
+            numbers = [int(val) for val in value.split(",")]
         else:
             numbers = []
     except ValueError:
-        editor.show_message(
-            'Invalid value. Expecting comma separated list of integers')
+        editor.show_message("Invalid value. Expecting comma separated list of integers")
     else:
         editor.colorcolumn = numbers
 
 
-@set_cmd('all')
+@set_cmd("all")
 def set_all(editor):
     def handler():
         options = editor.get_current_buffer_options()
@@ -828,7 +856,8 @@ def set_all(editor):
                 s = f"  {k}={v}"
             option_strings.append(s)
         print("\n".join(option_strings))
-        input('\nPress ENTER to continue...')
+        input("\nPress ENTER to continue...")
+
     run_in_terminal(handler)
 
 
@@ -854,10 +883,11 @@ def _get_line_index(editor, cursor_position_row, range_start, range_end):
 
 
 def substitute(editor, range_start, range_end, search, replace, flags):
-    """ Substitute /search/ with /replace/ over a range of text """
+    """Substitute /search/ with /replace/ over a range of text"""
+
     def get_transform_callback(search, replace, flags):
         SUBSTITUTE_ALL, SUBSTITUTE_ONE = 0, 1
-        sub_count = SUBSTITUTE_ALL if 'g' in flags else SUBSTITUTE_ONE
+        sub_count = SUBSTITUTE_ALL if "g" in flags else SUBSTITUTE_ONE
         return lambda s: re.sub(search, replace, s, count=sub_count)
 
     search_state = editor.application.current_search_state
@@ -884,7 +914,9 @@ def substitute(editor, range_start, range_end, search, replace, flags):
         new_text,
         Document(new_text).translate_row_col_to_index(new_cursor_position_row, 0),
     )
-    buffer.cursor_position += buffer.document.get_start_of_line_position(after_whitespace=True)
+    buffer.cursor_position += buffer.document.get_start_of_line_position(
+        after_whitespace=True
+    )
     buffer._search(search_state, include_current_position=True)
 
     # update editor state
@@ -898,7 +930,7 @@ def yank(editor, range_start, range_end):
     start, end = _get_line_index(editor, cursor_position_row, range_start, range_end)
     lines = buffer.document.lines
 
-    yanked = "\n".join(lines[start: end])
+    yanked = "\n".join(lines[start:end])
     get_app().clipboard.set_data(ClipboardData(yanked, SelectionType.LINES))
 
 
@@ -909,8 +941,8 @@ def delete(editor, range_start, range_end):
 
     lines = buffer.document.lines
 
-    before = "\n".join(lines[: start])
-    deleted = "\n".join(lines[start: end])
+    before = "\n".join(lines[:start])
+    deleted = "\n".join(lines[start:end])
     after = "\n".join(lines[end:])
     get_app().clipboard.set_data(ClipboardData(deleted, SelectionType.LINES))
 

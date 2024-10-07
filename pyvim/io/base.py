@@ -1,8 +1,6 @@
 from abc import ABCMeta, abstractmethod
 
-__all__ = (
-    'EditorIO',
-)
+__all__ = ("EditorIO",)
 
 
 class EditorIO(metaclass=ABCMeta):
@@ -13,6 +11,7 @@ class EditorIO(metaclass=ABCMeta):
     read/write immediately from an FTP server. Or a GZIP backend for files
     ending with .gz.
     """
+
     @abstractmethod
     def can_open_location(cls, location):
         """
@@ -36,7 +35,7 @@ class EditorIO(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def write(self, location, data, encoding='utf-8'):
+    def write(self, location, data, encoding="utf-8"):
         """
         Write file to storage.
         Can raise IOError.

@@ -9,19 +9,19 @@ Usage::
 
     errors = report('location.py', Document('file content'))
 """
+
 import string
 import warnings
 import pyflakes.api
 
-__all__ = (
-    'report',
-)
+__all__ = ("report",)
 
 
 class ReporterError(object):
     """
     Error found by a reporter.
     """
+
     def __init__(self, lineno, start_column, end_column, formatted_text):
         self.lineno = lineno  # Zero based line number.
         self.start_column = start_column
@@ -38,13 +38,13 @@ def report(location, document):
     """
     assert isinstance(location, str)
 
-    if location.endswith('.py'):
+    if location.endswith(".py"):
         return report_pyflakes(document)
     else:
         return []
 
 
-WORD_CHARACTERS = string.ascii_letters + '0123456789_'
+WORD_CHARACTERS = string.ascii_letters + "0123456789_"
 
 
 def report_pyflakes(document):
@@ -54,27 +54,34 @@ def report_pyflakes(document):
     # Run pyflakes on input.
     reporter = _FlakesReporter()
     with warnings.catch_warnings():
-        warnings.simplefilter('ignore')
-        pyflakes.api.check(document.text, '', reporter=reporter)
+        warnings.simplefilter("ignore")
+        pyflakes.api.check(document.text, "", reporter=reporter)
 
     def format_flake_message(message):
         return [
-            ('class:flakemessage.prefix', 'pyflakes:'),
-            ('', ' '),
-            ('class:flakemessage', message.message % message.message_args)
+            ("class:flakemessage.prefix", "pyflakes:"),
+            ("", " "),
+            ("class:flakemessage", message.message % message.message_args),
         ]
 
     def message_to_reporter_error(message):
-        """ Turn pyflakes message into ReporterError. """
-        start_index = document.translate_row_col_to_index(message.lineno - 1, message.col)
+        """Turn pyflakes message into ReporterError."""
+        start_index = document.translate_row_col_to_index(
+            message.lineno - 1, message.col
+        )
         end_index = start_index
-        while end_index < len(document.text) and document.text[end_index] in WORD_CHARACTERS:
+        while (
+            end_index < len(document.text)
+            and document.text[end_index] in WORD_CHARACTERS
+        ):
             end_index += 1
 
-        return ReporterError(lineno=message.lineno - 1,
-                             start_column=message.col,
-                             end_column=message.col + end_index - start_index,
-                             formatted_text=format_flake_message(message))
+        return ReporterError(
+            lineno=message.lineno - 1,
+            start_column=message.col,
+            end_column=message.col + end_index - start_index,
+            formatted_text=format_flake_message(message),
+        )
 
     # Construct list of ReporterError instances.
     return [message_to_reporter_error(m) for m in reporter.messages]
@@ -84,6 +91,7 @@ class _FlakesReporter(object):
     """
     Reporter class to be passed to pyflakes.api.check.
     """
+
     def __init__(self):
         self.messages = []
 

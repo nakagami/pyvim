@@ -6,22 +6,23 @@ from prompt_toolkit.contrib.regular_languages.completion import GrammarCompleter
 from .grammar import COMMAND_GRAMMAR
 from .commands import get_commands, SET_COMMANDS
 
-__all__ = (
-    'create_command_completer',
-)
+__all__ = ("create_command_completer",)
 
 
 def create_command_completer(editor):
-    commands = [c + ' ' for c in get_commands()]
+    commands = [c + " " for c in get_commands()]
 
-    return GrammarCompleter(COMMAND_GRAMMAR, {
-        'command': WordCompleter(commands),
-        'location': PathCompleter(expanduser=True),
-        'set_option': WordCompleter(sorted(SET_COMMANDS)),
-        'buffer_name': BufferNameCompleter(editor),
-        'colorscheme': ColorSchemeCompleter(editor),
-        'shell_command': SystemCompleter(),
-    })
+    return GrammarCompleter(
+        COMMAND_GRAMMAR,
+        {
+            "command": WordCompleter(commands),
+            "location": PathCompleter(expanduser=True),
+            "set_option": WordCompleter(sorted(SET_COMMANDS)),
+            "buffer_name": BufferNameCompleter(editor),
+            "colorscheme": ColorSchemeCompleter(editor),
+            "shell_command": SystemCompleter(),
+        },
+    )
 
 
 class BufferNameCompleter(Completer):
@@ -30,6 +31,7 @@ class BufferNameCompleter(Completer):
     It is sufficient when the input appears anywhere in the buffer name, to
     trigger a completion.
     """
+
     def __init__(self, editor):
         self.editor = editor
 
@@ -48,6 +50,7 @@ class ColorSchemeCompleter(Completer):
     Complete on the names of the color schemes that are currently known to the
     Editor instance.
     """
+
     def __init__(self, editor):
         self.editor = editor
 
@@ -56,4 +59,4 @@ class ColorSchemeCompleter(Completer):
 
         for style_name in self.editor.styles:
             if style_name.startswith(text):
-                yield Completion(style_name[len(text):], display=style_name)
+                yield Completion(style_name[len(text) :], display=style_name)

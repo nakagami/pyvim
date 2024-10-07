@@ -25,7 +25,9 @@ def test_tab_page_get_windows_for_buffer(editor, editor_buffer, tab_page_with_sp
     assert len(windows) == 3
 
 
-def test_window_arrangement_get_windows_for_buffer(editor, editor_buffer, tab_page_with_splits, window_arrangement):
+def test_window_arrangement_get_windows_for_buffer(
+    editor, editor_buffer, tab_page_with_splits, window_arrangement
+):
     tab_page1 = tab_page_with_splits
     tab_page2 = TabPage(Window(editor_buffer))
 

@@ -74,7 +74,9 @@ def create_text_object_decorator(
 
                 @key_bindings.add(
                     *keys,
-                    filter=~vi_waiting_for_text_object_mode & filter & vi_navigation_mode,
+                    filter=~vi_waiting_for_text_object_mode
+                    & filter
+                    & vi_navigation_mode,
                     eager=eager,
                 )
                 def _move_in_navigation_mode(event: E) -> None:
@@ -89,7 +91,9 @@ def create_text_object_decorator(
 
                 @key_bindings.add(
                     *keys,
-                    filter=~vi_waiting_for_text_object_mode & filter & vi_selection_mode,
+                    filter=~vi_waiting_for_text_object_mode
+                    & filter
+                    & vi_selection_mode,
                     eager=eager,
                 )
                 def _move_in_selection_mode(event: E) -> None:

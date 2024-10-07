@@ -1,14 +1,13 @@
 from .grammar import COMMAND_GRAMMAR
 
-__all__ = (
-    'CommandPreviewer',
-)
+__all__ = ("CommandPreviewer",)
 
 
 class CommandPreviewer(object):
     """
     Already show the effect of Vi commands before enter is pressed.
     """
+
     def __init__(self, editor):
         self.editor = editor
 
@@ -51,7 +50,7 @@ class CommandPreviewer(object):
         self._apply(input_string)
 
     def _apply(self, input_string):
-        """ Apply command. """
+        """Apply command."""
         e = self.editor
 
         # Parse command.
@@ -61,43 +60,42 @@ class CommandPreviewer(object):
 
         variables = m.variables()
 
-        command = variables.get('command')
-        set_option = variables.get('set_option')
+        command = variables.get("command")
+        set_option = variables.get("set_option")
 
         # Preview colorschemes.
-        if command == 'colorscheme':
-            colorscheme = variables.get('colorscheme')
+        if command == "colorscheme":
+            colorscheme = variables.get("colorscheme")
             if colorscheme:
                 e.use_colorscheme(colorscheme)
 
         # Preview some set commands.
-        if command == 'set':
-            if set_option in ('hlsearch', 'hls'):
+        if command == "set":
+            if set_option in ("hlsearch", "hls"):
                 e.highlight_search = True
-            elif set_option in ('nohlsearch', 'nohls'):
+            elif set_option in ("nohlsearch", "nohls"):
                 e.highlight_search = False
-            elif set_option in ('nu', 'number'):
+            elif set_option in ("nu", "number"):
                 e.show_line_numbers = True
-            elif set_option in ('nonu', 'nonumber'):
+            elif set_option in ("nonu", "nonumber"):
                 e.show_line_numbers = False
-            elif set_option in ('ruler', 'ru'):
+            elif set_option in ("ruler", "ru"):
                 e.show_ruler = True
-            elif set_option in ('noruler', 'noru'):
+            elif set_option in ("noruler", "noru"):
                 e.show_ruler = False
-            elif set_option in ('relativenumber', 'rnu'):
+            elif set_option in ("relativenumber", "rnu"):
                 e.relative_number = True
-            elif set_option in ('norelativenumber', 'nornu'):
+            elif set_option in ("norelativenumber", "nornu"):
                 e.relative_number = False
-            elif set_option in ('cursorline', 'cul'):
+            elif set_option in ("cursorline", "cul"):
                 e.cursorline = True
-            elif set_option in ('cursorcolumn', 'cuc'):
+            elif set_option in ("cursorcolumn", "cuc"):
                 e.cursorcolumn = True
-            elif set_option in ('nocursorline', 'nocul'):
+            elif set_option in ("nocursorline", "nocul"):
                 e.cursorline = False
-            elif set_option in ('nocursorcolumn', 'nocuc'):
+            elif set_option in ("nocursorcolumn", "nocuc"):
                 e.cursorcolumn = False
-            elif set_option in ('colorcolumn', 'cc'):
-                value = variables.get('set_value', '')
+            elif set_option in ("colorcolumn", "cc"):
+                value = variables.get("set_value", "")
                 if value:
-                    e.colorcolumn = [
-                        int(v) for v in value.split(',') if v.isdigit()]
+                    e.colorcolumn = [int(v) for v in value.split(",") if v.isdigit()]

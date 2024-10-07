@@ -7,6 +7,7 @@ Usage::
     e = Editor(files_to_edit)
     e.run()  # Runs the event loop, starts interaction.
 """
+
 from prompt_toolkit.application import Application
 from prompt_toolkit.application.application import _CombinedRegistry
 from prompt_toolkit.buffer import Buffer
@@ -33,9 +34,7 @@ from .utils import getLogger
 import pygments
 import os
 
-__all__ = (
-    'Editor',
-)
+__all__ = ("Editor",)
 
 
 logger = getLogger()
@@ -49,7 +48,8 @@ class Editor(object):
     :param input: (Optionally) `prompt_toolkit.input.Input` object.
     :param output: (Optionally) `prompt_toolkit.output.Output` object.
     """
-    def __init__(self, config_directory='~/.pyvim', input=None, output=None):
+
+    def __init__(self, config_directory="~/.pyvim", input=None, output=None):
         self.input = input
         self.output = output
 
@@ -94,7 +94,7 @@ class Editor(object):
 
         # Load styles. (Mapping from name to Style class.)
         self.styles = generate_built_in_styles()
-        self.current_style = get_editor_style_by_name('vim')
+        self.current_style = get_editor_style_by_name("vim")
 
         # I/O backends.
         self.io_backends = [
@@ -106,7 +106,7 @@ class Editor(object):
 
         # Create history and search buffers.
         def handle_action(buff):
-            ' When enter is pressed in the Vi command line. '
+            "When enter is pressed in the Vi command line."
             text = buff.text  # Remember: leave_command_mode resets the buffer.
 
             # First leave command mode. We want to make sure that the working
@@ -116,19 +116,23 @@ class Editor(object):
             # Execute command.
             handle_command(self, text)
 
-        commands_history = FileHistory(os.path.join(self.config_directory, 'commands_history'))
+        commands_history = FileHistory(
+            os.path.join(self.config_directory, "commands_history")
+        )
         self.command_buffer = Buffer(
             accept_handler=handle_action,
             enable_history_search=True,
             completer=create_command_completer(self),
             history=commands_history,
-            multiline=False)
+            multiline=False,
+        )
 
-        search_buffer_history = FileHistory(os.path.join(self.config_directory, 'search_history'))
+        search_buffer_history = FileHistory(
+            os.path.join(self.config_directory, "search_history")
+        )
         self.search_buffer = Buffer(
-            history=search_buffer_history,
-            enable_history_search=True,
-            multiline=False)
+            history=search_buffer_history, enable_history_search=True, multiline=False
+        )
 
         # Create key bindings registry.
         self.key_bindings = create_key_bindings(self)
@@ -140,17 +144,20 @@ class Editor(object):
         # Hide message when a key is pressed.
         def key_pressed(_):
             self.message = None
+
         self.application.key_processor.before_key_press += key_pressed
 
         # Command line previewer.
         self.previewer = CommandPreviewer(self)
 
-        self.last_substitute_text = ''
+        self.last_substitute_text = ""
 
         self._last_edit_command = []
         self._in_edit_command = False
 
-    def load_initial_files(self, locations, in_tab_pages=False, hsplit=False, vsplit=False):
+    def load_initial_files(
+        self, locations, in_tab_pages=False, hsplit=False, vsplit=False
+    ):
         """
         Load a list of files.
         """
@@ -175,7 +182,7 @@ class Editor(object):
         self.window_arrangement.active_tab_index = 0
 
         if locations and len(locations) > 1:
-            self.show_message('%i files loaded.' % len(locations))
+            self.show_message("%i files loaded." % len(locations))
             self.locations = locations
             self.current_location_index = 0
 
@@ -195,8 +202,11 @@ class Editor(object):
             include_default_pygments_style=False,
             mouse_support=Condition(lambda: self.enable_mouse_support),
             full_screen=True,
-            enable_page_navigation_bindings=True)
-        application.key_processor = VimKeyProcessor(_CombinedRegistry(application), self)
+            enable_page_navigation_bindings=True,
+        )
+        application.key_processor = VimKeyProcessor(
+            _CombinedRegistry(application), self
+        )
 
         # Handle command line previews.
         # (e.g. when typing ':colorscheme blue', it should already show the
@@ -204,6 +214,7 @@ class Editor(object):
         def preview(_):
             if self.application.layout.has_focus(self.command_buffer):
                 self.previewer.preview(self.command_buffer.text)
+
         self.command_buffer.on_text_changed += preview
 
         return application
@@ -236,7 +247,7 @@ class Editor(object):
         """
         self.message = message
 
-    def use_colorscheme(self, name='default'):
+    def use_colorscheme(self, name="default"):
         """
         Apply new colorscheme. (By name.)
         """
@@ -339,7 +350,9 @@ class Editor(object):
             self._last_edit_command_arg = 1
         self.application.current_buffer.save_to_undo_stack()
         self._in_edit_command = True
-        logger.debug(f"start_edit_command():{self.application.vi_state.input_mode}:{event}")
+        logger.debug(
+            f"start_edit_command():{self.application.vi_state.input_mode}:{event}"
+        )
         logger.debug(self._last_edit_command)
 
     def append_edit_command(self, key_event):
@@ -347,10 +360,14 @@ class Editor(object):
             if key_event.key in (Keys.ControlG, Keys.ControlP, Keys.ControlN):
                 return
             self._last_edit_command.append(key_event)
-            logger.debug(f"append_edit_command():{self.application.vi_state.input_mode}:{key_event}")
+            logger.debug(
+                f"append_edit_command():{self.application.vi_state.input_mode}:{key_event}"
+            )
             logger.debug(self._last_edit_command)
             # 'dw' finish edit command. If there is another suitable line, I would like to move it.
-            if [not isinstance(k, tuple) and k.data for k in self._last_edit_command] == ["d", "w"]:
+            if [
+                not isinstance(k, tuple) and k.data for k in self._last_edit_command
+            ] == ["d", "w"]:
                 self.finish_edit_command()
 
     def append_edit_completion(self, start, text):
@@ -365,7 +382,9 @@ class Editor(object):
         if self._in_edit_command:
             if event:
                 self._last_edit_command.extend(event.key_sequence)
-            logger.debug(f"finish_edit_command():{self.application.vi_state.input_mode}:{event}")
+            logger.debug(
+                f"finish_edit_command():{self.application.vi_state.input_mode}:{event}"
+            )
             logger.debug(self._last_edit_command)
         self._in_edit_command = False
 

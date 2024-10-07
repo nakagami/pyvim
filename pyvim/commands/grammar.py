@@ -4,7 +4,8 @@ from .commands import get_commands_taking_locations
 
 
 #: The compiled grammar for the Vim command line.
-COMMAND_GRAMMAR = compile(r"""
+COMMAND_GRAMMAR = compile(
+    r"""
     # Allow leading colons and whitespace. (They are ignored.)
     :*
     \s*
@@ -47,6 +48,8 @@ COMMAND_GRAMMAR = compile(r"""
 
     # Allow trailing space.
     \s*
-""" % {
-    'commands_taking_locations': '|'.join(get_commands_taking_locations()),
-})
+"""
+    % {
+        "commands_taking_locations": "|".join(get_commands_taking_locations()),
+    }
+)

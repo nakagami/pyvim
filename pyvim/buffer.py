@@ -3,6 +3,7 @@ from prompt_toolkit.search import SearchDirection, SearchState
 from prompt_toolkit.document import Document
 
 from .utils import getLogger
+
 logger = getLogger()
 
 
@@ -95,8 +96,10 @@ class VimBuffer(buffer.Buffer):
                         )
                         if new_index is not None:
                             return (i, Document(document.text, new_index))
-                self._editor.show_message(f'Search hit BOTTOM without match for: {text}')
-            else:   # search BACKWARDS
+                self._editor.show_message(
+                    f"Search hit BOTTOM without match for: {text}"
+                )
+            else:  # search BACKWARDS
                 # Try find at the current input.
                 new_index = document.find_backwards(text, ignore_case=ignore_case)
 
@@ -121,7 +124,7 @@ class VimBuffer(buffer.Buffer):
                                 i,
                                 Document(document.text, len(document.text) + new_index),
                             )
-                self._editor.show_message(f'Search hit TOP without match for: {text}')
+                self._editor.show_message(f"Search hit TOP without match for: {text}")
             return None
 
         # Do 'count' search iterations.
@@ -217,7 +220,9 @@ class VimBuffer(buffer.Buffer):
     def go_to_completion(self, index):
         super().go_to_completion(index)
         s = self.complete_state
-        logger.debug(f"go_to_completion({index}) completion_start={s.completion_start},completion_text={s.completion_text}")
+        logger.debug(
+            f"go_to_completion({index}) completion_start={s.completion_start},completion_text={s.completion_text}"
+        )
         self._editor.append_edit_completion(s.completion_start, s.completion_text)
 
     def apply_completion(self, *args, **kwargs):

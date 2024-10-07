@@ -1,10 +1,14 @@
 import asyncio
 from .grammar import COMMAND_GRAMMAR
-from .commands import call_command_handler, has_command_handler, substitute, yank, delete
-
-__all__ = (
-    'handle_command',
+from .commands import (
+    call_command_handler,
+    has_command_handler,
+    substitute,
+    yank,
+    delete,
 )
+
+__all__ = ("handle_command",)
 
 
 def handle_command(editor, input_string):
@@ -17,14 +21,14 @@ def handle_command(editor, input_string):
         return
 
     variables = m.variables()
-    command = variables.get('command')
-    go_to_line = variables.get('go_to_line')
-    shell_command = variables.get('shell_command')
-    range_start = variables.get('range_start')
-    range_end = variables.get('range_end')
-    search = variables.get('search')
-    replace = variables.get('replace')
-    flags = variables.get('flags', '')
+    command = variables.get("command")
+    go_to_line = variables.get("go_to_line")
+    shell_command = variables.get("shell_command")
+    range_start = variables.get("range_start")
+    range_end = variables.get("range_end")
+    search = variables.get("search")
+    replace = variables.get("replace")
+    flags = variables.get("flags", "")
 
     # Call command handler.
 
@@ -41,16 +45,16 @@ def handle_command(editor, input_string):
         # Handle other 'normal' commands.
         call_command_handler(command, editor, variables)
 
-    elif command in ('s', 'substitute'):
-        flags = flags.lstrip('/')
+    elif command in ("s", "substitute"):
+        flags = flags.lstrip("/")
         substitute(editor, range_start, range_end, search, replace, flags)
-    elif command in ('ya', 'yank'):
+    elif command in ("ya", "yank"):
         yank(editor, range_start, range_end)
-    elif command in ('d', 'delete'):
+    elif command in ("d", "delete"):
         delete(editor, range_start, range_end)
     else:
         # For unknown commands, show error message.
-        editor.show_message('Not an editor command: %s' % input_string)
+        editor.show_message("Not an editor command: %s" % input_string)
         return
 
     # After execution of commands, make sure to update the layout and focus

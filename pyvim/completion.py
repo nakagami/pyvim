@@ -5,11 +5,10 @@ from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.key_binding.vi_state import InputMode
 
 from .utils import getLogger
+
 logger = getLogger()
 
-__all__ = (
-    'DocumentCompleter',
-)
+__all__ = ("DocumentCompleter",)
 
 
 class DocumentCompleter(Completer):
@@ -18,6 +17,7 @@ class DocumentCompleter(Completer):
     Depending on the file type and settings, it selects another completer to
     call.
     """
+
     def __init__(self, editor, editor_buffer):
         # (Weakrefs, they are already pointing to us.)
         self._editor_ref = weakref.ref(editor)
@@ -25,9 +25,13 @@ class DocumentCompleter(Completer):
 
     def get_completions(self, document, complete_event):
         editor = self._editor_ref()
-        location = self._editor_buffer_ref().location or '.txt'
+        location = self._editor_buffer_ref().location or ".txt"
 
-        if location.endswith('.py') and editor.enable_jedi and editor.application.vi_state.input_mode == InputMode.INSERT:
+        if (
+            location.endswith(".py")
+            and editor.enable_jedi
+            and editor.application.vi_state.input_mode == InputMode.INSERT
+        ):
             completer = PythonCompleter(location)
             return completer.get_completions(document, complete_event)
 
@@ -38,6 +42,7 @@ class PythonCompleter(Completer):
     """
     Wrapper around the Jedi completion engine.
     """
+
     def __init__(self, location):
         self.location = location
 
@@ -52,7 +57,9 @@ class PythonCompleter(Completer):
             return None
 
         if script:
-            logger.debug(f'get_completions() line="{document.lines[document.cursor_position_row]}" col={document.cursor_position_col}')
+            logger.debug(
+                f'get_completions() line="{document.lines[document.cursor_position_row]}" col={document.cursor_position_col}'
+            )
             try:
                 completions = script.complete(
                     column=document.cursor_position_col,

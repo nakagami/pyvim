@@ -6,23 +6,24 @@ import urllib
 from .base import EditorIO
 
 __all__ = (
-    'FileIO',
-    'GZipFileIO',
-    'DirectoryIO',
-    'HttpIO',
+    "FileIO",
+    "GZipFileIO",
+    "DirectoryIO",
+    "HttpIO",
 )
 
 
-ENCODINGS = ['utf-8', 'latin-1']
+ENCODINGS = ["utf-8", "latin-1"]
 
 
 class FileIO(EditorIO):
     """
     I/O backend for the native file system.
     """
+
     def can_open_location(cls, location):
         # We can handle all local files.
-        return '://' not in location and not os.path.isdir(location)
+        return "://" not in location and not os.path.isdir(location)
 
     def exists(self, location):
         return os.path.exists(os.path.expanduser(location))
@@ -36,13 +37,13 @@ class FileIO(EditorIO):
         # Try to open this file, using different encodings.
         for e in ENCODINGS:
             try:
-                with codecs.open(location, 'r', e) as f:
+                with codecs.open(location, "r", e) as f:
                     return f.read(), e
             except UnicodeDecodeError:
                 pass  # Try next codec.
 
         # Unable to open.
-        raise Exception('Unable to open file: %r' % location)
+        raise Exception("Unable to open file: %r" % location)
 
     def write(self, location, text, encoding):
         """
@@ -50,7 +51,7 @@ class FileIO(EditorIO):
         """
         location = os.path.expanduser(location)
 
-        with codecs.open(location, 'w', encoding) as f:
+        with codecs.open(location, "w", encoding) as f:
             f.write(text)
 
 
@@ -61,8 +62,9 @@ class GZipFileIO(EditorIO):
     It is possible to edit this file as if it were not compressed.
     The read and write call will decompress and compress transparently.
     """
+
     def can_open_location(cls, location):
-        return FileIO().can_open_location(location) and location.endswith('.gz')
+        return FileIO().can_open_location(location) and location.endswith(".gz")
 
     def exists(self, location):
         return FileIO().exists(location)
@@ -70,7 +72,7 @@ class GZipFileIO(EditorIO):
     def read(self, location):
         location = os.path.expanduser(location)
 
-        with gzip.open(location, 'rb') as f:
+        with gzip.open(location, "rb") as f:
             data = f.read()
         return _auto_decode(data)
 
@@ -80,7 +82,7 @@ class GZipFileIO(EditorIO):
         """
         location = os.path.expanduser(location)
 
-        with gzip.open(location, 'wb') as f:
+        with gzip.open(location, "wb") as f:
             f.write(text.encode(encoding))
 
 
@@ -88,9 +90,10 @@ class DirectoryIO(EditorIO):
     """
     Create a textual listing of the directory content.
     """
+
     def can_open_location(cls, location):
         # We can handle all local directories.
-        return '://' not in location and os.path.isdir(location)
+        return "://" not in location and os.path.isdir(location)
 
     def exists(self, location):
         return os.path.isdir(location)
@@ -114,19 +117,19 @@ class DirectoryIO(EditorIO):
         result.append('"    %s\n' % os.path.abspath(directory))
         result.append('"    Quick help: -: go up dir\n')
         result.append('" ==================================\n')
-        result.append('../\n')
-        result.append('./\n')
+        result.append("../\n")
+        result.append("./\n")
 
         for d in directories:
-            result.append('%s/\n' % d)
+            result.append("%s/\n" % d)
 
         for f in files:
-            result.append('%s\n' % f)
+            result.append("%s\n" % f)
 
-        return ''.join(result), 'utf-8'
+        return "".join(result), "utf-8"
 
     def write(self, location, text, encoding):
-        raise NotImplementedError('Cannot write to directory.')
+        raise NotImplementedError("Cannot write to directory.")
 
     def isdir(self, location):
         return True
@@ -136,9 +139,10 @@ class HttpIO(EditorIO):
     """
     I/O backend that reads from HTTP.
     """
+
     def can_open_location(cls, location):
         # We can handle all local directories.
-        return location.startswith('http://') or location.startswith('https://')
+        return location.startswith("http://") or location.startswith("https://")
 
     def exists(self, location):
         return NotImplemented  # We don't know.
@@ -151,7 +155,7 @@ class HttpIO(EditorIO):
         return _auto_decode(bytes)
 
     def write(self, location, text, encoding):
-        raise NotImplementedError('Cannot write to HTTP.')
+        raise NotImplementedError("Cannot write to HTTP.")
 
 
 def _auto_decode(data):
@@ -166,4 +170,4 @@ def _auto_decode(data):
         except UnicodeDecodeError:
             pass
 
-    return data.decode('utf-8', 'ignore')
+    return data.decode("utf-8", "ignore")

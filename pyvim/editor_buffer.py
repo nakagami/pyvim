@@ -9,9 +9,7 @@ import stat
 import os
 import weakref
 
-__all__ = (
-    'EditorBuffer',
-)
+__all__ = ("EditorBuffer",)
 
 
 class EditorBuffer(object):
@@ -21,6 +19,7 @@ class EditorBuffer(object):
     A 'prompt-toolkit' `Buffer` doesn't know anything about files, changes,
     etc... This wrapper contains the necessary data for the editor.
     """
+
     def __init__(self, editor, location=None, text=None):
         assert location is None or isinstance(location, str)
         assert text is None or isinstance(text, str)
@@ -28,7 +27,7 @@ class EditorBuffer(object):
 
         self._editor_ref = weakref.ref(editor)
         self.location = location
-        self.encoding = 'utf-8'
+        self.encoding = "utf-8"
 
         #: is_new: True when this file does not yet exist in the storage.
         self.is_new = True
@@ -40,7 +39,7 @@ class EditorBuffer(object):
         if location:
             text = self._read(location)
         else:
-            text = text or ''
+            text = text or ""
 
         self._file_content = text
 
@@ -51,7 +50,8 @@ class EditorBuffer(object):
             document=Document(text, 0),
             complete_while_typing=True,
             on_text_changed=lambda _: self.run_reporter(),
-            editor=editor)
+            editor=editor,
+        )
 
         # List of reporting errors.
         self.report_errors = []
@@ -59,7 +59,7 @@ class EditorBuffer(object):
 
     @property
     def editor(self):
-        """ Back reference to the Editor. """
+        """Back reference to the Editor."""
         return self._editor_ref()
 
     @property
@@ -93,24 +93,24 @@ class EditorBuffer(object):
                         text, self.encoding = io.read(location)
 
                         # Replace \r\n by \n.
-                        text = text.replace('\r\n', '\n')
+                        text = text.replace("\r\n", "\n")
 
                         # Drop trailing newline while editing.
                         # (prompt-toolkit doesn't enforce the trailing newline.)
-                        if text.endswith('\n'):
+                        if text.endswith("\n"):
                             text = text[:-1]
                     except Exception as e:
-                        self.editor.show_message('Cannot read %r: %r' % (location, e))
-                        return ''
+                        self.editor.show_message("Cannot read %r: %r" % (location, e))
+                        return ""
                     else:
                         return text
                 else:
                     # File doesn't exist.
                     self.is_new = True
-                    return ''
+                    return ""
 
-        self.editor.show_message('Cannot read: %r' % location)
-        return ''
+        self.editor.show_message("Cannot read: %r" % location)
+        return ""
 
     def reload(self):
         """
@@ -136,38 +136,48 @@ class EditorBuffer(object):
             if io.can_open_location(self.location):
                 break
         else:
-            self.editor.show_message('Unknown location: %r' % location)
+            self.editor.show_message("Unknown location: %r" % location)
 
         # Write it.
         toggle_write_permission = False
         done = False
-        while (not done):
+        while not done:
             try:
-                io.write(self.location, self.buffer.text + '\n', self.encoding)
+                io.write(self.location, self.buffer.text + "\n", self.encoding)
                 self.is_new = False
                 if toggle_write_permission:
                     try:
-                        os.chmod(self.location, os.stat(self.location).st_mode & ~stat.S_IWRITE)
+                        os.chmod(
+                            self.location,
+                            os.stat(self.location).st_mode & ~stat.S_IWRITE,
+                        )
                         done = True
                     except Exception as e:
-                        self.editor.show_message('%s' % e)
+                        self.editor.show_message("%s" % e)
                         done = True
             except Exception as e:
-                if os.path.isfile(self.location) and (not os.access(self.location, os.W_OK)):  # File is not writable
+                if os.path.isfile(self.location) and (
+                    not os.access(self.location, os.W_OK)
+                ):  # File is not writable
                     if force:
                         if not toggle_write_permission:
                             try:
-                                os.chmod(self.location, os.stat(self.location).st_mode | stat.S_IWRITE)
+                                os.chmod(
+                                    self.location,
+                                    os.stat(self.location).st_mode | stat.S_IWRITE,
+                                )
                                 toggle_write_permission = True
                             except Exception as e:
-                                self.editor.show_message('%s' % e)
+                                self.editor.show_message("%s" % e)
                                 done = True
                         else:
                             # E.g. "No such file or directory."
-                            self.editor.show_message('%s' % e)
+                            self.editor.show_message("%s" % e)
                             done = True
                     else:
-                        self.editor.show_message("'readonly' option is set (add ! to override)")
+                        self.editor.show_message(
+                            "'readonly' option is set (add ! to override)"
+                        )
                         done = True
             else:
                 # When the save succeeds: update: _file_content.
@@ -179,17 +189,17 @@ class EditorBuffer(object):
         Return name as displayed.
         """
         if self.location is None:
-            return '[New file]'
+            return "[New file]"
         elif short:
             return os.path.basename(self.location)
         else:
             return self.location
 
     def __repr__(self):
-        return '%s(buffer=%r)' % (self.__class__.__name__, self.buffer)
+        return "%s(buffer=%r)" % (self.__class__.__name__, self.buffer)
 
     def run_reporter(self):
-        " Buffer text changed. "
+        "Buffer text changed."
         if not self._reporter_is_running:
             # Don't run reporter when we don't have a location. (We need to
             # know the filetype, actually.)

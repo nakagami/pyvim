@@ -5,14 +5,18 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.vi_state import CharacterFind, InputMode
 from prompt_toolkit.key_binding.bindings import vi
 from prompt_toolkit.key_binding.bindings.vi import (
-    TextObjectType, TextObject,
-    Callable, _OF, Filter, Always, Keys, vi_waiting_for_text_object_mode,
+    TextObjectType,
+    TextObject,
+    Callable,
+    _OF,
+    Filter,
+    Always,
+    Keys,
+    vi_waiting_for_text_object_mode,
 )
 from prompt_toolkit.key_binding.key_processor import KeyPressEvent as E
 from prompt_toolkit.clipboard import ClipboardData
-from prompt_toolkit.filters import (
-    Condition, has_focus, is_read_only
-)
+from prompt_toolkit.filters import Condition, has_focus, is_read_only
 from prompt_toolkit.filters.app import (
     in_paste_mode,
     is_multiline,
@@ -29,9 +33,7 @@ from .document import Document
 from .commands.commands import write_and_quit, quit
 
 
-__all__ = (
-    'create_key_bindings',
-)
+__all__ = ("create_key_bindings",)
 
 
 vi_register_names = string.ascii_lowercase + "0123456789"
@@ -132,7 +134,9 @@ def create_key_bindings(editor):
     @Condition
     def vi_buffer_focussed():
         app = get_app()
-        if app.layout.has_focus(editor.search_buffer) or app.layout.has_focus(editor.command_buffer):
+        if app.layout.has_focus(editor.search_buffer) or app.layout.has_focus(
+            editor.command_buffer
+        ):
             return False
         return True
 
@@ -259,10 +263,11 @@ def create_key_bindings(editor):
         before = "\n".join(lines[: buffer.document.cursor_position_row])
         deleted = "\n".join(
             lines[
-                buffer.document.cursor_position_row: buffer.document.cursor_position_row + event.arg
+                buffer.document.cursor_position_row : buffer.document.cursor_position_row
+                + event.arg
             ]
         )
-        after = "\n".join(lines[buffer.document.cursor_position_row + event.arg:])
+        after = "\n".join(lines[buffer.document.cursor_position_row + event.arg :])
 
         # Set new text.
         if before and after:
@@ -422,7 +427,6 @@ def create_key_bindings(editor):
 
     @kb.add("X", filter=vi_navigation_mode)
     def _delete_before_cursor(event: E) -> None:
-
         buffer = event.current_buffer
         count = min(event.arg, len(buffer.document.current_line_before_cursor))
         if count:
@@ -432,7 +436,7 @@ def create_key_bindings(editor):
             editor.finish_edit_command()
 
     @kb.add("<", "<", filter=vi_navigation_mode)
-    @kb.add('c-d', filter=in_insert_mode)
+    @kb.add("c-d", filter=in_insert_mode)
     def _unindent(event):
         buffer = event.current_buffer
         document = buffer.document
@@ -441,7 +445,7 @@ def create_key_bindings(editor):
         b = document.cursor_position + document.get_end_of_line_position()
         text = document.text[a:b]
         if buffer.expand_tab:
-            space_len = len(text) - len(text.lstrip(' '))
+            space_len = len(text) - len(text.lstrip(" "))
             if space_len:
                 if space_len % buffer.shiftwidth:
                     remove_len = space_len % buffer.shiftwidth
@@ -452,8 +456,8 @@ def create_key_bindings(editor):
                 buffer.cursor_position = cursor_position - remove_len
         else:
             for i in range(a, b):
-                if document.text[i] == '\t':
-                    buffer.text = document.text[:i] + document.text[i + 1:]
+                if document.text[i] == "\t":
+                    buffer.text = document.text[:i] + document.text[i + 1 :]
                     buffer.cursor_position = cursor_position - 1
                     break
 
@@ -526,7 +530,7 @@ def create_key_bindings(editor):
 
         editor.finish_edit_command()
 
-    @kb.add('Z', 'Z', filter=in_navigation_mode)
+    @kb.add("Z", "Z", filter=in_navigation_mode)
     def _(event):
         """
         Write and quit.
@@ -534,7 +538,7 @@ def create_key_bindings(editor):
         write_and_quit(editor, None)
         editor.sync_with_prompt_toolkit()
 
-    @kb.add('Z', 'Q', filter=in_navigation_mode)
+    @kb.add("Z", "Q", filter=in_navigation_mode)
     def _(event):
         """
         Quit and discard changes.
@@ -542,28 +546,28 @@ def create_key_bindings(editor):
         quit(editor, force=True)
         editor.sync_with_prompt_toolkit()
 
-    @kb.add('c-z', filter=in_navigation_mode)
+    @kb.add("c-z", filter=in_navigation_mode)
     def _(event):
         """
         Suspend process to background.
         """
         event.app.suspend_to_background()
 
-    @kb.add('c-r', filter=in_navigation_mode, save_before=(lambda e: False))
+    @kb.add("c-r", filter=in_navigation_mode, save_before=(lambda e: False))
     def redo(event):
         """
         Redo.
         """
         event.app.current_buffer.redo()
 
-    @kb.add(':', filter=in_navigation_mode)
+    @kb.add(":", filter=in_navigation_mode)
     def enter_command_mode(event):
         """
         Entering command mode.
         """
         editor.enter_command_mode()
 
-    @kb.add('tab', filter=vi_insert_mode)
+    @kb.add("tab", filter=vi_insert_mode)
     def tab_indent(event):
         """
         indent by tab key
@@ -574,25 +578,29 @@ def create_key_bindings(editor):
             col_mod = b.document.cursor_position_col % b.shiftwidth
             if col_mod:
                 sw -= col_mod
-            b.insert_text(' ' * sw)
+            b.insert_text(" " * sw)
         else:
-            b.insert_text('\t')
+            b.insert_text("\t")
 
-    @kb.add('escape', filter=has_focus(editor.command_buffer))
-    @kb.add('c-c', filter=has_focus(editor.command_buffer))
-    @kb.add('backspace', filter=has_focus(editor.command_buffer) & Condition(lambda: editor.command_buffer.text == ''))
+    @kb.add("escape", filter=has_focus(editor.command_buffer))
+    @kb.add("c-c", filter=has_focus(editor.command_buffer))
+    @kb.add(
+        "backspace",
+        filter=has_focus(editor.command_buffer)
+        & Condition(lambda: editor.command_buffer.text == ""),
+    )
     def leave_command_mode(event):
         """
         Leaving command mode.
         """
         editor.leave_command_mode()
 
-    @kb.add('c-w', 'c-w', filter=in_navigation_mode)
+    @kb.add("c-w", "c-w", filter=in_navigation_mode)
     def focus_next_window(event):
         editor.window_arrangement.cycle_focus()
         editor.sync_with_prompt_toolkit()
 
-    @kb.add('c-w', 'n', filter=in_navigation_mode)
+    @kb.add("c-w", "n", filter=in_navigation_mode)
     def horizontal_split(event):
         """
         Split horizontally.
@@ -600,7 +608,7 @@ def create_key_bindings(editor):
         editor.window_arrangement.hsplit(None)
         editor.sync_with_prompt_toolkit()
 
-    @kb.add('c-w', 'v', filter=in_navigation_mode)
+    @kb.add("c-w", "v", filter=in_navigation_mode)
     def vertical_split(event):
         """
         Split vertically.
@@ -608,17 +616,17 @@ def create_key_bindings(editor):
         editor.window_arrangement.vsplit(None)
         editor.sync_with_prompt_toolkit()
 
-    @kb.add('g', 't', filter=in_navigation_mode)
+    @kb.add("g", "t", filter=in_navigation_mode)
     def focus_next_tab(event):
         editor.window_arrangement.go_to_next_tab()
         editor.sync_with_prompt_toolkit()
 
-    @kb.add('g', 'T', filter=in_navigation_mode)
+    @kb.add("g", "T", filter=in_navigation_mode)
     def focus_previous_tab(event):
         editor.window_arrangement.go_to_previous_tab()
         editor.sync_with_prompt_toolkit()
 
-    @kb.add('f1')
+    @kb.add("f1")
     def show_help(event):
         editor.show_help()
 
@@ -639,9 +647,12 @@ def create_key_bindings(editor):
             _nth_line(event, event.arg)
 
     for c in "abcdefghijklmnopqrstuvwxyz":
+
         @kb.add("m", c, filter=vi_navigation_mode)
         def mark(event):
-            editor.current_editor_buffer.buffer.mark[event.key_sequence[1].data] = event.current_buffer.document.cursor_position_row + 1
+            editor.current_editor_buffer.buffer.mark[event.key_sequence[1].data] = (
+                event.current_buffer.document.cursor_position_row + 1
+            )
 
         @kb.add("'", c, filter=vi_navigation_mode)
         def jump(event):
@@ -658,28 +669,31 @@ def create_key_bindings(editor):
 
     @Condition
     def in_file_explorer_mode():
-        return bool(editor.current_editor_buffer and editor.current_editor_buffer.in_file_explorer_mode)
+        return bool(
+            editor.current_editor_buffer
+            and editor.current_editor_buffer.in_file_explorer_mode
+        )
 
-    @kb.add('enter', filter=in_file_explorer_mode)
+    @kb.add("enter", filter=in_file_explorer_mode)
     def open_path(event):
         """
         Open file/directory in file explorer mode.
         """
         name_under_cursor = event.current_buffer.document.current_line
-        new_path = os.path.normpath(os.path.join(
-            editor.current_editor_buffer.location, name_under_cursor))
+        new_path = os.path.normpath(
+            os.path.join(editor.current_editor_buffer.location, name_under_cursor)
+        )
 
-        editor.window_arrangement.open_buffer(
-            new_path, show_in_current_window=True)
+        editor.window_arrangement.open_buffer(new_path, show_in_current_window=True)
         editor.sync_with_prompt_toolkit()
 
-    @kb.add('-', filter=in_file_explorer_mode)
+    @kb.add("-", filter=in_file_explorer_mode)
     def to_parent_directory(event):
-        new_path = os.path.normpath(os.path.join(
-            editor.current_editor_buffer.location, '..'))
+        new_path = os.path.normpath(
+            os.path.join(editor.current_editor_buffer.location, "..")
+        )
 
-        editor.window_arrangement.open_buffer(
-            new_path, show_in_current_window=True)
+        editor.window_arrangement.open_buffer(new_path, show_in_current_window=True)
         editor.sync_with_prompt_toolkit()
 
     @kb.add(Keys.Any, filter=vi_replace_mode)
@@ -715,20 +729,25 @@ def create_key_bindings(editor):
         'word' forward. 'cw', 'dw': Delete/change one word.
         """
         document = event.current_buffer.document
-        if document.current_char in ('\n', ''):
+        if document.current_char in ("\n", ""):
             return None
         if document.current_char.isspace():
-            end = document.find_next_word_beginning(count=event.arg) or document.get_end_of_document_position()
-            eol = document.text_after_cursor[:end].find('\n')
+            end = (
+                document.find_next_word_beginning(count=event.arg)
+                or document.get_end_of_document_position()
+            )
+            eol = document.text_after_cursor[:end].find("\n")
             if eol != -1:
                 end = eol
         else:
-            end = document.find_next_word_ending(include_current_position=True, count=event.arg)
+            end = document.find_next_word_ending(
+                include_current_position=True, count=event.arg
+            )
             if not end:
                 end = document.get_end_of_line_position()
 
         # dw remove word and trailing spaces
-        if event.app.vi_state.operator_event.key_sequence[0].key == 'd':
+        if event.app.vi_state.operator_event.key_sequence[0].key == "d":
             c = document._get_char_relative_to_cursor(end)
             while c != "\n" and c.isspace():
                 end += 1
