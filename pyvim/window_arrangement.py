@@ -406,10 +406,8 @@ class WindowArrangement(object):
         Insert this new buffer in the list of buffers, right after the active
         one.
         """
-        assert (
-            isinstance(editor_buffer, EditorBuffer)
-            and editor_buffer not in self.editor_buffers
-        )
+        assert isinstance(editor_buffer, EditorBuffer)
+        assert editor_buffer not in self.editor_buffers
 
         # Add to list of EditorBuffers
         eb = self.active_editor_buffer
