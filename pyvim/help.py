@@ -18,8 +18,8 @@ When editing Python with Jedi enabled, an autocomplete window appears and follow
 
 - Ctrl+n: select next candidate
 - Ctrl+p: select previsous candidate
-- Ctrl+g: accept and close autocompletion window
-- Ctrl+e: cancen completion and close autocompletion window
+- Ctrl+g: accept completion and close autocompletion window
+- Ctrl+e: cancel completion and close autocompletion window
 
 This key binding may change in the future.
 
