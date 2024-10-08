@@ -953,3 +953,13 @@ def delete(editor, range_start, range_end):
         Document(new_text).translate_row_col_to_index(start, 0),
     )
     buffer.cursor_position += start
+
+
+def copy(editor, range_start, range_end, target_line):
+    buffer = editor.current_editor_buffer.buffer
+    cursor_position_row = buffer.document.cursor_position_row
+    start, end = _get_line_index(editor, cursor_position_row, range_start, range_end)
+    lines = buffer.document.lines
+
+    text = "\n".join(lines[start:end])
+    # TODO: copy text after target_line
