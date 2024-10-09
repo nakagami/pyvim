@@ -867,7 +867,7 @@ def _get_line_index(editor, s:str):
     if s[0] == "'":
         line_index = int(editor.current_editor_buffer.buffer.mark[s[1]]) - 1
     elif s[0] == "$":
-        line_index = editor.current_editor_buffer.buffer.document.line_count
+        line_index = editor.current_editor_buffer.buffer.document.line_count -1
     elif s[0] == ".":
         line_index = editor.current_editor_buffer.buffer.document.cursor_position_row
 
