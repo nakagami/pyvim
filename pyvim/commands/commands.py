@@ -861,22 +861,27 @@ def set_all(editor):
     run_in_terminal(handler)
 
 
-def _get_line_index(editor, cursor_position_row, range_start, range_end):
+def _get_line_index(editor, s:str):
+    "int(line number string) - 1"
+    line_index = None
+    if s[0] == "'":
+        line_index = int(editor.current_editor_buffer.buffer.mark[s[1]])
+    elif s[0] == "$":
+        line_index = editor.current_editor_buffer.buffer.document.line_count
+    elif s[0] == ".":
+        line_index = editor.current_editor_buffer.buffer.document.cursor_position_row
+
+    return line_index
+
+
+def _get_range_index(editor, range_start, range_end):
     if not range_start:
         assert not range_end
-        range_start = range_end = cursor_position_row
+        range_start = range_end = editor.current_editor_buffer.buffer.document.cursor_position_row
     else:
-        if range_start[0] == "'":
-            range_start = editor.current_editor_buffer.buffer.mark[range_start[1]]
-        elif range_start[0] == "$":
-            range_start = editor.current_editor_buffer.buffer.document.line_count
-        range_start = int(range_start) - 1
+        range_start = _get_line_index(editor, range_start)
         if range_end:
-            if range_end[0] == "'":
-                range_end = editor.current_editor_buffer.buffer.mark[range_end[1]]
-            elif range_end[0] == "$":
-                range_end = editor.current_editor_buffer.buffer.document.line_count
-            range_end = int(range_end) - 1
+            range_end = _get_line_index(editor, range_end)
         else:
             range_end = range_start
     return range_start, range_end + 1
@@ -892,7 +897,6 @@ def substitute(editor, range_start, range_end, search, replace, flags):
 
     search_state = editor.application.current_search_state
     buffer = editor.current_editor_buffer.buffer
-    cursor_position_row = buffer.document.cursor_position_row
 
     # read editor state
     if not search:
@@ -901,7 +905,7 @@ def substitute(editor, range_start, range_end, search, replace, flags):
     if replace is None:
         replace = editor.last_substitute_text
 
-    start, end = _get_line_index(editor, cursor_position_row, range_start, range_end)
+    start, end = _get_range_index(editor, range_start, range_end)
     line_index_iterator = range(start, end)
     transform_callback = get_transform_callback(search, replace, flags)
     new_text = buffer.transform_lines(line_index_iterator, transform_callback)
@@ -926,8 +930,7 @@ def substitute(editor, range_start, range_end, search, replace, flags):
 
 def yank(editor, range_start, range_end):
     buffer = editor.current_editor_buffer.buffer
-    cursor_position_row = buffer.document.cursor_position_row
-    start, end = _get_line_index(editor, cursor_position_row, range_start, range_end)
+    start, end = _get_range_index(editor, range_start, range_end)
     lines = buffer.document.lines
 
     yanked = "\n".join(lines[start:end])
@@ -936,8 +939,7 @@ def yank(editor, range_start, range_end):
 
 def delete(editor, range_start, range_end):
     buffer = editor.current_editor_buffer.buffer
-    cursor_position_row = buffer.document.cursor_position_row
-    start, end = _get_line_index(editor, cursor_position_row, range_start, range_end)
+    start, end = _get_range_index(editor, range_start, range_end)
 
     lines = buffer.document.lines
 
@@ -957,8 +959,7 @@ def delete(editor, range_start, range_end):
 
 def copy(editor, range_start, range_end, target_line):
     buffer = editor.current_editor_buffer.buffer
-    cursor_position_row = buffer.document.cursor_position_row
-    start, end = _get_line_index(editor, cursor_position_row, range_start, range_end)
+    start, end = _get_range_index(editor, range_start, range_end)
     lines = buffer.document.lines
 
     text = "\n".join(lines[start:end])
