@@ -972,6 +972,7 @@ def copy(editor, range_start, range_end, target_line):
     before = "\n".join(lines[: target_line + 1]) + "\n"
     after = "\n".join(lines[target_line + 1 :])
 
+    buffer.save_to_undo_stack()
     new_text = before + text + after
     # update text buffer
     buffer.document = Document(
