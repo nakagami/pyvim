@@ -861,13 +861,13 @@ def set_all(editor):
     run_in_terminal(handler)
 
 
-def _get_line_index(editor, s:str):
+def _get_line_index(editor, s: str):
     "int(line number string) - 1"
     line_index = None
     if s[0] == "'":
         line_index = int(editor.current_editor_buffer.buffer.mark[s[1]]) - 1
     elif s[0] == "$":
-        line_index = editor.current_editor_buffer.buffer.document.line_count -1
+        line_index = editor.current_editor_buffer.buffer.document.line_count - 1
     elif s[0] == ".":
         line_index = editor.current_editor_buffer.buffer.document.cursor_position_row
     else:
@@ -879,7 +879,9 @@ def _get_line_index(editor, s:str):
 def _get_range_index(editor, range_start, range_end):
     if not range_start:
         assert not range_end
-        range_start = range_end = editor.current_editor_buffer.buffer.document.cursor_position_row
+        range_start = range_end = (
+            editor.current_editor_buffer.buffer.document.cursor_position_row
+        )
     else:
         range_start = _get_line_index(editor, range_start)
         if range_end:
@@ -962,7 +964,8 @@ def delete(editor, range_start, range_end):
 def copy(editor, range_start, range_end, target_line):
     buffer = editor.current_editor_buffer.buffer
     start, end = _get_range_index(editor, range_start, range_end)
+    target_line = _get_line_index(editor, target_line)
     text = "\n".join(buffer.document.lines[start:end])
-    pos = buffer.document.translate_row_col_to_index(target_line+1, 0)
+    pos = buffer.document.translate_row_col_to_index(target_line + 1, 0)
     buffer.cursor_position(pos)
     buffer.document.insert_after(text)
