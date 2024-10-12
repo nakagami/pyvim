@@ -965,7 +965,18 @@ def copy(editor, range_start, range_end, target_line):
     buffer = editor.current_editor_buffer.buffer
     start, end = _get_range_index(editor, range_start, range_end)
     target_line = _get_line_index(editor, target_line)
-    text = "\n".join(buffer.document.lines[start:end])
+    lines = buffer.document.lines
+
+    text = "\n".join(lines[start:end]) + "\n"
+
     pos = buffer.document.translate_row_col_to_index(target_line + 1, 0)
-    buffer.cursor_position(pos)
-    buffer.document.insert_after(text)
+    before = "\n".join(lines[:pos])
+    after = "\n".join(lines[pos:])
+
+    new_text = before + text + after
+    # update text buffer
+    buffer.document = Document(
+        new_text,
+        Document(new_text).translate_row_col_to_index(target_line + 1, 0),
+    )
+    buffer.cursor_position = pos
