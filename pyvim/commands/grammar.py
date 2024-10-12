@@ -19,6 +19,9 @@ COMMAND_GRAMMAR = compile(
         # Delete command
         ((?P<range_start>\d+|\.|\'[a-z])(,(?P<range_end>\d+|\.|\'[a-z]|\$))?)?  (?P<command>d|delete[^\s]+) |
 
+        # Copy command
+        ((?P<range_start>\d+|\.|\'[a-z])(,(?P<range_end>\d+|\.|\'[a-z]|\$))?)?  (?P<command>co) (?P<target_line>\d+|\.|\'[a-z]) |
+
         # Commands accepting a location.
         (?P<command>%(commands_taking_locations)s)(?P<force>!?)  \s+   (?P<location>[^\s]+)   |
 

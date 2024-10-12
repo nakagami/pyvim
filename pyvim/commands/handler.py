@@ -6,6 +6,7 @@ from .commands import (
     substitute,
     yank,
     delete,
+    copy,
 )
 
 __all__ = ("handle_command",)
@@ -29,6 +30,7 @@ def handle_command(editor, input_string):
     search = variables.get("search")
     replace = variables.get("replace")
     flags = variables.get("flags", "")
+    target_line = variables.get("target_line")
 
     # Call command handler.
 
@@ -52,6 +54,8 @@ def handle_command(editor, input_string):
         yank(editor, range_start, range_end)
     elif command in ("d", "delete"):
         delete(editor, range_start, range_end)
+    elif command in ("co",):
+        copy(editor, range_start, range_end, target_line)
     else:
         # For unknown commands, show error message.
         editor.show_message("Not an editor command: %s" % input_string)
