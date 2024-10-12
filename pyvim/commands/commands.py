@@ -960,7 +960,7 @@ def delete(editor, range_start, range_end):
 def copy(editor, range_start, range_end, target_line):
     buffer = editor.current_editor_buffer.buffer
     start, end = _get_range_index(editor, range_start, range_end)
-    lines = buffer.document.lines
-
-    text = "\n".join(lines[start:end])
-    # TODO: copy text after target_line
+    text = "\n".join(buffer.document.lines[start:end])
+    pos = buffer.document.translate_row_col_to_index(target_line+1, 0)
+    buffer.cursor_position(pos)
+    buffer.document.insert_after(text)
