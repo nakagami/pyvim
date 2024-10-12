@@ -947,11 +947,11 @@ def delete(editor, range_start, range_end):
 
     lines = buffer.document.lines
 
-    before = "\n".join(lines[:start])
+    before = "\n".join(lines[:start]) + "\n"
     deleted = "\n".join(lines[start:end])
     after = "\n".join(lines[end:])
     get_app().clipboard.set_data(ClipboardData(deleted, SelectionType.LINES))
-
+    buffer.save_to_undo_stack()
     new_text = before + after
     # update text buffer
     buffer.document = Document(
