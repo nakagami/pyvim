@@ -580,7 +580,7 @@ def create_key_bindings(editor):
         indent by tab key
         """
         b = event.app.current_buffer
-        if b.expand_tab:
+        if hasattr(b, "expand_tab") and b.expand_tab:
             sw = b.shiftwidth
             col_mod = b.document.cursor_position_col % b.shiftwidth
             if col_mod:
