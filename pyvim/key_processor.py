@@ -59,8 +59,8 @@ class VimKeyProcessor(KeyProcessor):
                 self.reset()
                 self.empty_queue()
                 raise
-
-            self._editor.append_edit_command(key_press)
+            if key_press.key not in ("C", "D"):
+                self._editor.append_edit_command(key_press)
 
             if not is_flush and not is_cpr:
                 self.after_key_press.fire()
