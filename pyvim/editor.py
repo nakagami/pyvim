@@ -153,6 +153,7 @@ class Editor(object):
         self.last_substitute_text = ""
 
         self._last_edit_command = []
+        self._last_edit_command_arg = None
         self._in_edit_command = False
 
     def load_initial_files(
@@ -404,6 +405,8 @@ class Editor(object):
 
     def replay_edit_command(self):
         logger.debug("replay_edit_command() start")
+        if not self._last_edit_command_arg:
+            return
         if self._last_edit_command_arg != 1:
             self.application.key_processor.feed_multiple(
                 [KeyPress(c, data=c) for c in str(self._last_edit_command_arg)]
