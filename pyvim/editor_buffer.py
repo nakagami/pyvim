@@ -20,14 +20,14 @@ class EditorBuffer(object):
     etc... This wrapper contains the necessary data for the editor.
     """
 
-    def __init__(self, editor, location=None, text=None):
+    def __init__(self, editor, location=None, text=None, encoding="utf-8"):
         assert location is None or isinstance(location, str)
         assert text is None or isinstance(text, str)
         assert not (location and text)
 
         self._editor_ref = weakref.ref(editor)
         self.location = location
-        self.encoding = "utf-8"
+        self.encoding = encoding
 
         #: is_new: True when this file does not yet exist in the storage.
         self.is_new = True
