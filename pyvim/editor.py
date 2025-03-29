@@ -303,6 +303,7 @@ class Editor(object):
             "cursorline": self.cursorline,
             "corsorcolumn": self.cursorcolumn,
             "colorcolumn": self.colorcolumn,
+            "encoding": self.encoding,
         }
 
     def get_current_buffer_options(self):
