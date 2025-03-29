@@ -433,7 +433,7 @@ class WindowArrangement(object):
         # Start reporter.
         editor_buffer.run_reporter()
 
-    def _get_or_create_editor_buffer(self, location=None, text=None, encoding="utf-8"):
+    def _get_or_create_editor_buffer(self, location=None, text=None, encoding=""):
         """
         Given a location, return the `EditorBuffer` instance that we have if
         the file is already open, or create a new one.
