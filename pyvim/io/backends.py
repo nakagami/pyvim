@@ -3,6 +3,8 @@ import gzip
 import os
 import urllib
 
+import chardet
+
 from .base import EditorIO
 
 __all__ = (
@@ -37,13 +39,9 @@ class FileIO(EditorIO):
             with codecs.open(location, "r", encoding) as f:
                 return f.read(), encoding
 
-        # Try to open this file, using different encodings.
-        for e in ENCODINGS:
-            try:
-                with codecs.open(location, "r", e) as f:
-                    return f.read(), e
-            except UnicodeDecodeError:
-                pass  # Try next codec.
+        with open(location, "rb") as f:
+            data = f.read()
+            return _auto_decode(data)
 
         # Unable to open.
         raise Exception("Unable to open file: %r" % location)
@@ -171,10 +169,5 @@ def _auto_decode(data):
     """
     assert isinstance(data, bytes)
 
-    for e in ENCODINGS:
-        try:
-            return data.decode(e), e
-        except UnicodeDecodeError:
-            pass
-
-    return data.decode("utf-8", "ignore")
+    encoding = chardet.detect(data)["encoding"]
+    return data.decode(encoding, "ignore"), encoding
