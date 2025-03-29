@@ -847,7 +847,7 @@ def set_color_column(editor, value):
 @set_cmd("enc", accepts_value=True)
 def set_encoding(editor, value):
     "file encoding"
-    editor.encoding = encoding
+    editor.encoding = value
 
 
 @set_cmd("all")
