@@ -76,6 +76,7 @@ class Editor(object):
         self.cursorline = False  # ':set cursorline'
         self.cursorcolumn = False  # ':set cursorcolumn'
         self.colorcolumn = []  # ':set colorcolumn'. List of integers.
+        self.encoding = "utf-8"  # ':set encoding'
         # locations in command argument
         self.locations = []
         self.current_location_index = 0
