@@ -461,6 +461,8 @@ class WindowArrangement(object):
                 self._add_editor_buffer(eb)
 
                 return eb
+
+            eb.reload()
             return eb
 
     def open_buffer(self, location=None, show_in_current_window=False):
