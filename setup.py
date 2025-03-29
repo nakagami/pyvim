@@ -33,6 +33,7 @@ setup(
         "jedi",  # For Python autocompletion
         "pygments",  # For the syntax highlighting.
         "docopt",  # For command line arguments.
+        "chardet",
     ],
     entry_points={
         "console_scripts": [
