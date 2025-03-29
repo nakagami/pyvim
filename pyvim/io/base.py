@@ -28,7 +28,7 @@ class EditorIO(metaclass=ABCMeta):
         return True
 
     @abstractmethod
-    def read(self, location):
+    def read(self, location, encoding):
         """
         Read file for storage. Returns (text, encoding tuple.)
         Can raise IOError.

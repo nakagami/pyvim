@@ -306,7 +306,7 @@ class WindowArrangement(object):
 
         if location or text or new:
             editor_buffer = self._get_or_create_editor_buffer(
-                location=location, text=text
+                location=location, text=text, encoding=self.editor.encoding,
             )
         else:
             editor_buffer = None
@@ -320,7 +320,7 @@ class WindowArrangement(object):
 
         if location or text or new:
             editor_buffer = self._get_or_create_editor_buffer(
-                location=location, text=text
+                location=location, text=text, encoding=self.editor.encoding,
             )
         else:
             editor_buffer = None
@@ -433,7 +433,7 @@ class WindowArrangement(object):
         # Start reporter.
         editor_buffer.run_reporter()
 
-    def _get_or_create_editor_buffer(self, location=None, text=None):
+    def _get_or_create_editor_buffer(self, location=None, text=None, encoding=""):
         """
         Given a location, return the `EditorBuffer` instance that we have if
         the file is already open, or create a new one.
@@ -445,7 +445,7 @@ class WindowArrangement(object):
 
         if location is None:
             # Create and add an empty EditorBuffer
-            eb = EditorBuffer(self.editor, text=text)
+            eb = EditorBuffer(self.editor, text=text, encoding=encoding)
             self._add_editor_buffer(eb)
 
             return eb
@@ -457,10 +457,12 @@ class WindowArrangement(object):
             # Not found? Create one.
             if eb is None:
                 # Create and add EditorBuffer
-                eb = EditorBuffer(self.editor, location)
+                eb = EditorBuffer(self.editor, location, encoding=encoding)
                 self._add_editor_buffer(eb)
 
                 return eb
+
+            eb.reload()
             return eb
 
     def open_buffer(self, location=None, show_in_current_window=False):
@@ -545,7 +547,7 @@ class WindowArrangement(object):
         """
         Create a new tab page.
         """
-        eb = self._get_or_create_editor_buffer(location)
+        eb = self._get_or_create_editor_buffer(location, encoding=self.editor.encoding)
 
         self.tab_pages.insert(self.active_tab_index + 1, TabPage(Window(eb)))
         self.active_tab_index += 1

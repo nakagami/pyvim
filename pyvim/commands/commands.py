@@ -843,6 +843,13 @@ def set_color_column(editor, value):
         editor.colorcolumn = numbers
 
 
+@set_cmd("encoding", accepts_value=True)
+@set_cmd("enc", accepts_value=True)
+def set_encoding(editor, value):
+    "file encoding"
+    editor.encoding = value
+
+
 @set_cmd("all")
 def set_all(editor):
     def handler():

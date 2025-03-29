@@ -28,11 +28,14 @@ class FileIO(EditorIO):
     def exists(self, location):
         return os.path.exists(os.path.expanduser(location))
 
-    def read(self, location):
+    def read(self, location, encoding):
         """
         Read file from disk.
         """
         location = os.path.expanduser(location)
+        if encoding:
+            with codecs.open(location, "r", encoding) as f:
+                return f.read(), encoding
 
         # Try to open this file, using different encodings.
         for e in ENCODINGS:
@@ -69,11 +72,13 @@ class GZipFileIO(EditorIO):
     def exists(self, location):
         return FileIO().exists(location)
 
-    def read(self, location):
+    def read(self, location, encoding):
         location = os.path.expanduser(location)
 
         with gzip.open(location, "rb") as f:
             data = f.read()
+        if encoding:
+            return data.decode(encoding)
         return _auto_decode(data)
 
     def write(self, location, text, encoding):
@@ -98,7 +103,7 @@ class DirectoryIO(EditorIO):
     def exists(self, location):
         return os.path.isdir(location)
 
-    def read(self, directory):
+    def read(self, directory, encoding):
         # Read content.
         content = sorted(os.listdir(directory))
         directories = []
@@ -147,12 +152,14 @@ class HttpIO(EditorIO):
     def exists(self, location):
         return NotImplemented  # We don't know.
 
-    def read(self, location):
+    def read(self, location, encoding):
         # Do Http request.
-        bytes = urllib.request.urlopen(location).read()
+        data = urllib.request.urlopen(location).read()
+        if encoding:
+            return data.decode(encoding)
 
         # Return decoded.
-        return _auto_decode(bytes)
+        return _auto_decode(data)
 
     def write(self, location, text, encoding):
         raise NotImplementedError("Cannot write to HTTP.")
