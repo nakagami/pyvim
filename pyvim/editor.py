@@ -76,6 +76,7 @@ class Editor(object):
         self.cursorline = False  # ':set cursorline'
         self.cursorcolumn = False  # ':set cursorcolumn'
         self.colorcolumn = []  # ':set colorcolumn'. List of integers.
+        self.encoding = ""  # ':set encoding'
         # locations in command argument
         self.locations = []
         self.current_location_index = 0
@@ -302,6 +303,7 @@ class Editor(object):
             "cursorline": self.cursorline,
             "corsorcolumn": self.cursorcolumn,
             "colorcolumn": self.colorcolumn,
+            "encoding": self.encoding,
         }
 
     def get_current_buffer_options(self):
