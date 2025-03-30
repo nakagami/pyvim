@@ -188,7 +188,6 @@ class VimBuffer(buffer.Buffer):
     def encoding(self, v):
         self._encoding = v
 
-
     def get_options(self):
         return {
             "filetype": self.filetype,
