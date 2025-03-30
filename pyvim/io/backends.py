@@ -15,9 +15,6 @@ __all__ = (
 )
 
 
-ENCODINGS = ["utf-8", "latin-1"]
-
-
 class FileIO(EditorIO):
     """
     I/O backend for the native file system.
