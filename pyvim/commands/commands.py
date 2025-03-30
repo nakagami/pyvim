@@ -849,6 +849,11 @@ def set_encoding(editor, value):
     "file encoding"
     editor.encoding = value
 
+    if value is None:
+        editor.show_message("encoding=%s" % editor.encoding)
+    else:
+        editor.current_editor_buffer.buffer.encoding = value
+
 
 @set_cmd("all")
 def set_all(editor):
