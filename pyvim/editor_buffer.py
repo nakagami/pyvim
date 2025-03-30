@@ -90,7 +90,7 @@ class EditorBuffer(object):
                     # File could exist. Read it.
                     self.is_new = False
                     try:
-                        text, self.encoding = io.read(location, self.editor.encoding)
+                        text, self.encoding = io.read(location, self.editor.fileencoding)
 
                         # Replace \r\n by \n.
                         text = text.replace("\r\n", "\n")

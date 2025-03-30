@@ -843,16 +843,16 @@ def set_color_column(editor, value):
         editor.colorcolumn = numbers
 
 
-@set_cmd("encoding", accepts_value=True)
-@set_cmd("enc", accepts_value=True)
-def set_encoding(editor, value):
+@set_cmd("fileencoding", accepts_value=True)
+@set_cmd("fenc", accepts_value=True)
+def set_fileencoding(editor, value):
     "file encoding"
-    editor.encoding = value
+    editor.fileencoding = value
 
     if value is None:
-        editor.show_message("encoding=%s" % editor.encoding)
+        editor.show_message("fileencoding=%s" % editor.fileencoding)
     else:
-        editor.current_editor_buffer.buffer.encoding = value
+        editor.current_editor_buffer.buffer.fileencoding = value
 
 
 @set_cmd("all")

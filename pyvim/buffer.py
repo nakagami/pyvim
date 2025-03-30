@@ -46,7 +46,7 @@ class VimBuffer(buffer.Buffer):
         self._expand_tab = None
         self._tabstop = None
         self._shiftwidth = None
-        self._encoding = None
+        self._fileencoding = None
 
     def _search(
         self,
@@ -181,12 +181,12 @@ class VimBuffer(buffer.Buffer):
         self._shiftwidth = v
 
     @property
-    def encoding(self):
-        return self._editor.encoding if self._encoding is None else self._encoding
+    def fileencoding(self):
+        return self._editor.fileencoding if self._fileencoding is None else self._fileencoding
 
-    @encoding.setter
-    def encoding(self, v):
-        self._encoding = v
+    @fileencoding.setter
+    def fileencoding(self, v):
+        self._fileencoding = v
 
     def get_options(self):
         return {
@@ -194,7 +194,7 @@ class VimBuffer(buffer.Buffer):
             "expandtab": self.expand_tab,
             "tabstop": self.tabstop,
             "shiftwidth": self.shiftwidth,
-            "encoding": self.encoding,
+            "fileencoding": self.fileencoding,
         }
 
     def undo(self):
