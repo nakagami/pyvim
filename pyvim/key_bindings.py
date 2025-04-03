@@ -39,6 +39,31 @@ __all__ = ("create_key_bindings",)
 vi_register_names = string.ascii_lowercase + "0123456789"
 
 
+def delete_or_change_operator(event: E, text_object: TextObject) -> None:
+    with_register = len(event.key_sequence) == 1
+    delete_only = event.key_sequence[-1] == "d"
+
+    clipboard_data = None
+    buff = event.current_buffer
+
+    if text_object:
+        new_document, clipboard_data = text_object.cut(buff)
+        buff.document = new_document
+
+    # Set deleted/changed text to clipboard or named register.
+    if clipboard_data and clipboard_data.text:
+        if with_register:
+            reg_name = event.key_sequence[1].data
+            if reg_name in vi_register_names:
+                event.app.vi_state.named_registers[reg_name] = clipboard_data
+        else:
+            event.app.clipboard.set_data(clipboard_data)
+
+    # Only go back to insert mode in case of 'change'.
+    if text_object and not delete_only:
+        event.app.vi_state.input_mode = InputMode.INSERT
+
+
 def _create_operator_decorator(
     key_bindings: KeyBindings,
 ) -> Callable[..., Callable[[_OF], _OF]]:
@@ -60,6 +85,10 @@ def _create_operator_decorator(
         """
 
         def decorator(operator_func: _OF) -> _OF:
+            if keys[-1] in ("c", "d"):
+                # hook delete_or_change_operator
+                operator_func = delete_or_change_operator
+
             @key_bindings.add(
                 *keys,
                 filter=~vi_waiting_for_text_object_mode & filter & vi_navigation_mode,

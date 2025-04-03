@@ -84,7 +84,8 @@ def create_text_object_decorator(
                     Move handler for navigation mode.
                     """
                     text_object = text_object_func(event)
-                    event.current_buffer.cursor_position += text_object.start
+                    if text_object:
+                        event.current_buffer.cursor_position += text_object.start
 
             # Register a move selection operation.
             if not no_selection_handler:
