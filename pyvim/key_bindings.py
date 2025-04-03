@@ -60,7 +60,7 @@ def delete_or_change_operator(event: E, text_object: TextObject) -> None:
             event.app.clipboard.set_data(clipboard_data)
 
     # Only go back to insert mode in case of 'change'.
-    if not delete_only:
+    if text_object and not delete_only:
         event.app.vi_state.input_mode = InputMode.INSERT
 
 
