@@ -40,8 +40,7 @@ vi_register_names = string.ascii_lowercase + "0123456789"
 
 
 def delete_or_change_operator(event: E, text_object: TextObject) -> None:
-    if len(event.key_sequence) == 1:
-        with_register = False
+    with_register = len(event.key_sequence) == 1
     delete_only = event.key_sequence[-1] == "d"
 
     clipboard_data = None
@@ -88,7 +87,7 @@ def _create_operator_decorator(
         def decorator(operator_func: _OF) -> _OF:
             if keys[-1] in ("c", "d"):
                 # hook delete_or_change_operator
-                operetor_func = delete_or_change_operator
+                operator_func = delete_or_change_operator
 
             @key_bindings.add(
                 *keys,
