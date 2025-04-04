@@ -40,7 +40,7 @@ vi_register_names = string.ascii_lowercase + "0123456789"
 
 
 def delete_or_change_operator(event: E, text_object: TextObject) -> None:
-    with_register = len(event.key_sequence) == 1
+    with_register = len(event.key_sequence) > 1
     delete_only = event.key_sequence[-1] == "d"
 
     clipboard_data = None
