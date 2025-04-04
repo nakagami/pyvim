@@ -20,14 +20,14 @@ class EditorBuffer(object):
     etc... This wrapper contains the necessary data for the editor.
     """
 
-    def __init__(self, editor, location=None, text=None, encoding="utf-8"):
+    def __init__(self, editor, encoding, location=None, text=None):
         assert location is None or isinstance(location, str)
         assert text is None or isinstance(text, str)
         assert not (location and text)
 
         self._editor_ref = weakref.ref(editor)
         self.location = location
-        self.encoding = encoding
+        self.encoding = encoding if encoding else "utf-8"
 
         #: is_new: True when this file does not yet exist in the storage.
         self.is_new = True
@@ -91,7 +91,9 @@ class EditorBuffer(object):
                     # File could exist. Read it.
                     self.is_new = False
                     try:
-                        text, self.encoding = io.read(location, self.editor.fileencoding)
+                        text, self.encoding = io.read(
+                            location, self.editor.fileencoding
+                        )
 
                         # Replace \r\n by \n.
                         text = text.replace("\r\n", "\n")
@@ -144,7 +146,9 @@ class EditorBuffer(object):
         done = False
         while not done:
             try:
-                io.write(self.location, self.buffer.text + "\n", self.buffer.fileencoding)
+                io.write(
+                    self.location, self.buffer.text + "\n", self.buffer.fileencoding
+                )
                 self.is_new = False
                 if toggle_write_permission:
                     try:

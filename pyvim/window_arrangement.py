@@ -445,7 +445,7 @@ class WindowArrangement(object):
 
         if location is None:
             # Create and add an empty EditorBuffer
-            eb = EditorBuffer(self.editor, text=text, encoding=encoding)
+            eb = EditorBuffer(self.editor, encoding, text=text)
             self._add_editor_buffer(eb)
 
             return eb
@@ -457,7 +457,7 @@ class WindowArrangement(object):
             # Not found? Create one.
             if eb is None:
                 # Create and add EditorBuffer
-                eb = EditorBuffer(self.editor, location, encoding=encoding)
+                eb = EditorBuffer(self.editor, encoding, location)
                 self._add_editor_buffer(eb)
 
                 return eb
