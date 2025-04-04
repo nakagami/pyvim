@@ -306,7 +306,9 @@ class WindowArrangement(object):
 
         if location or text or new:
             editor_buffer = self._get_or_create_editor_buffer(
-                location=location, text=text, encoding=self.editor.fileencoding,
+                location=location,
+                text=text,
+                encoding=self.editor.fileencoding,
             )
         else:
             editor_buffer = None
@@ -320,7 +322,9 @@ class WindowArrangement(object):
 
         if location or text or new:
             editor_buffer = self._get_or_create_editor_buffer(
-                location=location, text=text, encoding=self.editor.fileencoding,
+                location=location,
+                text=text,
+                encoding=self.editor.fileencoding,
             )
         else:
             editor_buffer = None
@@ -547,7 +551,9 @@ class WindowArrangement(object):
         """
         Create a new tab page.
         """
-        eb = self._get_or_create_editor_buffer(location, encoding=self.editor.fileencoding)
+        eb = self._get_or_create_editor_buffer(
+            location, encoding=self.editor.fileencoding
+        )
 
         self.tab_pages.insert(self.active_tab_index + 1, TabPage(Window(eb)))
         self.active_tab_index += 1
