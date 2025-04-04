@@ -823,7 +823,8 @@ class EditorLayout(object):
                 result.append(("", prefix))
 
             # Add softwrap mark.
-            result.append(("class:soft-wrap", "..."))
+            if self.editor.display_unprintable_characters:
+                result.append(("class:soft-wrap", "..."))
             return result
         return ""
 
