@@ -5,10 +5,12 @@ Usage:
     pyvim [-p] [-o] [-O] [-u <pyvimrc>] [<location>...]
 
 Options:
-    -p           : Open files in tab pages.
-    -o           : Split horizontally.
-    -O           : Split vertically.
-    -u <pyvimrc> : Use this .pyvimrc file instead.
+    -p            : Open files in tab pages.
+    -o            : Split horizontally.
+    -O            : Split vertically.
+    -u <pyvimrc>  : Use this .pyvimrc file instead.
+    -e <encoding> : File encoding
+    -t <filetype> : File type
 """
 
 import docopt
