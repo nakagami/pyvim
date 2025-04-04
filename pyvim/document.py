@@ -1,6 +1,12 @@
 import re
+from prompt_toolkit import document
 from prompt_toolkit.document import Document
 from .utils import re_finditer
+
+# patch word forward regex
+document._FIND_WORD_RE = re.compile(r"(\w+)")
+document._FIND_CURRENT_WORD_RE = re.compile(r"^(\w+)")
+document._FIND_CURRENT_WORD_INCLUDE_TRAILING_WHITESPACE_RE = re.compile(r"^((\w+)\s*)")
 
 
 __all__ = ("Document",)
