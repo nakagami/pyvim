@@ -46,7 +46,7 @@ class VimBuffer(buffer.Buffer):
         self._expand_tab = None
         self._tabstop = None
         self._shiftwidth = None
-        self._fileencoding = None
+        self._fileencoding = "utf-8"
 
     def _search(
         self,
@@ -182,7 +182,7 @@ class VimBuffer(buffer.Buffer):
 
     @property
     def fileencoding(self):
-        return self._editor.fileencoding if self._fileencoding is None else self._fileencoding
+        return self._fileencoding
 
     @fileencoding.setter
     def fileencoding(self, v):
