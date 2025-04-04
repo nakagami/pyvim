@@ -2,15 +2,14 @@
 """
 pyvim: Pure Python Vim clone.
 Usage:
-    pyvim [-p] [-o] [-O] [-u <pyvimrc>] [<location>...]
+    pyvim [-p] [-o] [-O] [-u <pyvimrc>] [-e encoding] [<location>...]
 
 Options:
     -p            : Open files in tab pages.
     -o            : Split horizontally.
     -O            : Split vertically.
     -u <pyvimrc>  : Use this .pyvimrc file instead.
-    -e <encoding> : File encoding
-    -t <filetype> : File type
+    -e <encoding> : File encoding.
 """
 
 import docopt
@@ -29,9 +28,13 @@ def run():
     hsplit = a["-o"]
     vsplit = a["-O"]
     pyvimrc = a["-u"]
+    encoding = a["-e"]
 
     # Create new editor instance.
     editor = Editor()
+
+    if encoding:
+        editor.fileencoding = encoding
 
     # Apply rc file.
     if pyvimrc:
