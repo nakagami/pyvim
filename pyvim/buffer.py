@@ -36,6 +36,8 @@ class VimBuffer(buffer.Buffer):
     def __init__(self, *args, **kwargs):
         editor = kwargs["editor"]
         del kwargs["editor"]
+        encoding = kwargs["encoding"]
+        del kwargs["encoding"]
         super().__init__(*args, **kwargs)
         self._editor = editor
         self.mark = {}
@@ -46,7 +48,7 @@ class VimBuffer(buffer.Buffer):
         self._expand_tab = None
         self._tabstop = None
         self._shiftwidth = None
-        self._fileencoding = self._editor.fileencoding if self._editor.fileencoding else "utf-8"
+        self._fileencoding = encoding
 
     def _search(
         self,

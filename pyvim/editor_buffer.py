@@ -51,6 +51,7 @@ class EditorBuffer(object):
             complete_while_typing=True,
             on_text_changed=lambda _: self.run_reporter(),
             editor=editor,
+            encoding=self.encoding,
         )
 
         # List of reporting errors.
