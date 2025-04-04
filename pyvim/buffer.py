@@ -47,6 +47,7 @@ class VimBuffer(buffer.Buffer):
         self._tabstop = None
         self._shiftwidth = None
         self._fileencoding = self._editor.fileencoding if self._editor.fileencoding else "utf-8"
+
     def _search(
         self,
         search_state: SearchState,
