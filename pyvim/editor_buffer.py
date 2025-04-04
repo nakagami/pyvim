@@ -20,7 +20,7 @@ class EditorBuffer(object):
     etc... This wrapper contains the necessary data for the editor.
     """
 
-    def __init__(self, editor, encoding, location=None, text=None):
+    def __init__(self, editor, encoding=None, location=None, text=None):
         assert location is None or isinstance(location, str)
         assert text is None or isinstance(text, str)
         assert not (location and text)
