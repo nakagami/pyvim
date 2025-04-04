@@ -144,7 +144,7 @@ class EditorBuffer(object):
         done = False
         while not done:
             try:
-                io.write(self.location, self.buffer.text + "\n", self.encoding)
+                io.write(self.location, self.buffer.text + "\n", self.buffer.fileencoding)
                 self.is_new = False
                 if toggle_write_permission:
                     try:
