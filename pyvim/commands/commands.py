@@ -850,7 +850,7 @@ def set_fileencoding(editor, value):
     editor.fileencoding = value
 
     if value is None:
-        editor.show_message("fileencoding=%s" % editor.fileencoding)
+        editor.show_message("fileencoding=%s" % editor.current_editor_buffer.buffer.fileencoding)
     else:
         editor.current_editor_buffer.buffer.fileencoding = value
 
