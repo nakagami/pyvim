@@ -177,10 +177,14 @@ def create_key_bindings(editor):
         """
         Escape goes to vi navigation mode.
         """
+        vi_state = event.app.vi_state
+        if vi_state.input_mode == InputMode.INSERT and event.current_buffer.complete_state:
+            event.current_buffer.cancel_completion()
+            return
+
         editor.finish_edit_command(event)
 
         buffer = event.current_buffer
-        vi_state = event.app.vi_state
 
         if vi_state.input_mode in (InputMode.INSERT, InputMode.REPLACE):
             buffer.cursor_position += buffer.document.get_cursor_left_position()
@@ -489,13 +493,6 @@ def create_key_bindings(editor):
                     buffer.text = document.text[:i] + document.text[i + 1 :]
                     buffer.cursor_position = cursor_position - 1
                     break
-
-    @kb.add("c-e", filter=vi_insert_mode)
-    def _cancel_completion(event: E) -> None:
-        """
-        Cancel completion. Go back to originally typed text.
-        """
-        event.current_buffer.cancel_completion()
 
     @kb.add("enter", filter=in_insert_mode & is_multiline)
     def _newline(event: E) -> None:
