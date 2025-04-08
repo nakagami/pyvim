@@ -178,9 +178,6 @@ def create_key_bindings(editor):
         Escape goes to vi navigation mode.
         """
         vi_state = event.app.vi_state
-        if vi_state.input_mode == InputMode.INSERT and event.current_buffer.complete_state:
-            event.current_buffer.cancel_completion()
-            return
 
         editor.finish_edit_command(event)
 
@@ -467,6 +464,10 @@ def create_key_bindings(editor):
             text = event.current_buffer.delete_before_cursor(count=count)
             event.app.clipboard.set_text(text)
             editor.finish_edit_command()
+
+    @kb.add("c-c", filter=in_insert_mode)
+    def _cancel_completion(event):
+        event.current_buffer.cancel_completion()
 
     @kb.add("<", "<", filter=vi_navigation_mode)
     @kb.add("c-d", filter=in_insert_mode)
