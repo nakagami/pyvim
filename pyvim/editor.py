@@ -64,7 +64,7 @@ class Editor(object):
         self.tabstop = 4  # Number of spaces that a tab character represents.
         self.shiftwidth = 4  # Number of spaces at indent/unindent
         self.incsearch = True  # Show matches while typing search string.
-        self.ignore_case = True  # Ignore case while searching.
+        self.ignore_case = False  # Ignore case while searching.
         self.enable_mouse_support = False
         self.display_unprintable_characters = False  # ':set list'
         self.enable_jedi = True  # ':set jedi', for Python Jedi completion.
