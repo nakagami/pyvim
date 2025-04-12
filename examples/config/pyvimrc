@@ -1,6 +1,6 @@
 # vim: set ft=python:
 """
-Pyvim configuration. Save to file to: ~/.pyvimrc
+Pyvim configuration. Save file to ~/.pyvimrc
 """
 
 import sys
