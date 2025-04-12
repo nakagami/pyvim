@@ -2,6 +2,7 @@
 """
 Pyvim configuration. Save to file to: ~/.pyvimrc
 """
+
 import sys
 import os
 from prompt_toolkit.application import run_in_terminal
@@ -10,9 +11,7 @@ from prompt_toolkit.key_binding.key_processor import KeyPress
 from prompt_toolkit.keys import Keys
 from subprocess import call
 
-__all__ = (
-    'configure',
-)
+__all__ = ("configure",)
 
 
 def on_open_buffer(location, buffer):
@@ -58,14 +57,13 @@ def configure(editor):
     editor.enable_wrapscan = True
 
     # Apply colorscheme. (:colorscheme vim)
-    editor.use_colorscheme('vim')
+    editor.use_colorscheme("vim")
 
     editor.on_open_buffer = on_open_buffer
 
-
     # Add custom key bindings:
 
-    @editor.add_key_binding('j', 'j', filter=ViInsertMode())
+    @editor.add_key_binding("j", "j", filter=ViInsertMode())
     def _(event):
         """
         Typing 'jj' in Insert mode, should go back to navigation mode.
@@ -94,6 +92,6 @@ def configure(editor):
         # not destroy the window layout.
         def execute():
             call([sys.executable, editor_buffer.location])
-            input('Press enter to continue...')
+            input("Press enter to continue...")
 
         run_in_terminal(execute)
