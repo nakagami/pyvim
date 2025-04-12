@@ -39,10 +39,8 @@ __all__ = ("create_key_bindings",)
 vi_register_names = string.ascii_lowercase + "0123456789"
 
 
-def delete_or_change_operator(event: E, text_object: TextObject) -> None:
+def delete_operator(event: E, text_object: TextObject) -> None:
     with_register = len(event.key_sequence) > 1
-    delete_only = event.key_sequence[-1] == "d"
-
     clipboard_data = None
     buff = event.current_buffer
 
@@ -59,8 +57,27 @@ def delete_or_change_operator(event: E, text_object: TextObject) -> None:
         else:
             event.app.clipboard.set_data(clipboard_data)
 
-    # Only go back to insert mode in case of 'change'.
-    if text_object and not delete_only:
+
+def change_operator(event: E, text_object: TextObject) -> None:
+    with_register = len(event.key_sequence) > 1
+    clipboard_data = None
+    buff = event.current_buffer
+
+    if text_object:
+        new_document, clipboard_data = text_object.cut(buff)
+        buff.document = new_document
+
+    # Set deleted/changed text to clipboard or named register.
+    if clipboard_data and clipboard_data.text:
+        if with_register:
+            reg_name = event.key_sequence[1].data
+            if reg_name in vi_register_names:
+                event.app.vi_state.named_registers[reg_name] = clipboard_data
+        else:
+            event.app.clipboard.set_data(clipboard_data)
+
+    # Back to insert mode in case of 'change'.
+    if text_object:
         event.app.vi_state.input_mode = InputMode.INSERT
 
 
@@ -85,9 +102,10 @@ def _create_operator_decorator(
         """
 
         def decorator(operator_func: _OF) -> _OF:
-            if keys[-1] in ("c", "d"):
-                # hook delete_or_change_operator
-                operator_func = delete_or_change_operator
+            if keys[-1] == "d":
+                operator_func = delete_operator
+            elif keys[-1] == "c":
+                operator_func = change_operator
 
             @key_bindings.add(
                 *keys,
@@ -177,11 +195,10 @@ def create_key_bindings(editor):
         """
         Escape goes to vi navigation mode.
         """
-        vi_state = event.app.vi_state
-
         editor.finish_edit_command(event)
 
         buffer = event.current_buffer
+        vi_state = event.app.vi_state
 
         if vi_state.input_mode in (InputMode.INSERT, InputMode.REPLACE):
             buffer.cursor_position += buffer.document.get_cursor_left_position()
@@ -465,10 +482,6 @@ def create_key_bindings(editor):
             event.app.clipboard.set_text(text)
             editor.finish_edit_command()
 
-    @kb.add("c-c", filter=in_insert_mode)
-    def _cancel_completion(event):
-        event.current_buffer.cancel_completion()
-
     @kb.add("<", "<", filter=vi_navigation_mode)
     @kb.add("c-d", filter=in_insert_mode)
     def _unindent(event):
@@ -494,6 +507,13 @@ def create_key_bindings(editor):
                     buffer.text = document.text[:i] + document.text[i + 1 :]
                     buffer.cursor_position = cursor_position - 1
                     break
+
+    @kb.add("c-e", filter=vi_insert_mode)
+    def _cancel_completion(event: E) -> None:
+        """
+        Cancel completion. Go back to originally typed text.
+        """
+        event.current_buffer.cancel_completion()
 
     @kb.add("enter", filter=in_insert_mode & is_multiline)
     def _newline(event: E) -> None:
@@ -607,9 +627,6 @@ def create_key_bindings(editor):
         indent by tab key
         """
         b = event.app.current_buffer
-        if b.complete_state:
-            b.complete_state = None
-            return
         if hasattr(b, "expand_tab") and b.expand_tab:
             sw = b.shiftwidth
             col_mod = b.document.cursor_position_col % b.shiftwidth
