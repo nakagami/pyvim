@@ -20,9 +20,9 @@ def on_open_buffer(location, buffer):
             case ".go":
                 buffer.expand_tab = False
             case ".ex":
-                buffer.expand_tab = True
-                buffer.tabstop = 2
-                buffer.shifwidth = 2
+                buffer.tabstop = buffer.shifwidth = 2
+            case ".exs":
+                buffer.tabstop = buffer.shifwidth = 2
 
 
 def configure(editor):
