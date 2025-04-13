@@ -503,35 +503,23 @@ class WindowStatusBarRuler(ConditionalContainer):
     """
 
     def __init__(self, editor, buffer_window, buffer):
-        def get_scroll_text():
-            info = buffer_window.render_info
-            scroll_text = ""
-            if info:
-                if info.full_height_visible:
-                    scroll_text = "All"
-                elif info.top_visible:
-                    scroll_text = "Top"
-                elif info.bottom_visible:
-                    scroll_text = "Bot"
-                else:
-                    scroll_text = f"{info.vertical_scroll_percentage:0>2}%"
-            logger.debug(f"{scroll_text=}")
-            return scroll_text
-
         def get_tokens():
-            main_document = buffer.document
+            document = buffer.document
+            percentage = int(
+                (document.cursor_position_row + 1) / document.line_count * 100.0
+            )
 
             return [
                 (
                     "class:cursorposition",
                     "(%i,%i)"
                     % (
-                        main_document.cursor_position_row + 1,
-                        main_document.cursor_position_col + 1,
+                        document.cursor_position_row + 1,
+                        document.cursor_position_col + 1,
                     ),
                 ),
                 ("", " - "),
-                ("class:percentage", get_scroll_text()),
+                ("class:percentage", f"{percentage:3}%"),
                 ("", " "),
             ]
 
