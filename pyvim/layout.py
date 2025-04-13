@@ -44,7 +44,7 @@ from prompt_toolkit.widgets.toolbars import (
     CompletionsToolbar,
 )
 
-from .utils import re_finditer
+from .utils import re_finditer, getLogger
 from .commands.lexer import create_command_lexer
 from .lexer import DocumentLexer
 from .welcome_message import (
@@ -63,6 +63,9 @@ __all__ = (
     "EditorLayout",
     "get_terminal_title",
 )
+
+
+logger = getLogger()
 
 
 def _highlight_search_processor_apply_transformation(
@@ -502,19 +505,18 @@ class WindowStatusBarRuler(ConditionalContainer):
     def __init__(self, editor, buffer_window, buffer):
         def get_scroll_text():
             info = buffer_window.render_info
-
+            scroll_text = ""
             if info:
                 if info.full_height_visible:
-                    return "All"
+                    scroll_text = "All"
                 elif info.top_visible:
-                    return "Top"
+                    scroll_text = "Top"
                 elif info.bottom_visible:
-                    return "Bot"
+                    scroll_text = "Bot"
                 else:
-                    percentage = info.vertical_scroll_percentage
-                    return "%2i%%" % percentage
-
-            return ""
+                    scroll_text = f"{info.vertical_percentage:0>2}%"
+            logger.debug(f"{scroll_text=}")
+            return scroll_text
 
         def get_tokens():
             main_document = buffer.document
