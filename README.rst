@@ -8,8 +8,6 @@ to prove the usefulness of the `python-prompt-toolkit <https://github.com/prompt
 
 I am trying to modify it to a more vi/vim like editor.
 
-.. image :: https://github.com/nakagami/pyvim/raw/master/docs/images/welcome-screen.png
-
 
 Installation
 ------------
@@ -22,30 +20,6 @@ Execute bellow pip command in the python virtual environment of your project.
 
 
 And you can execute ``pyvim`` command.
-
-Some more screenshots
----------------------
-
-Editing its own source code:
-
-.. image :: https://github.com/nakagami/pyvim/raw/master/docs/images/editing-pyvim-source.png
-
-Window layouts (horizontal and vertical splits + tab pages.)
-
-.. image :: https://github.com/nakagami/pyvim/raw/master/docs/images/window-layout.png
-
-Pyflakes for Python code checking and Jedi for autocompletion:
-
-.. image :: https://github.com/nakagami/pyvim/raw/master/docs/images/pyflakes-and-jedi.png
-
-Other colorschemes:
-
-.. image :: https://github.com/nakagami/pyvim/raw/master/docs/images/colorschemes.png
-
-Chinese and Japanese input (double width characters):
-
-.. image :: https://raw.githubusercontent.com/nakagami/pyvim/master/docs/images/cjk.png?v2
-
 
 Configuring pyvim
 -----------------
