@@ -514,7 +514,7 @@ class WindowStatusBarRuler(ConditionalContainer):
                 elif info.bottom_visible:
                     scroll_text = "Bot"
                 else:
-                    scroll_text = f"{info.vertical_percentage:0>2}%"
+                    scroll_text = f"{info.vertical_scroll_percentage:0>2}%"
             logger.debug(f"{scroll_text=}")
             return scroll_text
 
