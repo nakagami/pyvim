@@ -44,6 +44,7 @@ from prompt_toolkit.widgets.toolbars import (
     CompletionsToolbar,
 )
 
+from .document import Document
 from .utils import re_finditer, getLogger
 from .commands.lexer import create_command_lexer
 from .lexer import DocumentLexer
@@ -66,6 +67,35 @@ __all__ = (
 
 
 logger = getLogger()
+
+
+class CustomHighlightMatchingBracketProcessor(HighlightMatchingBracketProcessor):
+    def _get_positions_to_highlight(self, document: Document) -> list[tuple[int, int]]:
+        """
+        Return a list of (row, col) tuples that need to be highlighted.
+        """
+        pos: int | None
+
+        # Try for the character under the cursor.
+        if document.current_char and document.current_char in self.chars:
+            pos = document.find_matching_bracket_position(
+                start_pos=document.cursor_position - self.max_cursor_distance,
+                end_pos=document.cursor_position + self.max_cursor_distance,
+            )
+
+        else:
+            pos = None
+
+        # Return a list of (row, col) tuples that need to be highlighted.
+        if pos:
+            pos += document.cursor_position  # pos is relative.
+            row, col = document.translate_index_to_position(pos)
+            return [
+                (row, col),
+                (document.cursor_position_row, document.cursor_position_col),
+            ]
+        else:
+            return []
 
 
 def _highlight_search_processor_apply_transformation(
@@ -788,7 +818,7 @@ class EditorLayout(object):
                 HighlightIncrementalSearchProcessor(),
                 Condition(lambda: self.editor.highlight_search) & preview_search,
             ),
-            HighlightMatchingBracketProcessor(),
+            CustomHighlightMatchingBracketProcessor(),
             DisplayMultipleCursors(),
         ]
 
