@@ -306,25 +306,19 @@ def create_key_bindings(editor):
 
         # Split string in before/deleted/after text.
         lines = buffer.document.lines
+        before = lines[: buffer.document.cursor_position_row]
 
-        before = "\n".join(lines[: buffer.document.cursor_position_row])
-        deleted = "\n".join(
-            lines[
-                buffer.document.cursor_position_row : buffer.document.cursor_position_row
-                + event.arg
-            ]
-        )
-        after = "\n".join(lines[buffer.document.cursor_position_row + event.arg :])
-
-        # Set new text.
-        if before and after:
-            before = before + "\n"
-
+        deleted = lines[
+            buffer.document.cursor_position_row : buffer.document.cursor_position_row
+            + event.arg
+        ]
+        after = lines[buffer.document.cursor_position_row + event.arg :]
         # Set text and cursor position.
+        new_text = "\n".join(before + after)
         buffer.document = Document(
-            text=before + after,
+            text=new_text,
             # Cursor At the start of the first 'after' line, after the leading whitespace.
-            cursor_position=len(before) + len(after) - len(after.lstrip(" ")),
+            cursor_position=len(new_text) - len("\n".join(after).lstrip(" ")),
         )
 
         # Set clipboard data
