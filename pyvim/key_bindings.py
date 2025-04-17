@@ -307,7 +307,6 @@ def create_key_bindings(editor):
         # Split string in before/deleted/after text.
         lines = buffer.document.lines
         before = lines[: buffer.document.cursor_position_row]
-
         deleted = lines[
             buffer.document.cursor_position_row : buffer.document.cursor_position_row
             + event.arg
@@ -322,7 +321,7 @@ def create_key_bindings(editor):
         )
 
         # Set clipboard data
-        event.app.clipboard.set_data(ClipboardData(deleted, SelectionType.LINES))
+        event.app.clipboard.set_data(ClipboardData("\n".join(deleted), SelectionType.LINES))
 
         editor.finish_edit_command()
 
