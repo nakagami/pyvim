@@ -7,7 +7,6 @@ from pyvim.reporting import report
 
 import stat
 import os
-import weakref
 
 __all__ = ("EditorBuffer",)
 
