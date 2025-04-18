@@ -34,12 +34,9 @@ buffer.CompletionState.new_text_and_position = _new_text_and_position
 
 class VimBuffer(buffer.Buffer):
     def __init__(self, *args, **kwargs):
-        editor = kwargs["editor"]
-        del kwargs["editor"]
-        encoding = kwargs["encoding"]
-        del kwargs["encoding"]
+        self.editor_buffer = kwargs["editor_buffer"]      # EditorBuffer
+        del kwargs["editor_buffer"]
         super().__init__(*args, **kwargs)
-        self._editor = editor
         self.mark = {}
 
         # Vi options.
@@ -48,7 +45,7 @@ class VimBuffer(buffer.Buffer):
         self._expand_tab = None
         self._tabstop = None
         self._shiftwidth = None
-        self._fileencoding = encoding
+        self._fileencoding = self.editor_buffer.encoding
 
     def _search(
         self,
@@ -64,7 +61,7 @@ class VimBuffer(buffer.Buffer):
 
         text = search_state.text
         direction = search_state.direction
-        ignore_case = self._editor.ignore_case
+        ignore_case = self.editor_buffer.editor.ignore_case
 
         def search_once(
             working_index: int, document: Document
@@ -86,7 +83,7 @@ class VimBuffer(buffer.Buffer):
                         working_index,
                         Document(document.text, document.cursor_position + new_index),
                     )
-                elif self._editor.enable_wrapscan:
+                elif self.editor_buffer.editor.enable_wrapscan:
                     # No match, go forward in the history. (Include len+1 to wrap around.)
                     # (Here we should always include all cursor positions, because
                     # it's a different line.)
@@ -99,7 +96,7 @@ class VimBuffer(buffer.Buffer):
                         )
                         if new_index is not None:
                             return (i, Document(document.text, new_index))
-                self._editor.show_message(
+                self.editor_buffer.editor.show_message(
                     f"Search hit BOTTOM without match for: {text}"
                 )
             else:  # search BACKWARDS
@@ -111,7 +108,7 @@ class VimBuffer(buffer.Buffer):
                         working_index,
                         Document(document.text, document.cursor_position + new_index),
                     )
-                elif self._editor.enable_wrapscan:
+                elif self.editor_buffer.editor.enable_wrapscan:
                     # No match, go back in the history. (Include -1 to wrap around.)
                     for i in range(working_index - 1, -2, -1):
                         i %= len(self._working_lines)
@@ -127,7 +124,7 @@ class VimBuffer(buffer.Buffer):
                                 i,
                                 Document(document.text, len(document.text) + new_index),
                             )
-                self._editor.show_message(f"Search hit TOP without match for: {text}")
+                self.editor_buffer.editor.show_message(f"Search hit TOP without match for: {text}")
             return None
 
         # Do 'count' search iterations.
@@ -152,7 +149,7 @@ class VimBuffer(buffer.Buffer):
 
     @property
     def autoindent(self):
-        return self._editor.autoindent if self._autoindent is None else self._autoindent
+        return self.editor_buffer.editor.autoindent if self._autoindent is None else self._autoindent
 
     @autoindent.setter
     def autoindent(self, v):
@@ -160,7 +157,7 @@ class VimBuffer(buffer.Buffer):
 
     @property
     def expand_tab(self):
-        return self._editor.expand_tab if self._expand_tab is None else self._expand_tab
+        return self.editor_buffer.editor.expand_tab if self._expand_tab is None else self._expand_tab
 
     @expand_tab.setter
     def expand_tab(self, v):
@@ -168,7 +165,9 @@ class VimBuffer(buffer.Buffer):
 
     @property
     def tabstop(self):
-        return self._editor.tabstop if self._tabstop is None else self._tabstop
+        if self._tabstop:
+            return self._tabstop
+        return self.editor_buffer.editor.tabstop
 
     @tabstop.setter
     def tabstop(self, v):
@@ -176,7 +175,9 @@ class VimBuffer(buffer.Buffer):
 
     @property
     def shiftwidth(self):
-        return self._editor.shiftwidth if self._shiftwidth is None else self._shiftwidth
+        if self._shiftwidth:
+            return self._shiftwidth
+        return self.editor_buffer.editor.shiftwidth
 
     @shiftwidth.setter
     def shiftwidth(self, v):
