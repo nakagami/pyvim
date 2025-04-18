@@ -236,7 +236,7 @@ class VimBuffer(buffer.Buffer):
         logger.debug(
             f"go_to_completion({index}) completion_start={s.completion_start},completion_text={s.completion_text}"
         )
-        self._editor.append_edit_completion(s.completion_start, s.completion_text)
+        self.editor_buffer.editor.append_edit_completion(s.completion_start, s.completion_text)
 
     def apply_completion(self, *args, **kwargs):
         logger.debug("apply_completion()")
