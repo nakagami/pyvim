@@ -857,6 +857,34 @@ def set_fileencoding(editor, value):
         editor.current_editor_buffer.buffer.fileencoding = value
 
 
+@set_cmd("modeline")
+def set_modeline(editor):
+    "Enable the modeline option."
+    editor.modeline = True
+
+
+@set_cmd("nomodeline")
+def set_nomodeline(editor):
+    "Disable the modeline option."
+    editor.modeline = False
+
+
+@set_cmd("modelines", accepts_value=True)
+def set_modelines(editor, value):
+    "modelines"
+    if value is None:
+        editor.show_message("modelines=%i" % editor.modelines)
+    else:
+        try:
+            value = int(value)
+            if value > 0:
+                editor.modelines = value
+            else:
+                editor.show_message("Argument must be positive")
+        except ValueError:
+            editor.show_message("Number required after =")
+
+
 @set_cmd("all")
 def set_all(editor):
     def handler():

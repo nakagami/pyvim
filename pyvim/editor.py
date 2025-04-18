@@ -77,6 +77,8 @@ class Editor(object):
         self.cursorcolumn = False  # ':set cursorcolumn'
         self.colorcolumn = []  # ':set colorcolumn'. List of integers.
         self.fileencoding = ""  # ':set fileencoding'
+        self.modeline = True    # ':set modeline'
+        self.modelines = 5      # Number of modeline count
         # locations in command argument
         self.locations = []
         self.current_location_index = 0
@@ -304,6 +306,8 @@ class Editor(object):
             "corsorcolumn": self.cursorcolumn,
             "colorcolumn": self.colorcolumn,
             "fileencoding": self.fileencoding,
+            "modeline": self.modeline,
+            "modelines": self.modelines,
         }
 
     def get_current_buffer_options(self):
