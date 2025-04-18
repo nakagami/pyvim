@@ -25,7 +25,7 @@ class EditorBuffer(object):
         assert text is None or isinstance(text, str)
         assert not (location and text)
 
-        self._editor_ref = weakref.ref(editor)
+        self.editor = editor
         self.location = location
         self.encoding = encoding if encoding else "utf-8"
 
@@ -41,6 +41,8 @@ class EditorBuffer(object):
         else:
             text = text or ""
 
+        # TODO: read modeline and if fileencoding is changed reload
+
         self._file_content = text
 
         # Create Buffer.
@@ -50,18 +52,12 @@ class EditorBuffer(object):
             document=Document(text, 0),
             complete_while_typing=True,
             on_text_changed=lambda _: self.run_reporter(),
-            editor=editor,
-            encoding=self.encoding,
+            editor_buffer=self,
         )
 
         # List of reporting errors.
         self.report_errors = []
         self._reporter_is_running = False
-
-    @property
-    def editor(self):
-        """Back reference to the Editor."""
-        return self._editor_ref()
 
     @property
     def has_unsaved_changes(self):
