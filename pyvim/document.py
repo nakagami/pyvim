@@ -6,7 +6,9 @@ from .utils import re_finditer
 # patch word forward regex
 document._FIND_WORD_RE = re.compile(r"(\w+|\S+)")
 document._FIND_CURRENT_WORD_RE = re.compile(r"^(\w+|\S+)")
-document._FIND_CURRENT_WORD_INCLUDE_TRAILING_WHITESPACE_RE = re.compile(r"^((\w+|\S+)\s*)")
+document._FIND_CURRENT_WORD_INCLUDE_TRAILING_WHITESPACE_RE = re.compile(
+    r"^((\w+|\S+)\s*)"
+)
 
 
 __all__ = ("Document",)

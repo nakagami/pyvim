@@ -34,7 +34,7 @@ buffer.CompletionState.new_text_and_position = _new_text_and_position
 
 class VimBuffer(buffer.Buffer):
     def __init__(self, *args, **kwargs):
-        self.editor_buffer = kwargs["editor_buffer"]      # EditorBuffer
+        self.editor_buffer = kwargs["editor_buffer"]  # EditorBuffer
         del kwargs["editor_buffer"]
         super().__init__(*args, **kwargs)
         self.mark = {}
@@ -124,7 +124,9 @@ class VimBuffer(buffer.Buffer):
                                 i,
                                 Document(document.text, len(document.text) + new_index),
                             )
-                self.editor_buffer.editor.show_message(f"Search hit TOP without match for: {text}")
+                self.editor_buffer.editor.show_message(
+                    f"Search hit TOP without match for: {text}"
+                )
             return None
 
         # Do 'count' search iterations.
@@ -149,7 +151,11 @@ class VimBuffer(buffer.Buffer):
 
     @property
     def autoindent(self):
-        return self.editor_buffer.editor.autoindent if self._autoindent is None else self._autoindent
+        return (
+            self.editor_buffer.editor.autoindent
+            if self._autoindent is None
+            else self._autoindent
+        )
 
     @autoindent.setter
     def autoindent(self, v):
@@ -157,7 +163,11 @@ class VimBuffer(buffer.Buffer):
 
     @property
     def expand_tab(self):
-        return self.editor_buffer.editor.expand_tab if self._expand_tab is None else self._expand_tab
+        return (
+            self.editor_buffer.editor.expand_tab
+            if self._expand_tab is None
+            else self._expand_tab
+        )
 
     @expand_tab.setter
     def expand_tab(self, v):
@@ -236,7 +246,9 @@ class VimBuffer(buffer.Buffer):
         logger.debug(
             f"go_to_completion({index}) completion_start={s.completion_start},completion_text={s.completion_text}"
         )
-        self.editor_buffer.editor.append_edit_completion(s.completion_start, s.completion_text)
+        self.editor_buffer.editor.append_edit_completion(
+            s.completion_start, s.completion_text
+        )
 
     def apply_completion(self, *args, **kwargs):
         logger.debug("apply_completion()")

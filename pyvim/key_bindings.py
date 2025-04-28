@@ -321,7 +321,9 @@ def create_key_bindings(editor):
         )
 
         # Set clipboard data
-        event.app.clipboard.set_data(ClipboardData("\n".join(deleted), SelectionType.LINES))
+        event.app.clipboard.set_data(
+            ClipboardData("\n".join(deleted), SelectionType.LINES)
+        )
 
         editor.finish_edit_command()
 
