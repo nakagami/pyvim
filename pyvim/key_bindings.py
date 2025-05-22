@@ -293,6 +293,7 @@ def create_key_bindings(editor):
         deleted = buffer.delete(count=buffer.document.get_end_of_line_position())
         event.app.clipboard.set_text(deleted)
 
+        editor.append_edit_command(event.key_sequence[0])
         editor.finish_edit_command()
 
     @kb.add("d", "d", filter=vi_navigation_mode)
