@@ -549,9 +549,9 @@ class WindowStatusBarRuler(ConditionalContainer):
                         document.cursor_position_col + 1,
                     ),
                 ),
-#                ("", " - "),
+                #                ("", " - "),
                 ("class:percentage", f"{percentage:3}%"),
-#                ("", " "),
+                #                ("", " "),
             ]
 
         super(WindowStatusBarRuler, self).__init__(
