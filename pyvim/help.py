@@ -4,12 +4,23 @@ PyVim Help
 
 PyVim is a Pure Python Vim Clone.
 
+Commands for windows
+------------------------------
 
-Thanks to:
-    - Pyflakes: the tool for checking Python source files for errors.
-    - Jedi: the Python autocompletion library.
-    - Pygments: Python syntax highlighter.
-    - prompt_toolkit: the terminal UI toolkit.
+- :sp :split    Split window horizontally
+- :vsp :vsplit  Split window vertically
+- :new          Create new buffer
+- :vnew         Create new buffer, splitting vertically
+- :only         Keep only the current window
+- :hide         Hide the current window
+
+Keybinds for windows
+------------------------------
+
+- Ctrl+w Ctrl+w: Next window
+- Ctrl+w n: Split horizontaly
+- Ctrl+w v: Split vertically
+
 
 Keybinds in autocompletion
 ------------------------------
@@ -23,4 +34,12 @@ When editing Python with Jedi enabled, an autocomplete window appears and follow
 
 This key binding may change in the future.
 
-More help and documentation will follow."""
+More help and documentation will follow.
+
+Thanks to
+---------------
+
+- Pyflakes: the tool for checking Python source files for errors.
+- Jedi: the Python autocompletion library.
+- Pygments: Python syntax highlighter.
+- prompt_toolkit: the terminal UI toolkit."""
