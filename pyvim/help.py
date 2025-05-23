@@ -4,37 +4,38 @@ PyVim Help
 
 PyVim is a Pure Python Vim Clone.
 
-Commands for windows
+Commands for tab and window
 ------------------------------
 
-- :sp :split    Split window horizontally
-- :vsp :vsplit  Split window vertically
-- :new          Create new buffer
-- :vnew         Create new buffer, splitting vertically
-- :only         Keep only the current window
-- :hide         Hide the current window
+- :tabe :tabedit :tabnew    Create new tab page
+- :tabclose :tabc           Close tab page
+- :tabnext :tabn            Net tab
+- :tabprevious :tabp        Previsou tab
+- :sp :split                Split window horizontally
+- :vsp :vsplit              Split window vertically
+- :new                      Create new buffer
+- :vnew                     Create new buffer, splitting vertically
+- :only                     Keep only the current window
+- :hide                     Hide the current window
 
-Keybinds for windows
+Keybinds for tab and window
 ------------------------------
 
-- Ctrl+w Ctrl+w: Next window
-- Ctrl+w n: Split horizontaly
-- Ctrl+w v: Split vertically
-
+- Ctrl+g t                  Next tab page
+- Ctrl+g T                  Previous tab page
+- Ctrl+w Ctrl+w             Next window
+- Ctrl+w n                  Split horizontaly
+- Ctrl+w v                  Split vertically
 
 Keybinds in autocompletion
 ------------------------------
 
 When editing Python with Jedi enabled, an autocomplete window appears and follows these key bindings
 
-- Ctrl+n: select next candidate
-- Ctrl+p: select previsous candidate
-- Tab: close autocompletion window
-- Ctrl+c: cancel completion and close autocompletion window
-
-This key binding may change in the future.
-
-More help and documentation will follow.
+- Ctrl+n                    Select next candidate
+- Ctrl+p                    Select previsous candidate
+- Tab                       Close autocompletion window
+- Ctrl+c                    Cancel completion and close autocompletion window
 
 Thanks to
 ---------------
