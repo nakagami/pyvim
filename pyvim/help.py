@@ -4,6 +4,12 @@ PyVim Help
 
 PyVim is a Pure Python Vim Clone.
 
+Commands like shell
+------------------------------
+
+- :cd                       Change directory
+- :pwd                      Print working directory
+
 Commands for tab and window
 ------------------------------
 
