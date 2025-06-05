@@ -487,16 +487,16 @@ def create_key_bindings(editor):
         a = document.cursor_position + document.get_start_of_line_position()
         b = document.cursor_position + document.get_end_of_line_position()
         text = document.text[a:b]
-        if buffer.expand_tab:
-            space_len = len(text) - len(text.lstrip(" "))
-            if space_len:
-                if space_len % buffer.shiftwidth:
-                    remove_len = space_len % buffer.shiftwidth
-                else:
-                    remove_len = buffer.shiftwidth
-                text = text[remove_len:]
-                buffer.text = document.text[:a] + text + document.text[b:]
-                buffer.cursor_position = cursor_position - remove_len
+
+        space_len = len(text) - len(text.lstrip(" "))
+        if space_len:
+            if space_len % buffer.shiftwidth:
+                remove_len = space_len % buffer.shiftwidth
+            else:
+                remove_len = buffer.shiftwidth
+            text = text[remove_len:]
+            buffer.text = document.text[:a] + text + document.text[b:]
+            buffer.cursor_position = cursor_position - remove_len
         else:
             for i in range(a, b):
                 if document.text[i] == "\t":
