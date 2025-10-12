@@ -28,7 +28,7 @@ setup(
     long_description=long_description,
     packages=find_packages("."),
     install_requires=[
-        "prompt_toolkit==3.0.51",
+        "prompt_toolkit",
         "pyflakes",  # For Python error reporting.
         "jedi",  # For Python autocompletion
         "pygments",  # For the syntax highlighting.
