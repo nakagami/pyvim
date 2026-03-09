@@ -167,6 +167,6 @@ def _auto_decode(data):
     assert isinstance(data, bytes)
 
     encoding = chardet.detect(data)["encoding"]
-    if encoding == "ascii" or not encoding:
+    if encoding in ("ascii", "Windows-1252"):
         encoding = "utf-8"
     return data.decode(encoding, "ignore"), encoding
