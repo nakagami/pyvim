@@ -3,7 +3,7 @@ import gzip
 import os
 import urllib
 
-import charset_normalizer
+import chardet
 
 from .base import EditorIO
 
@@ -166,7 +166,7 @@ def _auto_decode(data):
     """
     assert isinstance(data, bytes)
 
-    encoding = charset_normalizer.from_bytes(data).best().encoding
+    encoding = chardet.detect(data)["encoding"]
     if encoding == "ascii" or not encoding:
         encoding = "utf-8"
     return data.decode(encoding, "ignore"), encoding
