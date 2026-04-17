@@ -1,6 +1,5 @@
 """Tests for word motion functions (w, b, e, W, B, E)."""
 
-import pytest
 from pyvim.word_motion import w_forward, b_backward, e_forward
 
 
