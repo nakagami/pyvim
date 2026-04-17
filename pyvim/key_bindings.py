@@ -30,6 +30,7 @@ from prompt_toolkit.selection import PasteMode, SelectionType
 
 from .vi import create_text_object_decorator
 from .document import Document
+from .word_motion import w_forward, b_backward, e_forward
 from .commands.commands import write_and_quit, quit
 
 
@@ -781,22 +782,19 @@ def create_key_bindings(editor):
         document = event.current_buffer.document
         if document.current_char in ("\n", ""):
             return None
-        if document.current_char.isspace():
-            end = (
-                document.find_next_word_beginning(count=event.arg)
-                or document.get_end_of_document_position()
-            )
-            eol = document.text_after_cursor[:end].find("\n")
-            if eol != -1:
-                end = eol
-        else:
-            end = document.find_next_word_ending(
-                include_current_position=True, count=event.arg
-            )
-            if not end:
-                end = document.get_end_of_line_position()
 
-        # dw remove word and trailing spaces
+        text = document.text
+        pos = document.cursor_position
+        new_pos = w_forward(text, pos, count=event.arg)
+
+        # cw: behaves like ce (stop at end of word, not beginning of next)
+        if event.app.vi_state.operator_event.key_sequence[0].key == "c":
+            end = e_forward(text, pos, count=event.arg)
+            return TextObject(end - pos, type=TextObjectType.INCLUSIVE)
+
+        end = new_pos - pos
+
+        # dw: remove word and trailing spaces on the same line
         if event.app.vi_state.operator_event.key_sequence[0].key == "d":
             c = document._get_char_relative_to_cursor(end)
             while c != "\n" and c.isspace():
@@ -804,6 +802,99 @@ def create_key_bindings(editor):
                 c = document._get_char_relative_to_cursor(end)
 
         return TextObject(end)
+
+    @text_object("W", no_move_handler=True)
+    def _WORD_forward(event: E) -> TextObject:
+        """
+        'WORD' forward. 'cW', 'dW': Delete/change one WORD.
+        """
+        document = event.current_buffer.document
+        if document.current_char in ("\n", ""):
+            return None
+
+        text = document.text
+        pos = document.cursor_position
+        new_pos = w_forward(text, pos, count=event.arg, big_word=True)
+
+        # cW: behaves like cE
+        if event.app.vi_state.operator_event.key_sequence[0].key == "c":
+            end = e_forward(text, pos, count=event.arg, big_word=True)
+            return TextObject(end - pos, type=TextObjectType.INCLUSIVE)
+
+        end = new_pos - pos
+
+        # dW: remove WORD and trailing spaces on the same line
+        if event.app.vi_state.operator_event.key_sequence[0].key == "d":
+            c = document._get_char_relative_to_cursor(end)
+            while c != "\n" and c.isspace():
+                end += 1
+                c = document._get_char_relative_to_cursor(end)
+
+        return TextObject(end)
+
+    @kb.add("w", filter=in_navigation_mode)
+    def _w_move(event: E) -> None:
+        """Move cursor: word forward."""
+        buf = event.current_buffer
+        text = buf.document.text
+        pos = buf.document.cursor_position
+        buf.cursor_position = w_forward(text, pos, count=event.arg)
+
+    @kb.add("w", filter=vi_selection_mode)
+    def _w_selection(event: E) -> None:
+        """Move cursor in selection mode: word forward."""
+        buf = event.current_buffer
+        text = buf.document.text
+        pos = buf.document.cursor_position
+        buf.cursor_position = w_forward(text, pos, count=event.arg)
+
+    @kb.add("W", filter=in_navigation_mode)
+    def _W_move(event: E) -> None:
+        """Move cursor: WORD forward."""
+        buf = event.current_buffer
+        text = buf.document.text
+        pos = buf.document.cursor_position
+        buf.cursor_position = w_forward(text, pos, count=event.arg, big_word=True)
+
+    @kb.add("W", filter=vi_selection_mode)
+    def _W_selection(event: E) -> None:
+        """Move cursor in selection mode: WORD forward."""
+        buf = event.current_buffer
+        text = buf.document.text
+        pos = buf.document.cursor_position
+        buf.cursor_position = w_forward(text, pos, count=event.arg, big_word=True)
+
+    @text_object("b")
+    def _word_backward(event: E) -> TextObject:
+        """'b': Move one word backward."""
+        text = event.current_buffer.document.text
+        pos = event.current_buffer.document.cursor_position
+        new_pos = b_backward(text, pos, count=event.arg)
+        return TextObject(new_pos - pos)
+
+    @text_object("B")
+    def _WORD_backward(event: E) -> TextObject:
+        """'B': Move one WORD backward."""
+        text = event.current_buffer.document.text
+        pos = event.current_buffer.document.cursor_position
+        new_pos = b_backward(text, pos, count=event.arg, big_word=True)
+        return TextObject(new_pos - pos)
+
+    @text_object("e")
+    def _end_of_word(event: E) -> TextObject:
+        """'e': End of word."""
+        text = event.current_buffer.document.text
+        pos = event.current_buffer.document.cursor_position
+        new_pos = e_forward(text, pos, count=event.arg)
+        return TextObject(new_pos - pos, type=TextObjectType.INCLUSIVE)
+
+    @text_object("E")
+    def _end_of_WORD(event: E) -> TextObject:
+        """'E': End of WORD."""
+        text = event.current_buffer.document.text
+        pos = event.current_buffer.document.cursor_position
+        new_pos = e_forward(text, pos, count=event.arg, big_word=True)
+        return TextObject(new_pos - pos, type=TextObjectType.INCLUSIVE)
 
     @text_object("f", Keys.Any)
     def _find_next_occurrence(event: E) -> TextObject:
