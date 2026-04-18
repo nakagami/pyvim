@@ -747,7 +747,11 @@ def create_key_bindings(editor):
 
     def _nth_line(event, number):
         buf = event.current_buffer
+        current_line = buf.document.cursor_position_row + 1
         count = number - buf.document.cursor_position_row - 1
+        if count != 0:
+            # Save current position as previous jump mark before moving.
+            editor.current_editor_buffer.buffer.mark["'"] = current_line
         if count > 0:
             buf.auto_down(count=count, go_to_start_of_line_if_history_changes=True)
         elif count < 0:
@@ -775,6 +779,15 @@ def create_key_bindings(editor):
             v = editor.current_editor_buffer.buffer.mark.get(k)
             if v:
                 _nth_line(event, v)
+
+    @kb.add("'", "'", filter=vi_navigation_mode)
+    def jump_to_previous(event):
+        """
+        '' : jump to the line before the last jump.
+        """
+        v = editor.current_editor_buffer.buffer.mark.get("'")
+        if v:
+            _nth_line(event, v)
 
     @kb.add(".", filter=vi_navigation_mode)
     def dot(event):
