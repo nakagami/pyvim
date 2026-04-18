@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "pyvim"
+version = "4.0.0"
+description = "Pure Python Vi Implementation"
+readme = "README.rst"
+license = { text = "BSD License" }
+authors = [
+    { name = "Jonathan Slenders" },
+]
+maintainers = [
+    { name = "Hajime Nakagami", email = "nakagami@gmail.com" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Text Editors",
+]
+dynamic = ["version"]
+
+requires-python = ">=3.10
+dependencies = [
+    "prompt_toolkit",
+    "pyflakes",
+    "jedi",
+    "pygments",
+    "docopt",
+    "chardet",
+    "pyperclip",
+]
+
+[project.urls]
+Homepage = "https://github.com/nakagami/pyvim"
+
+[project.scripts]
+pyvim = "pyvim.entry_points.run_pyvim:run"
+
+[tool.setuptools.dynamic]
+version = {attr = "pyvim.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["."]
