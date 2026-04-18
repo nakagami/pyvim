@@ -34,6 +34,7 @@ setup(
         "pygments",  # For the syntax highlighting.
         "docopt",  # For command line arguments.
         "chardet",  # detect encoding
+        "pyperclip",  # system clipboard integration
     ],
     entry_points={
         "console_scripts": [

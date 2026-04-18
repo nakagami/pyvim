@@ -32,6 +32,7 @@ from .vi import create_text_object_decorator
 from .document import Document
 from .word_motion import w_forward, b_backward, e_forward
 from .commands.commands import write_and_quit, quit
+from .clipboard import copy_to_system_clipboard
 
 
 __all__ = ("create_key_bindings",)
@@ -57,6 +58,7 @@ def delete_operator(event: E, text_object: TextObject) -> None:
                 event.app.vi_state.named_registers[reg_name] = clipboard_data
         else:
             event.app.clipboard.set_data(clipboard_data)
+            copy_to_system_clipboard(clipboard_data.text)
 
 
 def change_operator(event: E, text_object: TextObject) -> None:
@@ -76,10 +78,18 @@ def change_operator(event: E, text_object: TextObject) -> None:
                 event.app.vi_state.named_registers[reg_name] = clipboard_data
         else:
             event.app.clipboard.set_data(clipboard_data)
+            copy_to_system_clipboard(clipboard_data.text)
 
     # Back to insert mode in case of 'change'.
     if text_object:
         event.app.vi_state.input_mode = InputMode.INSERT
+
+
+def yank_operator(event: E, text_object: TextObject) -> None:
+    _, clipboard_data = text_object.cut(event.current_buffer)
+    if clipboard_data.text:
+        event.app.clipboard.set_data(clipboard_data)
+        copy_to_system_clipboard(clipboard_data.text)
 
 
 def _create_operator_decorator(
@@ -107,6 +117,8 @@ def _create_operator_decorator(
                 operator_func = delete_operator
             elif keys[-1] == "c":
                 operator_func = change_operator
+            elif keys[-1] == "y" and len(keys) == 1:
+                operator_func = yank_operator
 
             @key_bindings.add(
                 *keys,
@@ -228,6 +240,16 @@ def create_key_bindings(editor):
         editor.finish_edit_command(event)
         event.app.vi_state.input_mode = InputMode.NAVIGATION
 
+    @kb.add("y", "y", filter=vi_navigation_mode)
+    @kb.add("Y", filter=vi_navigation_mode)
+    def _yank_line(event: E) -> None:
+        """
+        Yank the whole line and copy to system clipboard.
+        """
+        text = "\n".join(event.current_buffer.document.lines_from_current[: event.arg])
+        event.app.clipboard.set_data(ClipboardData(text, SelectionType.LINES))
+        copy_to_system_clipboard(text)
+
     @kb.add("a", filter=vi_navigation_mode & ~is_read_only)
     # ~IsReadOnly, because we want to stay in navigation mode for
     # read-only buffers.
@@ -260,6 +282,7 @@ def create_key_bindings(editor):
 
         deleted = buffer.delete(count=buffer.document.get_end_of_line_position())
         event.app.clipboard.set_text(deleted)
+        copy_to_system_clipboard(deleted)
         event.app.vi_state.input_mode = InputMode.INSERT
 
     @kb.add("c", "c", filter=vi_navigation_mode & ~is_read_only)
@@ -275,6 +298,7 @@ def create_key_bindings(editor):
         # We copy the whole line.
         data = ClipboardData(buffer.document.current_line, SelectionType.LINES)
         event.app.clipboard.set_data(data)
+        copy_to_system_clipboard(data.text)
 
         # But we delete after the whitespace
         buffer.cursor_position += buffer.document.get_start_of_line_position(
@@ -293,6 +317,7 @@ def create_key_bindings(editor):
         buffer = event.current_buffer
         deleted = buffer.delete(count=buffer.document.get_end_of_line_position())
         event.app.clipboard.set_text(deleted)
+        copy_to_system_clipboard(deleted)
 
         editor.append_edit_command(event.key_sequence[0])
         editor.finish_edit_command()
@@ -326,6 +351,7 @@ def create_key_bindings(editor):
         event.app.clipboard.set_data(
             ClipboardData("\n".join(deleted), SelectionType.LINES)
         )
+        copy_to_system_clipboard("\n".join(deleted))
 
         editor.finish_edit_command()
 
@@ -454,6 +480,7 @@ def create_key_bindings(editor):
 
         text = event.current_buffer.delete(count=event.arg)
         event.app.clipboard.set_text(text)
+        copy_to_system_clipboard(text)
         event.app.vi_state.input_mode = InputMode.INSERT
 
     @kb.add("x", filter=vi_navigation_mode)
@@ -467,6 +494,7 @@ def create_key_bindings(editor):
             editor.start_edit_command(event)
             text = event.current_buffer.delete(count=count)
             event.app.clipboard.set_text(text)
+            copy_to_system_clipboard(text)
             editor.finish_edit_command()
 
     @kb.add("X", filter=vi_navigation_mode)
@@ -477,6 +505,7 @@ def create_key_bindings(editor):
             editor.start_edit_command(event)
             text = event.current_buffer.delete_before_cursor(count=count)
             event.app.clipboard.set_text(text)
+            copy_to_system_clipboard(text)
             editor.finish_edit_command()
 
     @kb.add("<", "<", filter=vi_navigation_mode)
