@@ -41,8 +41,26 @@ __all__ = ("create_key_bindings",)
 vi_register_names = string.ascii_lowercase + "0123456789"
 
 
+def _get_register_event(event: E) -> E:
+    """
+    Return the event that contains the register name in key_sequence[1].
+
+    In navigation mode, the operator key binding (e.g. '"', 'a', 'd') is stored
+    in vi_state.operator_event.  In visual/selection mode the operator is applied
+    directly and vi_state.operator_func is not set, so `event` itself holds the
+    full key sequence including the '"' prefix.
+    """
+    vi_state = event.app.vi_state
+    if vi_state.operator_func is not None:
+        # Navigation mode: operator_event contains '"', reg, operator_key.
+        return vi_state.operator_event
+    # Selection mode: event itself contains the full sequence.
+    return event
+
+
 def delete_operator(event: E, text_object: TextObject) -> None:
-    with_register = len(event.key_sequence) > 1
+    reg_event = _get_register_event(event)
+    with_register = len(reg_event.key_sequence) > 1
     clipboard_data = None
     buff = event.current_buffer
 
@@ -53,16 +71,17 @@ def delete_operator(event: E, text_object: TextObject) -> None:
     # Set deleted/changed text to clipboard or named register.
     if clipboard_data and clipboard_data.text:
         if with_register:
-            reg_name = event.key_sequence[1].data
+            reg_name = reg_event.key_sequence[1].data
             if reg_name in vi_register_names:
                 event.app.vi_state.named_registers[reg_name] = clipboard_data
-        else:
-            event.app.clipboard.set_data(clipboard_data)
-            copy_to_system_clipboard(clipboard_data.text)
+                return
+        event.app.clipboard.set_data(clipboard_data)
+        copy_to_system_clipboard(clipboard_data.text)
 
 
 def change_operator(event: E, text_object: TextObject) -> None:
-    with_register = len(event.key_sequence) > 1
+    reg_event = _get_register_event(event)
+    with_register = len(reg_event.key_sequence) > 1
     clipboard_data = None
     buff = event.current_buffer
 
@@ -73,7 +92,7 @@ def change_operator(event: E, text_object: TextObject) -> None:
     # Set deleted/changed text to clipboard or named register.
     if clipboard_data and clipboard_data.text:
         if with_register:
-            reg_name = event.key_sequence[1].data
+            reg_name = reg_event.key_sequence[1].data
             if reg_name in vi_register_names:
                 event.app.vi_state.named_registers[reg_name] = clipboard_data
         else:
@@ -88,6 +107,12 @@ def change_operator(event: E, text_object: TextObject) -> None:
 def yank_operator(event: E, text_object: TextObject) -> None:
     _, clipboard_data = text_object.cut(event.current_buffer)
     if clipboard_data.text:
+        reg_event = _get_register_event(event)
+        if len(reg_event.key_sequence) > 1:
+            reg_name = reg_event.key_sequence[1].data
+            if reg_name in vi_register_names:
+                event.app.vi_state.named_registers[reg_name] = clipboard_data
+                return
         event.app.clipboard.set_data(clipboard_data)
         copy_to_system_clipboard(clipboard_data.text)
 
@@ -117,7 +142,7 @@ def _create_operator_decorator(
                 operator_func = delete_operator
             elif keys[-1] == "c":
                 operator_func = change_operator
-            elif keys[-1] == "y" and len(keys) == 1:
+            elif keys[-1] == "y":
                 operator_func = yank_operator
 
             @key_bindings.add(
@@ -249,6 +274,16 @@ def create_key_bindings(editor):
         text = "\n".join(event.current_buffer.document.lines_from_current[: event.arg])
         event.app.clipboard.set_data(ClipboardData(text, SelectionType.LINES))
         copy_to_system_clipboard(text)
+
+    @kb.add('"', Keys.Any, "y", "y", filter=vi_navigation_mode)
+    def _yank_line_to_register(event: E) -> None:
+        """
+        Yank the whole line into a named register.  e.g. "ayy
+        """
+        c = event.key_sequence[1].data
+        if c in vi_register_names:
+            text = "\n".join(event.current_buffer.document.lines_from_current[: event.arg])
+            event.app.vi_state.named_registers[c] = ClipboardData(text, SelectionType.LINES)
 
     @kb.add("a", filter=vi_navigation_mode & ~is_read_only)
     # ~IsReadOnly, because we want to stay in navigation mode for
@@ -979,5 +1014,20 @@ def create_key_bindings(editor):
         if match:
             return TextObject(match + 1)
         return None
+
+    @text_object("y", no_move_handler=True, no_selection_handler=True)
+    def _yank_line_text_object(event: E) -> TextObject:
+        """
+        'y' as text object: current line(s).
+        Used by '"a3yy' (register + operator "ay" + count + text object "y").
+        e.g. "a3yy yanks 3 lines to register a.
+        """
+        count = event.arg or 1
+        if count <= 1:
+            return TextObject(0, type=TextObjectType.LINEWISE)
+        return TextObject(
+            event.current_buffer.document.get_cursor_down_position(count=count - 1),
+            type=TextObjectType.LINEWISE,
+        )
 
     return kb
