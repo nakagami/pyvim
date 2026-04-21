@@ -803,9 +803,11 @@ class EditorLayout(object):
                     lambda: "|" if self.editor.display_unprintable_characters else " "
                 ),
                 char2=(
-                    lambda: _try_char("\u2508", ".", get_app().output.encoding())
-                    if self.editor.display_unprintable_characters
-                    else " "
+                    lambda: (
+                        _try_char("\u2508", ".", get_app().output.encoding())
+                        if self.editor.display_unprintable_characters
+                        else " "
+                    )
                 ),
             ),
             # Reporting of errors, for Pyflakes.

@@ -27,6 +27,7 @@ def _detect_filetype(location):
         return aliases[0]
     return ""
 
+
 __all__ = ("EditorBuffer",)
 
 

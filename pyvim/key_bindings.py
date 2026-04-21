@@ -283,8 +283,12 @@ def create_key_bindings(editor):
         """
         c = event.key_sequence[1].data
         if c in vi_register_names:
-            text = "\n".join(event.current_buffer.document.lines_from_current[: event.arg])
-            event.app.vi_state.named_registers[c] = ClipboardData(text, SelectionType.LINES)
+            text = "\n".join(
+                event.current_buffer.document.lines_from_current[: event.arg]
+            )
+            event.app.vi_state.named_registers[c] = ClipboardData(
+                text, SelectionType.LINES
+            )
 
     @kb.add("a", filter=vi_navigation_mode & ~is_read_only)
     # ~IsReadOnly, because we want to stay in navigation mode for
