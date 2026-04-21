@@ -1,5 +1,6 @@
 import os
 import string
+import unicodedata
 from prompt_toolkit.application import get_app
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.vi_state import CharacterFind, InputMode
@@ -689,11 +690,16 @@ def create_key_bindings(editor):
         """
         b = event.app.current_buffer
         if hasattr(b, "expand_tab") and b.expand_tab:
-            sw = b.shiftwidth
-            col_mod = b.document.cursor_position_col % b.shiftwidth
-            if col_mod:
-                sw -= col_mod
-            b.insert_text(" " * sw)
+            # Use visual column width to correctly handle wide characters (CJK etc.)
+            text_before = b.document.text_before_cursor
+            line_before = text_before.split("\n")[-1]
+            vis_col = sum(
+                2 if unicodedata.east_asian_width(ch) in ("W", "F") else 1
+                for ch in line_before
+            )
+            col_mod = vis_col % b.shiftwidth
+            spaces = b.shiftwidth - col_mod if col_mod else b.shiftwidth
+            b.insert_text(" " * spaces)
         else:
             b.insert_text("\t")
 
