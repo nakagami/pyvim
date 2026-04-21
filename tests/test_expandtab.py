@@ -131,5 +131,3 @@ def test_wide_char_at_tab_stop():
     assert expected == 4
 
     assert actual == expected  # FAILS: actual=2, expected=4
-
-
