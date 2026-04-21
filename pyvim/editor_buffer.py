@@ -5,8 +5,27 @@ from pyvim.buffer import VimBuffer
 from pyvim.completion import DocumentCompleter
 from pyvim.reporting import report
 
+import pygments.lexers
+import pygments.util
 import stat
 import os
+
+
+def _detect_filetype(location):
+    """
+    Detect filetype name from a file location based on its extension,
+    using Pygments' lexer database. Returns an empty string if unknown.
+    """
+    if not location:
+        return ""
+    try:
+        lexer_cls = pygments.lexers.get_lexer_for_filename(location).__class__
+    except pygments.util.ClassNotFound:
+        return ""
+    aliases = getattr(lexer_cls, "aliases", None)
+    if aliases:
+        return aliases[0]
+    return ""
 
 __all__ = ("EditorBuffer",)
 
@@ -53,6 +72,12 @@ class EditorBuffer(object):
             on_text_changed=lambda _: self.run_reporter(),
             editor_buffer=self,
         )
+
+        # Set filetype based on the file extension.
+        if location:
+            filetype = _detect_filetype(location)
+            if filetype:
+                self.buffer.filetype = filetype
 
         # List of reporting errors.
         self.report_errors = []
