@@ -11,7 +11,6 @@ These tests FAIL with the current (buggy) implementation and should PASS after t
 """
 
 import unicodedata
-from prompt_toolkit.document import Document
 
 
 def visual_col(text, cursor_pos):
