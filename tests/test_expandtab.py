@@ -17,7 +17,7 @@ def visual_col(text, cursor_pos):
     """Calculate visual column width up to cursor_pos (wide chars count as 2)."""
     col = 0
     for ch in text[:cursor_pos]:
-        if unicodedata.east_asian_width(ch) in ('W', 'F'):
+        if unicodedata.east_asian_width(ch) in ("W", "F"):
             col += 2
         else:
             col += 1
@@ -28,8 +28,7 @@ def simulate_tab_indent(text, cursor_pos, shiftwidth):
     """Simulate the tab_indent implementation from key_bindings.py."""
     line_before = text[:cursor_pos].split("\n")[-1]
     vis_col = sum(
-        2 if unicodedata.east_asian_width(ch) in ("W", "F") else 1
-        for ch in line_before
+        2 if unicodedata.east_asian_width(ch) in ("W", "F") else 1 for ch in line_before
     )
     col_mod = vis_col % shiftwidth
     return shiftwidth - col_mod if col_mod else shiftwidth
