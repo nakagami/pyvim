@@ -15,14 +15,13 @@ __all__ = ("configure",)
 
 
 def on_open_buffer(location, buffer):
-    if location:
-        match os.path.splitext(location)[-1]:
-            case ".go":
-                buffer.expand_tab = False
-            case ".ex":
-                buffer.tabstop = buffer.shifwidth = 2
-            case ".exs":
-                buffer.tabstop = buffer.shifwidth = 2
+    match buffer.filetype:
+        case "go":
+            buffer.expand_tab = False
+        case "elixtir":
+            buffer.tabstop = buffer.shifwidth = 2
+        case "typescript":
+            buffer.tabstop = buffer.shifwidth = 2
 
 
 def configure(editor):
