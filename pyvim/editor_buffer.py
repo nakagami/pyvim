@@ -3,6 +3,7 @@ from prompt_toolkit.document import Document
 
 from pyvim.buffer import VimBuffer
 from pyvim.completion import DocumentCompleter
+from pyvim.modeline import apply_modeline_options, parse_modelines
 from pyvim.reporting import report
 
 import pygments.lexers
@@ -60,8 +61,6 @@ class EditorBuffer(object):
         else:
             text = text or ""
 
-        # TODO: read modeline and if fileencoding is changed reload
-
         self._file_content = text
 
         # Create Buffer.
@@ -79,6 +78,9 @@ class EditorBuffer(object):
             filetype = _detect_filetype(location)
             if filetype:
                 self.buffer.filetype = filetype
+
+        # Apply modeline options embedded in the file.
+        self._apply_modelines()
 
         # List of reporting errors.
         self.report_errors = []
@@ -135,6 +137,40 @@ class EditorBuffer(object):
 
         self.editor.show_message("Cannot read: %r" % location)
         return ""
+
+    def _apply_modelines(self):
+        """
+        Parse modelines in the current buffer text and apply them. If the
+        modeline changes ``fileencoding``, reload the file with the new
+        encoding.
+        """
+        if not getattr(self.editor, "modeline", True):
+            return
+        count = getattr(self.editor, "modelines", 5)
+        options = parse_modelines(self.buffer.text, count)
+        if not options:
+            return
+
+        new_encoding = apply_modeline_options(self.buffer, options)
+        if new_encoding and self.location and new_encoding != self.encoding:
+            for io in self.editor.io_backends:
+                if io.can_open_location(self.location):
+                    try:
+                        text, _ = io.read(self.location, new_encoding)
+                    except Exception as e:
+                        self.editor.show_message(
+                            "Cannot reload %r with encoding %r: %r"
+                            % (self.location, new_encoding, e)
+                        )
+                        return
+                    text = text.replace("\r\n", "\n")
+                    if text.endswith("\n"):
+                        text = text[:-1]
+                    self.encoding = new_encoding
+                    self.buffer.fileencoding = new_encoding
+                    self._file_content = text
+                    self.buffer.document = Document(text, 0)
+                    return
 
     def reload(self):
         """
