@@ -998,9 +998,6 @@ def delete(editor, range_start, range_end):
     after = "\n".join(lines[end:])
     get_app().clipboard.set_data(ClipboardData(deleted, SelectionType.LINES))
 
-    from ..clipboard import copy_to_system_clipboard
-
-    copy_to_system_clipboard(deleted)
     buffer.save_to_undo_stack()
     new_text = before + after
     # update text buffer
