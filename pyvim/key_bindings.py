@@ -572,6 +572,18 @@ def create_key_bindings(editor):
         """
         event.current_buffer.cancel_completion()
 
+    @kb.add("c-w", filter=in_insert_mode)
+    def _delete_word_before_cursor(event: E) -> None:
+        """
+        Delete word before cursor (insert mode).
+        """
+        buff = event.current_buffer
+        pos = buff.document.find_start_of_previous_word(count=event.arg, WORD=False)
+        if pos is None:
+            pos = -buff.cursor_position
+        if pos:
+            buff.delete_before_cursor(count=-pos)
+
     @kb.add("enter", filter=in_insert_mode & is_multiline)
     def _newline(event: E) -> None:
         """
