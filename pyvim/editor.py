@@ -11,6 +11,7 @@ Usage::
 from prompt_toolkit.application import Application
 from prompt_toolkit.application.application import _CombinedRegistry
 from prompt_toolkit.buffer import Buffer
+from prompt_toolkit.cursor_shapes import ModalCursorShapeConfig
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.filters import Condition
 from prompt_toolkit.history import FileHistory
@@ -207,6 +208,7 @@ class Editor(object):
             mouse_support=Condition(lambda: self.enable_mouse_support),
             full_screen=True,
             enable_page_navigation_bindings=True,
+            cursor=ModalCursorShapeConfig(),
         )
         application.key_processor = VimKeyProcessor(
             _CombinedRegistry(application), self
