@@ -22,6 +22,12 @@ Execute bellow pip command in the python virtual environment of your project.
 
     pip install git+https://github.com/nakagami/pyvim
 
+or
+
+::
+
+    pip install https://github.com/nakagami/pyvim/archive/refs/tags/v4.0.0.tar.gz
+
 
 And you can execute ``pyvim`` command.
 
