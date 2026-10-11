@@ -7,8 +7,6 @@ from .utils import getLogger
 logger = getLogger()
 
 
-
-
 class VimBuffer(buffer.Buffer):
     def __init__(self, *args, **kwargs):
         self.editor_buffer = kwargs["editor_buffer"]  # EditorBuffer

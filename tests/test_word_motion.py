@@ -26,6 +26,13 @@ class TestWForward:
         text = "hello"
         assert w_forward(text, 4) == 4  # stays at end
 
+    def test_empty_string(self):
+        assert w_forward("", 0) == 0
+
+    def test_count_exceeds(self):
+        text = "one two"
+        assert w_forward(text, 0, count=10) == 6
+
     def test_newline(self):
         text = "hello\nworld"
         assert w_forward(text, 0) == 6  # h -> w on next line
@@ -102,6 +109,13 @@ class TestBBackward:
         text = "hello"
         assert b_backward(text, 0) == 0
 
+    def test_empty_string(self):
+        assert b_backward("", 0) == 0
+
+    def test_count_exceeds(self):
+        text = "one two"
+        assert b_backward(text, 6, count=10) == 0
+
     def test_newline(self):
         text = "hello\nworld"
         assert b_backward(text, 6) == 0
@@ -169,6 +183,13 @@ class TestEForward:
     def test_at_end(self):
         text = "hello"
         assert e_forward(text, 4) == 4  # stays at end
+
+    def test_empty_string(self):
+        assert e_forward("", 0) == 0
+
+    def test_count_exceeds(self):
+        text = "one two"
+        assert e_forward(text, 0, count=10) == 6
 
 
 class TestEForwardBigWord:
