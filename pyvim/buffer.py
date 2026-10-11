@@ -7,29 +7,6 @@ from .utils import getLogger
 logger = getLogger()
 
 
-def _new_text_and_position(self) -> tuple[str, int]:
-    if self.complete_index is None:
-        self.completion_start = 0
-        self.completion_text = ""
-        return self.original_document.text, self.original_document.cursor_position
-    else:
-        original_text_before_cursor = self.original_document.text_before_cursor
-        original_text_after_cursor = self.original_document.text_after_cursor
-
-        c = self.completions[self.complete_index]
-        if c.start_position == 0:
-            before = original_text_before_cursor
-        else:
-            before = original_text_before_cursor[: c.start_position]
-
-        new_text = before + c.text + original_text_after_cursor
-        new_cursor_position = len(before) + len(c.text)
-        self.completion_start = c.start_position
-        self.completion_text = c.text
-        return new_text, new_cursor_position
-
-
-buffer.CompletionState.new_text_and_position = _new_text_and_position
 
 
 class VimBuffer(buffer.Buffer):
@@ -243,12 +220,14 @@ class VimBuffer(buffer.Buffer):
     def go_to_completion(self, index):
         super().go_to_completion(index)
         s = self.complete_state
-        logger.debug(
-            f"go_to_completion({index}) completion_start={s.completion_start},completion_text={s.completion_text}"
-        )
-        self.editor_buffer.editor.append_edit_completion(
-            s.completion_start, s.completion_text
-        )
+        if s and s.current_completion:
+            c = s.current_completion
+            logger.debug(
+                f"go_to_completion({index}) completion_start={c.start_position},completion_text={c.text}"
+            )
+            self.editor_buffer.editor.append_edit_completion(
+                c.start_position, c.text
+            )
 
     def apply_completion(self, *args, **kwargs):
         logger.debug("apply_completion()")

@@ -98,67 +98,69 @@ class CustomHighlightMatchingBracketProcessor(HighlightMatchingBracketProcessor)
             return []
 
 
-def _highlight_search_processor_apply_transformation(
-    self, transformation_input: TransformationInput
-) -> Transformation:
-    (
-        buffer_control,
-        document,
-        lineno,
-        source_to_display,
-        fragments,
-        _,
-        _,
-    ) = transformation_input.unpack()
+class CustomHighlightSearchProcessor(HighlightSearchProcessor):
+    def apply_transformation(
+        self, transformation_input: TransformationInput
+    ) -> Transformation:
+        (
+            buffer_control,
+            document,
+            lineno,
+            source_to_display,
+            fragments,
+            _,
+            _,
+        ) = transformation_input.unpack()
 
-    search_text = self._get_search_text(buffer_control)
-    searchmatch_fragment = f" class:{self._classname} "
-    searchmatch_current_fragment = f" class:{self._classname_current} "
+        search_text = self._get_search_text(buffer_control)
+        searchmatch_fragment = f" class:{self._classname} "
+        searchmatch_current_fragment = f" class:{self._classname_current} "
 
-    if search_text and not get_app().is_done:
-        # For each search match, replace the style string.
-        line_text = fragment_list_to_text(fragments)
-        fragments = explode_text_fragments(fragments)
+        if search_text and not get_app().is_done:
+            # For each search match, replace the style string.
+            line_text = fragment_list_to_text(fragments)
+            fragments = explode_text_fragments(fragments)
 
-        if buffer_control.search_state.ignore_case():
-            flags = re.IGNORECASE
-        else:
-            flags = re.RegexFlag(0)
-
-        # Get cursor column.
-        cursor_column: int | None
-        if document.cursor_position_row == lineno:
-            cursor_column = source_to_display(document.cursor_position_col)
-        else:
-            cursor_column = None
-
-        iterator = re_finditer(search_text, line_text, flags=flags)
-
-        for match in iterator:
-            if cursor_column is not None:
-                on_cursor = match.start() <= cursor_column < match.end()
+            if buffer_control.search_state.ignore_case():
+                flags = re.IGNORECASE
             else:
-                on_cursor = False
+                flags = re.RegexFlag(0)
 
-            for i in range(match.start(), match.end()):
-                old_fragment, text, *_ = fragments[i]
-                if on_cursor:
-                    fragments[i] = (
-                        old_fragment + searchmatch_current_fragment,
-                        fragments[i][1],
-                    )
+            # Get cursor column.
+            cursor_column: int | None
+            if document.cursor_position_row == lineno:
+                cursor_column = source_to_display(document.cursor_position_col)
+            else:
+                cursor_column = None
+
+            iterator = re_finditer(search_text, line_text, flags=flags)
+
+            for match in iterator:
+                if cursor_column is not None:
+                    on_cursor = match.start() <= cursor_column < match.end()
                 else:
-                    fragments[i] = (
-                        old_fragment + searchmatch_fragment,
-                        fragments[i][1],
-                    )
+                    on_cursor = False
 
-    return Transformation(fragments)
+                for i in range(match.start(), match.end()):
+                    old_fragment, text, *_ = fragments[i]
+                    if on_cursor:
+                        fragments[i] = (
+                            old_fragment + searchmatch_current_fragment,
+                            fragments[i][1],
+                        )
+                    else:
+                        fragments[i] = (
+                            old_fragment + searchmatch_fragment,
+                            fragments[i][1],
+                        )
+
+        return Transformation(fragments)
 
 
-HighlightSearchProcessor.apply_transformation = (
-    _highlight_search_processor_apply_transformation
-)
+class CustomHighlightIncrementalSearchProcessor(
+    HighlightIncrementalSearchProcessor, CustomHighlightSearchProcessor
+):
+    pass
 
 
 def _try_char(character, backup, encoding=sys.stdout.encoding):
@@ -814,11 +816,11 @@ class EditorLayout(object):
             ReportingProcessor(editor_buffer),
             HighlightSelectionProcessor(),
             ConditionalProcessor(
-                HighlightSearchProcessor(),
+                CustomHighlightSearchProcessor(),
                 Condition(lambda: self.editor.highlight_search),
             ),
             ConditionalProcessor(
-                HighlightIncrementalSearchProcessor(),
+                CustomHighlightIncrementalSearchProcessor(),
                 Condition(lambda: self.editor.highlight_search) & preview_search,
             ),
             CustomHighlightMatchingBracketProcessor(),

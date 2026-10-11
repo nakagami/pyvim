@@ -63,7 +63,8 @@ def create_text_object_decorator(
                 # `vi_waiting_for_text_object_mode` filter state.)
                 operator_func = vi_state.operator_func
 
-                operator_func(event, text_obj)
+                if text_obj is not None and operator_func is not None:
+                    operator_func(event, text_obj)
 
                 # Clear operator.
                 event.app.vi_state.operator_func = None
@@ -108,24 +109,25 @@ def create_text_object_decorator(
                     if selection_state is None:
                         return  # Should not happen, because of the `vi_selection_mode` filter.
 
-                    # When the text object has both a start and end position, like 'i(' or 'iw',
-                    # Turn this into a selection, otherwise the cursor.
-                    if text_object.end:
-                        # Take selection positions from text object.
-                        start, end = text_object.operator_range(buff.document)
-                        start += buff.cursor_position
-                        end += buff.cursor_position
+                    if text_object is not None:
+                        # When the text object has both a start and end position, like 'i(' or 'iw',
+                        # Turn this into a selection, otherwise the cursor.
+                        if text_object.end:
+                            # Take selection positions from text object.
+                            start, end = text_object.operator_range(buff.document)
+                            start += buff.cursor_position
+                            end += buff.cursor_position
 
-                        selection_state.original_cursor_position = start
-                        buff.cursor_position = end
+                            selection_state.original_cursor_position = start
+                            buff.cursor_position = end
 
-                        # Take selection type from text object.
-                        if text_object.type == TextObjectType.LINEWISE:
-                            selection_state.type = SelectionType.LINES
+                            # Take selection type from text object.
+                            if text_object.type == TextObjectType.LINEWISE:
+                                selection_state.type = SelectionType.LINES
+                            else:
+                                selection_state.type = SelectionType.CHARACTERS
                         else:
-                            selection_state.type = SelectionType.CHARACTERS
-                    else:
-                        event.current_buffer.cursor_position += text_object.start
+                            event.current_buffer.cursor_position += text_object.start
 
             # Make it possible to chain @text_object decorators.
             return text_object_func
