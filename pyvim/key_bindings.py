@@ -324,23 +324,36 @@ def create_key_bindings(editor):
 
     @kb.add("c", "c", filter=vi_navigation_mode & ~is_read_only)
     @kb.add("S", filter=vi_navigation_mode & ~is_read_only)
-    def _change_current_line(event: E) -> None:  # TODO: implement 'arg'
+    def _change_current_line(event: E) -> None:
         """
-        Change current line
+        Change current line (or following lines with count).
         """
         editor.start_edit_command(event)
 
         buffer = event.current_buffer
+        count = event.arg or 1
 
-        # We copy the whole line.
-        data = ClipboardData(buffer.document.current_line, SelectionType.LINES)
+        lines = buffer.document.lines
+        row = buffer.document.cursor_position_row
+        before = lines[:row]
+        deleted = lines[row : row + count]
+        after = lines[row + count :]
+
+        # We copy the whole line(s).
+        data = ClipboardData("\n".join(deleted), SelectionType.LINES)
         event.app.clipboard.set_data(data)
 
-        # But we delete after the whitespace
-        buffer.cursor_position += buffer.document.get_start_of_line_position(
-            after_whitespace=True
+        # Preserve indentation of the first line
+        first_line = deleted[0] if deleted else ""
+        indent = first_line[: len(first_line) - len(first_line.lstrip(" "))]
+        new_lines = before + [indent] + after
+        new_text = "\n".join(new_lines)
+
+        cursor_pos = len("\n".join(before)) + (1 if before else 0) + len(indent)
+        buffer.document = Document(
+            text=new_text,
+            cursor_position=cursor_pos,
         )
-        buffer.delete(count=buffer.document.get_end_of_line_position())
         event.app.vi_state.input_mode = InputMode.INSERT
 
     @kb.add("D", filter=vi_navigation_mode)

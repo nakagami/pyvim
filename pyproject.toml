@@ -34,6 +34,12 @@ dependencies = [
     "pyperclip",
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "flake8",
+]
+
 [project.urls]
 Homepage = "https://github.com/nakagami/pyvim"
 

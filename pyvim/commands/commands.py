@@ -1,7 +1,6 @@
 import os
 import re
 from prompt_toolkit.application import run_in_terminal
-from prompt_toolkit.application.current import get_app
 from prompt_toolkit.clipboard import ClipboardData
 from prompt_toolkit.selection import SelectionType
 from prompt_toolkit.document import Document
@@ -954,10 +953,22 @@ def substitute(editor, range_start, range_end, search, replace, flags):
     start, end = _get_range_index(editor, range_start, range_end)
     line_index_iterator = range(start, end)
     transform_callback = get_transform_callback(search, replace, flags)
-    new_text = buffer.transform_lines(line_index_iterator, transform_callback)
+
+    lines = buffer.text.split("\n")
+    last_substituted_row = None
+    for index in line_index_iterator:
+        if 0 <= index < len(lines):
+            new_line = transform_callback(lines[index])
+            if new_line != lines[index]:
+                last_substituted_row = index
+                lines[index] = new_line
+    new_text = "\n".join(lines)
 
     assert len(line_index_iterator) >= 1
-    new_cursor_position_row = line_index_iterator[-1]
+    if last_substituted_row is not None:
+        new_cursor_position_row = last_substituted_row
+    else:
+        new_cursor_position_row = line_index_iterator[-1]
 
     # update text buffer
     buffer.document = Document(
@@ -980,7 +991,7 @@ def yank(editor, range_start, range_end):
     lines = buffer.document.lines
 
     yanked = "\n".join(lines[start:end])
-    get_app().clipboard.set_data(ClipboardData(yanked, SelectionType.LINES))
+    editor.application.clipboard.set_data(ClipboardData(yanked, SelectionType.LINES))
 
     from ..clipboard import copy_to_system_clipboard
 
@@ -996,7 +1007,7 @@ def delete(editor, range_start, range_end):
     before = "\n".join(lines[:start]) + "\n"
     deleted = "\n".join(lines[start:end])
     after = "\n".join(lines[end:])
-    get_app().clipboard.set_data(ClipboardData(deleted, SelectionType.LINES))
+    editor.application.clipboard.set_data(ClipboardData(deleted, SelectionType.LINES))
 
     buffer.save_to_undo_stack()
     new_text = before + after
